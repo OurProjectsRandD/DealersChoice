@@ -76,13 +76,13 @@ const PotDiv = () => {
   return (
     <>
       <div className="bg-light text-center">
-        <div className="text-center mb-0 p-0" id="status">
+        <div className="text-center mb-0" id="status">
           {gameState.BetStatus}
         </div>
       </div>
-      <div className="text-center mx-auto p-3">
-        <div className="PlayerNameX badge badge-warning mt-1">Pot</div>
-        <span className="PlayerStatus badge badge-warning mx-auto ms-1">
+      <div className="text-center mx-auto p-2">
+        <div className="PlayerNameX badge badge-warning mb-2">Pot</div>
+        <span className="PlayerStatus badge badge-warning mx-auto">
           {gameState.PotSize}
         </span>
         {gameState.Deck.length !== 52 &&

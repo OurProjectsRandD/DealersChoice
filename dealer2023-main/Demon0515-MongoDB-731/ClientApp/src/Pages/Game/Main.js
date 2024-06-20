@@ -166,7 +166,7 @@ const MainGame = ({ isVideoChatAllowed = false }) => {
           );
           console.log(
             stateRef.current.minutes +
-              stateRef.current.gameHash.ActivePlayers.length
+            stateRef.current.gameHash.ActivePlayers.length
           );
           console.log(
             `${parseInt(
@@ -177,14 +177,14 @@ const MainGame = ({ isVideoChatAllowed = false }) => {
           );
           console.log(
             parseInt(stateRef.current.asset.Tokens) -
-              parseInt(10 * stateRef.current.gameHash.ActivePlayers.length)
+            parseInt(10 * stateRef.current.gameHash.ActivePlayers.length)
           );
           console.log("Outside===Closed");
           if (
             stateRef.current.minutes +
-              stateRef.current.gameHash.ActivePlayers.length >=
+            stateRef.current.gameHash.ActivePlayers.length >=
             parseInt(stateRef.current.asset.Tokens) -
-              parseInt(10 * stateRef.current.gameHash.ActivePlayers.length)
+            parseInt(10 * stateRef.current.gameHash.ActivePlayers.length)
           ) {
             console.log("Inside===Open");
             console.log(
@@ -192,7 +192,7 @@ const MainGame = ({ isVideoChatAllowed = false }) => {
             );
             console.log(
               stateRef.current.minutes +
-                stateRef.current.gameHash.ActivePlayers.length
+              stateRef.current.gameHash.ActivePlayers.length
             );
             console.log(
               `${parseInt(
@@ -203,7 +203,7 @@ const MainGame = ({ isVideoChatAllowed = false }) => {
             );
             console.log(
               parseInt(stateRef.current.asset.Tokens) -
-                parseInt(10 * stateRef.current.gameHash.ActivePlayers.length)
+              parseInt(10 * stateRef.current.gameHash.ActivePlayers.length)
             );
             console.log("Inside===Closed");
             setVideoMinutesRunoutModalOpen(true);
@@ -224,7 +224,7 @@ const MainGame = ({ isVideoChatAllowed = false }) => {
           //calculate estimated minutes
           setTotalMinutes(
             stateRef.current.minutes +
-              stateRef.current.gameHash.ActivePlayers.length
+            stateRef.current.gameHash.ActivePlayers.length
           );
         }, 1000 * 60);
         setTimerId(intervalId);
@@ -494,8 +494,10 @@ const MainGame = ({ isVideoChatAllowed = false }) => {
       <>
         <div className="container-fluid bg-black p-0" id="GameBoard">
           <div className="row">
-            <Logging />
-            <div className="col-10">
+            <div className="col-lg-2">
+              <Logging />
+            </div>
+            <div className="col-lg-10">
               <div className="row">
                 <div
                   className="logging d-none col-12 alert alert-warning"
@@ -503,37 +505,32 @@ const MainGame = ({ isVideoChatAllowed = false }) => {
                 >
                   <span>Game Started</span>
                 </div>
-                <hr />
               </div>
-              <div
-                className="row GeneralMessage"
-                style={{ position: "fixed:", zIndex: 400, width: "60%" }}
-              ></div>
+
               <div id="table">
-                <div className="row"></div>
                 <div className="row">
-                  <div className="col-4 seat">
-                    <Player ptr={3} dealerId={gameState.DealerId} />
-                  </div>
-                  <div className="col-4 seat">
-                    <Player ptr={4} dealerId={gameState.DealerId} />
-                  </div>
-                  <div className="col-4 seat">
-                    <Player ptr={5} dealerId={gameState.DealerId} />
-                  </div>
-                </div>
-                <div className="row">
-                  <div className="col-4 seat">
+                  <div className="col-2 seat">
                     <Player ptr={2} dealerId={gameState.DealerId} />
                   </div>
-                  <div className="col-4" id="potdiv">
-                    <PotDiv />
+                  <div className="col-2 seat">
+                    <Player ptr={3} dealerId={gameState.DealerId} />
                   </div>
-                  <div className="col-4 seat">
+                  <div className="col-2 seat">
+                    <div id="potdiv">
+                      <PotDiv />
+                    </div>
+                  </div>
+                  <div className="col-2 seat">
+                    <Player ptr={4} dealerId={gameState.DealerId} />
+                  </div>
+                  <div className="col-2 seat">
+                    <Player ptr={5} dealerId={gameState.DealerId} />
+                  </div>
+                  <div className="col-2 seat">
                     <Player ptr={6} dealerId={gameState.DealerId} />
                   </div>
                 </div>
-                <div className="row text-center mx-2 mt-2 mb-2">
+                <div className="row mt-3">
                   <div className="col-10">
                     <CurrentPlayerDiv />
                   </div>
@@ -542,14 +539,10 @@ const MainGame = ({ isVideoChatAllowed = false }) => {
                   </div>
                 </div>
               </div>
-              <div className="row">
-                <div className="text-center mx-auto col-12 text-center card bg-secondary align-self-center">
-                  {gameState.DealerId === user.Id && <DealerPanel />}
-                </div>
+              <div className=" player-deal-card">
+                {gameState.DealerId === user.Id && <DealerPanel />}
               </div>
-              <div className="row">
-                <GameControlPanel isMeetingJoined={isMeetingJoined} />
-              </div>
+              <GameControlPanel isMeetingJoined={isMeetingJoined} />
             </div>
           </div>
         </div>

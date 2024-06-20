@@ -12,7 +12,7 @@ import MenuItem from "@mui/material/MenuItem";
 import "./NavMenu.css";
 import { SendRequest } from "../util/AxiosUtil";
 import { useSelector, useDispatch } from "react-redux";
-import { unAuthorized,setMeetingJoined } from "../slice/authSlice";
+import { unAuthorized, setMeetingJoined } from "../slice/authSlice";
 import { persistStore } from "redux-persist";
 import { store } from "../store";
 export const NavMenu = () => {
@@ -53,159 +53,157 @@ export const NavMenu = () => {
 
   return (
     <AppBar position="static" id="Menu">
-      <Container maxWidth="xl">
-        <Toolbar disableGutters>
-          <Box
-            sx={{ flexGrow: 0, display: { xs: "none", md: "flex" } }}
-            id="Home_Menu"
+      <Toolbar disableGutters>
+        <Box
+          sx={{ flexGrow: 0, display: { xs: "none", md: "flex" } }}
+          id="Home_Menu"
+        >
+          <Button
+            key={0}
+            sx={{ my: 2, color: "white", display: "block", mr: 2 }}
+            onClick={() => {
+              navigate("/");
+            }}
+            id="Home_Menu_Button"
+            className="my-0"
           >
-            <Button
-              key={0}
-              sx={{ my: 2, color: "white", display: "block", mr: 2 }}
-              onClick={() => {
-                navigate("/");
-              }}
-              id="Home_Menu_Button"
-              className="my-0"
+            <img
+              alt="DealersChoice logo"
+              className="img-fluid"
+              src="/assets/images/Logo.jpg"
+            />
+          </Button>
+        </Box>
+        <Box
+          sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}
+          id="Games_Menu"
+        >
+          {!auth.isAuthorized && (
+            <Typography
+              variant="h4"
+              component="div"
+              sx={{ mr: 2 }}
+              color="blue"
+              className="btn"
+              onClick={() => navigate("/about")}
             >
-              <img
-                alt="DealersChoice logo"
-                className="img-fluid"
-                src="/assets/images/Logo.jpg"
-              />
-            </Button>
-          </Box>
-          <Box
-            sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}
-            id="Games_Menu"
-          >
-            {!auth.isAuthorized && (
+              About
+            </Typography>
+          )}
+          {auth.isAuthorized && (
+            <>
               <Typography
                 variant="h4"
                 component="div"
                 sx={{ mr: 2 }}
                 color="blue"
                 className="btn"
-                onClick={() => navigate("/about")}
+                onClick={() => {
+                  navigate("/game/games");
+                }}
               >
-                About
+                Games
               </Typography>
-            )}
-            {auth.isAuthorized && (
-              <>
+              <Typography
+                variant="h4"
+                component="div"
+                sx={{ mr: 2 }}
+                color="blue"
+                className="btn"
+                onClick={() => {
+                  navigate("/purchase");
+                }}
+              >
+                Purchases
+              </Typography>
+              <Typography
+                variant="h4"
+                component="div"
+                sx={{ mr: 2 }}
+                color="blue"
+                className="btn"
+                onClick={() => {
+                  navigate("/support");
+                }}
+              >
+                Support
+              </Typography>
+            </>
+          )}
+        </Box>
+        <Box sx={{ flexGrow: 0 }} id="Account_Menu">
+          {auth.isAuthorized && (
+            <>
+              <Tooltip title="Open settings">
                 <Typography
                   variant="h4"
                   component="div"
                   sx={{ mr: 2 }}
                   color="blue"
                   className="btn"
-                  onClick={() => {
-                    navigate("/game/games");
-                  }}
+                  onClick={handleOpenUserMenu}
                 >
-                  Games
+                  {`${auth.user.DisplayName} (${auth.asset.Tokens})`}
                 </Typography>
-                <Typography
-                  variant="h4"
-                  component="div"
-                  sx={{ mr: 2 }}
-                  color="blue"
-                  className="btn"
+              </Tooltip>
+              <Menu
+                sx={{ mt: "45px" }}
+                id="menu-appbar"
+                anchorEl={anchorElUser}
+                anchorOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                open={Boolean(anchorElUser)}
+                onClose={handleCloseUserMenu}
+              >
+                <MenuItem
+                  key={0}
                   onClick={() => {
-                    navigate("/purchase");
+                    setAnchorElUser(null);
+                    navigate("/auth/account-setting");
                   }}
                 >
-                  Purchases
-                </Typography>
-                <Typography
-                  variant="h4"
-                  component="div"
-                  sx={{ mr: 2 }}
-                  color="blue"
-                  className="btn"
+                  <Typography textAlign="center">Account Setting</Typography>
+                </MenuItem>
+                <MenuItem
+                  key={1}
                   onClick={() => {
-                    navigate("/support");
+                    setAnchorElUser(null);
                   }}
                 >
-                  Support
-                </Typography>
-              </>
-            )}
-          </Box>
-          <Box sx={{ flexGrow: 0 }} id="Account_Menu">
-            {auth.isAuthorized && (
-              <>
-                <Tooltip title="Open settings">
-                  <Typography
-                    variant="h4"
-                    component="div"
-                    sx={{ mr: 2 }}
-                    color="blue"
-                    className="btn"
-                    onClick={handleOpenUserMenu}
-                  >
-                    {`${auth.user.DisplayName} (${auth.asset.Tokens})`}
-                  </Typography>
-                </Tooltip>
-                <Menu
-                  sx={{ mt: "45px" }}
-                  id="menu-appbar"
-                  anchorEl={anchorElUser}
-                  anchorOrigin={{
-                    vertical: "top",
-                    horizontal: "right",
-                  }}
-                  keepMounted
-                  transformOrigin={{
-                    vertical: "top",
-                    horizontal: "right",
-                  }}
-                  open={Boolean(anchorElUser)}
-                  onClose={handleCloseUserMenu}
-                >
-                  <MenuItem
-                    key={0}
-                    onClick={() => {
-                      setAnchorElUser(null);
-                      navigate("/auth/account-setting");
-                    }}
-                  >
-                    <Typography textAlign="center">Account Setting</Typography>
-                  </MenuItem>
-                  <MenuItem
-                    key={1}
-                    onClick={() => {
-                      setAnchorElUser(null);
-                    }}
-                  >
-                    <Typography textAlign="center">Purchase history</Typography>
-                  </MenuItem>
-                  <MenuItem key={2} onClick={handleSignOut}>
-                    <Typography textAlign="center">Sign Out</Typography>
-                  </MenuItem>
-                </Menu>
-              </>
-            )}
-            {!auth.isAuthorized && (
-              <div id="Sign_In_Menu">
-                <Typography
-                  variant="h4"
-                  component="div"
-                  sx={{ flexGrow: 1 }}
-                  color="blue"
-                  className="btn"
-                  id="Sign_In_Menu_Button"
-                  onClick={() => {
-                    navigate("/auth/sign-in");
-                  }}
-                >
-                  Sign In
-                </Typography>
-              </div>
-            )}
-          </Box>
-        </Toolbar>
-      </Container>
+                  <Typography textAlign="center">Purchase history</Typography>
+                </MenuItem>
+                <MenuItem key={2} onClick={handleSignOut}>
+                  <Typography textAlign="center">Sign Out</Typography>
+                </MenuItem>
+              </Menu>
+            </>
+          )}
+          {!auth.isAuthorized && (
+            <div id="Sign_In_Menu">
+              <Typography
+                variant="h4"
+                component="div"
+                sx={{ flexGrow: 1 }}
+                color="blue"
+                className="btn"
+                id="Sign_In_Menu_Button"
+                onClick={() => {
+                  navigate("/auth/sign-in");
+                }}
+              >
+                Sign In
+              </Typography>
+            </div>
+          )}
+        </Box>
+      </Toolbar>
     </AppBar>
   );
 };

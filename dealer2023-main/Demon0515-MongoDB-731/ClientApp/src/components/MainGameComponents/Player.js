@@ -164,27 +164,26 @@ const Player = ({ ptr }) => {
       <div>
         <div className="row m-0 p-1">
           <div
-            className={`PlayerName col${
-              gameState.DealerId === Player.PlayerId ? " green" : ""
-            }`}
+            className={`PlayerName col${gameState.DealerId === Player.PlayerId ? " green" : ""
+              }`}
             onClick={() =>
               setToggleRemoveButtonVisible(!toggleRemoveButtonVisible)
             }
           >
-            <div className="PlayerDealer">{Player.PlayerName}</div>
+            <div className="PlayerDealer"><p>{Player.PlayerName}</p></div>
             {gameState.GameCreatorId === user.Id && (
               <span
-                className="PlayerStatusNet col-auto px-2 my-auto mx-2 btn"
+                className="PlayerStatusNet col-auto my-auto btn"
                 onClick={() => RemovePlayer(Player)}
               >
                 <i class="bi bi-trash"></i>
               </span>
             )}
-            <span className="PlayerStatusNet col-auto px-2 my-auto">
+            <span className="PlayerStatusNet col-auto my-auto">
               {Player.PlayerNetStatusFinal + Player.PlayerAmount}
             </span>
             {Player.PlayerId === gameState.DealerId && (
-              <span className="PlayerStatusNet col-auto px-2 my-auto dealerIconStyle">
+              <span className="PlayerStatusNet col-auto my-auto dealerIconStyle">
                 D
               </span>
             )}

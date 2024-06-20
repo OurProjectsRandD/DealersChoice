@@ -242,7 +242,8 @@ header .btn {
 
 #status {
   background-color: #000;
-  font-size: 1rem;
+  font-size: 12px;
+  padding: 8px 0px;
   font-weight: 700;
   color: #f2fe1c;
 }
@@ -599,14 +600,17 @@ button.stencil:hover {
 }
 
 #table {
+  padding: 20px;
   z-index: -10;
-  border-radius: 360px 360px 360px 360px;
+  border-radius: 40px;
   background-image: url("../images/greenfelt.jpg");
   background-size: cover;
-  padding-top: 10px;
+  margin-bottom: 10px;
 }
 
 #potdiv {
+  min-height: 130px;
+  border-radius: 6px;
   border: 3px solid rgb(147, 143, 143);
 }
 
@@ -619,8 +623,11 @@ button.stencil:hover {
 }
 
 .PlayerName {
+  border-radius: 4px;
+  padding: 4px 6px 4px 10px;
   background-color: black;
   font-size: 1rem;
+  text-transform: capitalize;
   font-weight: bold;
   color: #fff;
   display: flex;
@@ -637,7 +644,7 @@ button.stencil:hover {
 
 /*.PlayerView.PlayerActive.Player1.Player { background-color: unset; border: unset; height: inherit; }*/
 
-.Player3 {
+/* .Player3 {
   top: -35px;
   left: -20px;
 }
@@ -659,7 +666,7 @@ button.stencil:hover {
 .Player6 {
   bottom: 0;
   right: -15px;
-}
+} */
 
 .PlayerActions {
   border: 3px solid gray;
@@ -677,9 +684,11 @@ button.stencil:hover {
   justify-content: center;
   align-items: center;
   background-color: #fff;
-  max-height: 85%;
+  height: 30px !important;
+  width: 30px !important;
   color: #000;
   border-radius: 3px;
+  margin-left: 6px;
 }
 
 .PlayerActions .PlayerStatusNet {
@@ -692,9 +701,12 @@ button.stencil:hover {
 .btn {
   color: #fff;
   background-color: #d80808;
-  border-color: #432aeb !important;
+  border: none !important;
   white-space: nowrap;
-  padding: 0.125rem 0.75rem;
+  padding: 5px 10px;
+  font-size: 12px;
+  text-transform: capitalize;
+  border-radius: 4px;
 }
 
 .btn:hover {
@@ -846,7 +858,8 @@ text-danger {
 
 .PlayerStatus.badge,
 .PlayerNameX.badge {
-  font-size: 1.5rem;
+  font-size: 24px;
+  width: 100%;
 }
 
 text-warning {
@@ -898,6 +911,10 @@ div#potdiv {
 }
 
 .player-wrapper {
+  height: 100px !important;
+  overflow: hidden;
+  object-fit: cover;
+  object-position: center;
   width: auto;
   height: auto;
 }
@@ -906,7 +923,7 @@ div#potdiv {
   padding-top: 56.25%;
   position: relative;
   width: 100% !important;
-  height: 100% !important;
+  height: auto !important;
 }
 
 .react-player>div {
@@ -989,7 +1006,7 @@ div#potdiv {
 .react-player video {
   /* height: 242px !important; */
   width: 100% !important;
-  height: 100% !important;
+  height: auto !important;
 }
 
 .PlayerDealer {
@@ -997,9 +1014,28 @@ div#potdiv {
   text-align: left;
 }
 
+.PlayerDealer p {
+  white-space: nowrap;
+  width: 50px;
+  padding: 3px 0px;
+  margin-bottom: 0px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .dealerIconStyle {
 
   color: white;
   background-color: green;
   margin-left: 5px;
+}
+
+.bottom-icon {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.player-deal-card {
+  background: #f5f5f5;
+  border-radius: 10px;
 }

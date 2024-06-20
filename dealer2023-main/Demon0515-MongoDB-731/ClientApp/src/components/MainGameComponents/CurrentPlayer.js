@@ -161,7 +161,7 @@ const CurrentPlayerDiv = () => {
           <PassCardButton />
         </div>
         <div className="row PlayerActions bg-dark p-3 m-0">
-          <div className="col-12 d-flex justify-content-around">
+          <div className="col-12 d-flex justify-content-between">
             <input
               autoComplete="off"
               type="text"

@@ -45,7 +45,7 @@ const DealerPanel = () => {
             DealValueRef.current.value = "";
           }
         );
-      } catch (err) {}
+      } catch (err) { }
     },
     [cardDealType, gameState.GameCode, user.Id]
   );
@@ -73,9 +73,9 @@ const DealerPanel = () => {
 
   return (
     <>
-      <div className="PlayerDealer m-1 pt-1">
+      <div className="PlayerDealer  m-3">
         <div className="row align-items-center border-primary border-bottom mb-1 justify-content-between h-75">
-          <div className="col-auto text-center p-0 mr-3 h-100">
+          <div className="col-2 text-center  h-100">
             <input
               id="txtAnte"
               className="mt-0"
@@ -84,7 +84,7 @@ const DealerPanel = () => {
             />
             <AnteButton txtAnteRef={txtAnteRef} />
           </div>
-          <div className="col-auto p-0 text-left h-100">
+          <div className="col-3 text-center  h-100">
             <span>Deal</span>
             <input
               id="DealValue"
@@ -94,7 +94,7 @@ const DealerPanel = () => {
             />
             <span>Cards</span>
           </div>
-          <div className="col-2 p-0 m-3 text-left h-100">
+          <div className="col-3 text-center  h-100">
             <div>
               <input
                 autoComplete="off"
@@ -110,7 +110,7 @@ const DealerPanel = () => {
                 up
               </label>
             </div>
-            <div className="d-inline-block; mt-3">
+            <div className="d-inline-block; mt-2">
               <input
                 autoComplete="off"
                 type="radio"
@@ -125,8 +125,8 @@ const DealerPanel = () => {
               </label>
             </div>
           </div>
-          <div className="col-auto p-2 h-100">to</div>
-          <div className="col-auto pr-0 text-left h-100">
+          <div className="col-1 text-center  h-100">to</div>
+          <div className="col-3 text-center  h-100">
             <div
               className="CardDealPlayer"
               style={{
@@ -174,8 +174,8 @@ const DealerPanel = () => {
             </div>
           </div>
         </div>
-        <div className="row m1-1">
-          <div className="col-12 text-center">
+        <div className=" p-2">
+          <div className=" text-center">
             <button
               className="btn btn PassDeal m2"
               data-toggle="tooltip"
