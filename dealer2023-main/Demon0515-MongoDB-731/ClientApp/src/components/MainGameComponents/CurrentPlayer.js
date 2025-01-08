@@ -133,9 +133,8 @@ const CurrentPlayerDiv = () => {
                 </span>
                 <span
                   className="PlayerName p-2"
-                  // onInput={handleInputPlayerName}
                 >
-                  {currentPlayer && currentPlayer.PlayerName}
+                  {currentPlayer && currentPlayer.PlayerName} 
                 </span>
                 <div className="PlayerDeck row">
                   {currentPlayer &&
