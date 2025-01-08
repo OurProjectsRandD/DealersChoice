@@ -138,7 +138,7 @@ const Games = ({ isAuthorized }) => {
             </Table>
           </TableContainer>
         </Grid>
-        <Grid item xs={5}>
+        <Grid item xs={5} >
           <Typography component="h1" variant="h5">
             Past Games
           </Typography>

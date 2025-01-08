@@ -150,7 +150,7 @@ namespace PersonalizedCardGame.Controllers
                 return gameHash.MeetingId;
             } catch(Exception ex)
             {
-                return null;
+                return ex.Message + ex.InnerException;
             }
         }
 

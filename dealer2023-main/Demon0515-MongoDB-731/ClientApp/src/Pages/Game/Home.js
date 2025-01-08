@@ -201,6 +201,16 @@ const Home = () => {
     });
   }, [auth, dispatch, navigator]);
 
+
+    //function App() {
+    //    return (
+    //        <div className='container'>
+    //            <h2>Hello useState</h2></div>
+    //    );
+    //}
+
+
+  //start
   if (!isCreating)
     return (
       <div className="container p-2">
