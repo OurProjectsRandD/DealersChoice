@@ -43,6 +43,7 @@ const Home = () => {
     /* Alert the copied text */
   }, [invitation_code_ref]);
 
+  //Create invitation code function
   const handleCreate = useCallback(() => {
     if (
       !auth.isAuthorized &&
@@ -57,6 +58,7 @@ const Home = () => {
       setCopyButtonVisible(true);
     }
   }, [auth]);
+
 
   const handleStart = useCallback(async () => {
     if (
