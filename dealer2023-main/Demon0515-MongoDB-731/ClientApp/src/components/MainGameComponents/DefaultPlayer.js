@@ -92,45 +92,46 @@ import React, {
     if (PlayerIndex === -1) return <></>;
   
     return (
-      <div
-        className={
-          "Player" +
-          ptr +
-          " Player" +
-          (Player.IsFolded || Player.IsDisconnected ? " PlayerFolded" : "") +
-          (gameState.CurrentId === Player.PlayerId && gameState.Deck.length < 52
-            ? " bg-active"
-            : "")
-        }
-        data-sliderindex="0"
-      >
-        <div>
-          <div className="row m-0 p-1">
-            <div
-              className={`PlayerName col${
-                gameState.DealerId === Player.PlayerId ? " green" : ""
-              }`}
-            >
-              {Player.PlayerName}
-            </div>
-          </div>
-          <div
-            id={"Player" + ptr}
-          >
-            {Player.IsRealTimeChat ? (
-              <ParticipantView participantId={Player.PlayerId} />
-            ) : Player.PlayerImage.length > 0 ? (
-              <img
-                alt=""
-                src={"/" + Player.PlayerImage}
-                style={{ width: "200px", height: "200px" }}
-              />
-            ) : (
-              <i className={"fas fa-user"}></i>
-            )}
-          </div>
-        </div>
-      </div>
+      <></>
+      // <div
+      //   className={
+      //     "Player" +
+      //     ptr +
+      //     " Player" +
+      //     (Player.IsFolded || Player.IsDisconnected ? " PlayerFolded" : "") +
+      //     (gameState.CurrentId === Player.PlayerId && gameState.Deck.length < 52
+      //       ? " bg-active"
+      //       : "")
+      //   }
+      //   data-sliderindex="0"
+      // >
+      //   <div>
+      //     <div className="row m-0 p-1">
+      //       <div
+      //         className={`PlayerName col${
+      //           gameState.DealerId === Player.PlayerId ? " green" : ""
+      //         }`}
+      //       >
+      //         {Player.PlayerName} 001
+      //       </div>
+      //     </div>
+      //     <div
+      //       id={"Player" + ptr}
+      //     >
+      //       {Player.IsRealTimeChat ? (
+      //         <ParticipantView participantId={Player.PlayerId} />
+      //       ) : Player.PlayerImage.length > 0 ? (
+      //         <img
+      //           alt=""
+      //           src={"/" + Player.PlayerImage}
+      //           style={{ width: "200px", height: "200px" }}
+      //         />
+      //       ) : (
+      //         <i className={"fas fa-user"}></i>
+      //       )}
+      //     </div>
+      //   </div>
+      // </div>
     );
   };
   
