@@ -845,7 +845,7 @@ namespace PersonalizedCardGame.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpPost] 
         public async Task<bool> Endgame([FromBody] GameControllerRequestModel model)
         {
             try
