@@ -56,6 +56,7 @@ import {
 } from "../../common/game/GameControl";
 import SettlementModalEndGame from "../../components/Dialogs/SettlementModalEndGame";
 import { setMeetingJoined, setVideoTime } from "../../slice/authSlice";
+import { SettlementEndGame } from "../../components/Settlements/SettlementEndGame";
 
 const MainGame = ({ isVideoChatAllowed = false }) => {
   const stateRef = useRef();
@@ -166,7 +167,7 @@ const MainGame = ({ isVideoChatAllowed = false }) => {
           );
           console.log(
             stateRef.current.minutes +
-            stateRef.current.gameHash.ActivePlayers.length
+              stateRef.current.gameHash.ActivePlayers.length
           );
           console.log(
             `${parseInt(
@@ -177,14 +178,14 @@ const MainGame = ({ isVideoChatAllowed = false }) => {
           );
           console.log(
             parseInt(stateRef.current.asset.Tokens) -
-            parseInt(10 * stateRef.current.gameHash.ActivePlayers.length)
+              parseInt(10 * stateRef.current.gameHash.ActivePlayers.length)
           );
           console.log("Outside===Closed");
           if (
             stateRef.current.minutes +
-            stateRef.current.gameHash.ActivePlayers.length >=
+              stateRef.current.gameHash.ActivePlayers.length >=
             parseInt(stateRef.current.asset.Tokens) -
-            parseInt(10 * stateRef.current.gameHash.ActivePlayers.length)
+              parseInt(10 * stateRef.current.gameHash.ActivePlayers.length)
           ) {
             console.log("Inside===Open");
             console.log(
@@ -192,7 +193,7 @@ const MainGame = ({ isVideoChatAllowed = false }) => {
             );
             console.log(
               stateRef.current.minutes +
-              stateRef.current.gameHash.ActivePlayers.length
+                stateRef.current.gameHash.ActivePlayers.length
             );
             console.log(
               `${parseInt(
@@ -203,7 +204,7 @@ const MainGame = ({ isVideoChatAllowed = false }) => {
             );
             console.log(
               parseInt(stateRef.current.asset.Tokens) -
-              parseInt(10 * stateRef.current.gameHash.ActivePlayers.length)
+                parseInt(10 * stateRef.current.gameHash.ActivePlayers.length)
             );
             console.log("Inside===Closed");
             setVideoMinutesRunoutModalOpen(true);
@@ -224,7 +225,7 @@ const MainGame = ({ isVideoChatAllowed = false }) => {
           //calculate estimated minutes
           setTotalMinutes(
             stateRef.current.minutes +
-            stateRef.current.gameHash.ActivePlayers.length
+              stateRef.current.gameHash.ActivePlayers.length
           );
         }, 1000 * 60);
         setTimerId(intervalId);
@@ -495,7 +496,34 @@ const MainGame = ({ isVideoChatAllowed = false }) => {
         <div className="container-fluid bg-black p-0" id="GameBoard">
           <div className="row">
             <div className="col-lg-2">
-              <Logging />
+              <div
+                // remove inline style
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "flex-start",
+                  justifyContent: "space-between",
+                  gap: "20px",
+                }}
+              >
+                <div
+                  // remove inline style
+                  style={{
+                    height: "450px",
+                    overflow: "auto",
+                    width: "100%",
+                  }}
+                >
+                  <Logging />
+                </div>
+
+                <SettlementEndGame
+                  isShow={false}
+                  gameState={gameState}
+                  open={settlementModalEndGameOpen}
+                  setOpen={setSettlementModalEndGameOpen}
+                />
+              </div>
             </div>
             <div className="col-lg-10">
               <div className="row">
@@ -551,12 +579,12 @@ const MainGame = ({ isVideoChatAllowed = false }) => {
           setOpen={setVideoMinutesRunoutModalOpen}
         />
         <ToastContainer />
-        <SettlementModalEndGame
+        {/* <SettlementModalEndGame
           isShow={false}
           gameState={gameState}
           open={settlementModalEndGameOpen}
           setOpen={setSettlementModalEndGameOpen}
-        />
+        /> */}
       </>
     );
   else return <h1>Loading...</h1>;

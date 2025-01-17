@@ -179,10 +179,10 @@ header .btn {
 }
 
 .CustomSideBar {
-  overflow-wrap: break-word;
-  max-height: 750px !important;
-  overflow-x: hidden;
-  overflow-y: auto;
+  /* overflow-wrap: break-word; */
+  /* max-height: 750px !important; */
+  /* overflow-x: hidden; */
+  /* overflow-y: auto; */
   font-size: 0.8rem;
 }
 
@@ -214,15 +214,14 @@ header .btn {
   width: 98% !important;
 }
 
-.btn-group-sm>.btn,
+.btn-group-sm > .btn,
 .btn-sm {
   padding: 0.2rem 0.2rem;
   margin-top: 0.25rem;
 }
 
 @media only screen and (min-device-width: 320px) and (max-device-width: 568px) {
-
-  .btn-group-sm>.btn,
+  .btn-group-sm > .btn,
   .btn-sm {
     font-size: 0.75rem;
   }
@@ -303,8 +302,7 @@ header .btn {
 
 .Playerz {
   background-color: #1661b2;
-  background-image: linear-gradient(#513333,
-      yellow);
+  background-image: linear-gradient(#513333, yellow);
   /* width:100px; */
   /* height: 100px; */
   box-shadow: 1px 4px 20px 0px;
@@ -468,9 +466,11 @@ img[data-communityindex="0"] {
 @media only screen and (max-width: 414) {
   body {
     background-color: rgba(0, 0, 0, 0.19);
-    background: radial-gradient(circle,
-        rgba(0, 0, 0, 0.19),
-        rgba(0, 0, 0, 0.19) 99%);
+    background: radial-gradient(
+      circle,
+      rgba(0, 0, 0, 0.19),
+      rgba(0, 0, 0, 0.19) 99%
+    );
   }
 }
 
@@ -717,7 +717,7 @@ button.stencil:hover {
 
 .btn-primary:not(:disabled):not(.disabled).active,
 .btn-primary:not(:disabled):not(.disabled):active,
-.show>.btn-primary.dropdown-toggle {
+.show > .btn-primary.dropdown-toggle {
   color: #fff !important;
   background-color: #0062cc !important;
   border-color: #005cbf !important;
@@ -750,7 +750,7 @@ button.stencil:hover {
 
 .btn-secondary:not(:disabled):not(.disabled).active,
 .btn-secondary:not(:disabled):not(.disabled):active,
-.show>.btn-secondary.dropdown-toggle {
+.show > .btn-secondary.dropdown-toggle {
   color: #fff !important;
   background-color: #0062cc !important;
   border-color: #005cbf !important;
@@ -787,7 +787,7 @@ button.stencil:hover {
 
 .btn-success:not(:disabled):not(.disabled).active,
 .btn-success:not(:disabled):not(.disabled):active,
-.show>.btn-success.dropdown-toggle {
+.show > .btn-success.dropdown-toggle {
   color: #fff !important;
   background-color: #0062cc !important;
   border-color: #005cbf !important;
@@ -816,7 +816,7 @@ text-success {
 
 .btn-danger:not(:disabled):not(.disabled).active,
 .btn-danger:not(:disabled):not(.disabled):active,
-.show>.btn-danger.dropdown-toggle {
+.show > .btn-danger.dropdown-toggle {
   color: #fff !important;
   background-color: #0062cc !important;
   border-color: #005cbf !important;
@@ -845,7 +845,7 @@ text-danger {
 
 .btn-warning:not(:disabled):not(.disabled).active,
 .btn-warning:not(:disabled):not(.disabled):active,
-.show>.btn-warning.dropdown-toggle {
+.show > .btn-warning.dropdown-toggle {
   color: #fff !important;
   background-color: #0062cc !important;
   border-color: #005cbf !important;
@@ -880,7 +880,7 @@ text-warning {
 
 .btn-info:not(:disabled):not(.disabled).active,
 .btn-info:not(:disabled):not(.disabled):active,
-.show>.btn-info.dropdown-toggle {
+.show > .btn-info.dropdown-toggle {
   color: #fff !important;
   background-color: #0062cc !important;
   border-color: #005cbf !important;
@@ -903,7 +903,8 @@ div#potdiv {
   background: rgba(22, 1, 1, 0.5) !important;
 }
 
-@media screen and (max-width: 999px) {}
+@media screen and (max-width: 999px) {
+}
 
 .alert-success {
   margin-left: 0% !important;
@@ -926,7 +927,7 @@ div#potdiv {
   height: auto !important;
 }
 
-.react-player>div {
+.react-player > div {
   position: absolute;
 }
 
@@ -1024,7 +1025,6 @@ div#potdiv {
 }
 
 .dealerIconStyle {
-
   color: white;
   background-color: green;
   margin-left: 5px;

@@ -1,6 +1,7 @@
 import React, { useCallback } from "react";
 import { capitalizeFirstLetter } from "../../common/game/basic";
 import { useSelector } from "react-redux";
+
 const Logging = () => {
   const gameState = useSelector((state) => state.gameState);
 
@@ -9,7 +10,6 @@ const Logging = () => {
       <div className="DivGameCode mt-1" id="inviteCode">
         <span>
           Join code:&nbsp;
-
           {gameState.GameCode}
         </span>
       </div>
@@ -31,12 +31,13 @@ const Logging = () => {
                           <br />
                           {/* &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#8594;&nbsp; */}
                           <span
-                            className={`d-block log-entry ${actionStep.Action === "Deal" ||
+                            className={`d-block log-entry ${
+                              actionStep.Action === "Deal" ||
                               actionStep.Action === "ReturnToDeck" ||
                               actionStep.Action === "Discard"
-                              ? "card-action"
-                              : "player-action"
-                              }`}
+                                ? "card-action"
+                                : "player-action"
+                            }`}
                           >
                             <strong>
                               {capitalizeFirstLetter(actionStep.PlayerName)}
@@ -59,12 +60,13 @@ const Logging = () => {
                           <br />
                           {/* &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#8594;&nbsp; */}
                           <span
-                            className={`d-block log-entry ${actionStep.Action === "Deal" ||
+                            className={`d-block log-entry ${
+                              actionStep.Action === "Deal" ||
                               actionStep.Action === "ReturnToDeck" ||
                               actionStep.Action === "Discard"
-                              ? "card-action"
-                              : "player-action"
-                              }`}
+                                ? "card-action"
+                                : "player-action"
+                            }`}
                           >
                             <strong>
                               {capitalizeFirstLetter(actionStep.PlayerName)}
