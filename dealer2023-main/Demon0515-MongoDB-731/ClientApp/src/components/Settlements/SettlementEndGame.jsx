@@ -79,7 +79,7 @@ function SettleGame(
                       " owes " +
                       obj2.amount +
                       " to " +
-                      obj2.to.PlayerName +
+                      obj2.to.PlayerName + 
                       ""
                   );
                 });
