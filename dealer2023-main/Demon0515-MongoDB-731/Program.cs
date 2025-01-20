@@ -66,7 +66,17 @@ services.AddCors(options => options.AddPolicy("CorsPolicy",
 services.AddDistributedMemoryCache();
 
 services.Configure<ElmahIoOptions>(builder.Configuration.GetSection("ElmahIo"));
-services.AddElmahIo();
+services.AddElmahIo(options =>
+{
+    options.OnMessage = msg =>
+    {
+        // Add additional properties to log messages
+        msg.Application = "PersonalizedCardGame";
+        msg.Version = "1.0.0";
+        msg.Hostname = Environment.MachineName;
+    };
+   
+});
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.ConfigureApplicationCookie(options =>
