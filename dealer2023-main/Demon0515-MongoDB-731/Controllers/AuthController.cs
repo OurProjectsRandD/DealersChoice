@@ -12,6 +12,7 @@ using PersonalizedCardGame.Services;
 using MongoDB.Driver;
 using Microsoft.Extensions.Hosting.Internal;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 
 namespace PersonalizedCardGame.Controllers
 {
@@ -28,8 +29,10 @@ namespace PersonalizedCardGame.Controllers
         private readonly RoleManager<AppRole> _roleManager;
         private readonly UserService _userService;
         private readonly SignInHistoryService _signInHistoryService;
+        private readonly ILogger<AuthController> _logger; // Added logger dependency
 
-        public AuthController(SignInHistoryService signInHistoryService, UserService userService, RoleManager<AppRole> roleManager, IWebHostEnvironment env, UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IConfiguration config,AssetService assetService)
+
+        public AuthController(SignInHistoryService signInHistoryService, UserService userService, RoleManager<AppRole> roleManager, IWebHostEnvironment env, UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IConfiguration config,AssetService assetService, ILogger<AuthController> logger)
         {
             _userService = userService;
             _roleManager = roleManager;
@@ -39,32 +42,41 @@ namespace PersonalizedCardGame.Controllers
             _config = config;
             _assetService = assetService;
             _signInHistoryService = signInHistoryService;
+            _logger = logger; // Assign logger
         }
 
         [HttpPost("sign-up")]
         public async Task<IActionResult> SignUp(RegisterVM register)
         {
-            if (!ModelState.IsValid) return BadRequest(new { field = "", message="Invalid Model" });
-
-            AppUser newUser = new AppUser
+            try
             {
-                Email = register.Email,
-                UserName = register.Username,
-                DisplayName = register.DisplayName,
-                FirstName = register.FirstName,
-                LastName = register.LastName,
-                ImageFileName = register.ImageFileName,
-            };
+                if (!ModelState.IsValid) return BadRequest(new { field = "", message = "Invalid Model" });
 
-            IdentityResult result = await _userManager.CreateAsync(newUser, register.Password);
-            if (!result.Succeeded)
-            {
-                return BadRequest(new { field = "", message = result.Errors.First().Description });
+                AppUser newUser = new AppUser
+                {
+                    Email = register.Email,
+                    UserName = register.Username,
+                    DisplayName = register.DisplayName,
+                    FirstName = register.FirstName,
+                    LastName = register.LastName,
+                    ImageFileName = register.ImageFileName,
+                };
+
+                IdentityResult result = await _userManager.CreateAsync(newUser, register.Password);
+                if (!result.Succeeded)
+                {
+                    return BadRequest(new { field = "", message = result.Errors.First().Description });
+                }
+
+                await _assetService.CreateAsync(new Asset() { UserId = newUser.Id.ToString() });
+
+                return Ok();
             }
-            
-            await _assetService.CreateAsync(new Asset() { UserId = newUser.Id.ToString() });
+            catch (Exception ex)
+            {
 
-            return Ok();
+                throw;
+            }
         }
 
         [HttpPost("change-user-info")]
@@ -175,9 +187,15 @@ namespace PersonalizedCardGame.Controllers
         [HttpPost("sign-in")]
         public async Task<IActionResult> SignIn(SignInVM signIn)
         {
+            _logger.LogInformation("Sign-in initiated for user with email: {Email}", signIn.Email);
+
             var user = await _userManager.FindByEmailAsync(signIn.Email);
             if (user == null)
+            {
+                _logger.LogWarning("Sign-in attempt failed: Email doesn't exist. Email: {Email}", signIn.Email);
                 return BadRequest(new { field = "email", message = "Email doesn't exist." });
+
+            }
 
             var result = await _signInManager.PasswordSignInAsync(user, signIn.Password, signIn.RememberMe, true);
             if (!result.Succeeded)
