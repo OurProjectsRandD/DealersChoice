@@ -331,7 +331,7 @@ namespace PersonalizedCardGame.Controllers
 
         private GameHash OnPlayerAction(GameHash gameHash, int currentIndex)
         {
-            int HighestBet = gameHash.ActivePlayers.Max(player => player.CurrentRoundStatus);
+            int HighestBet = gameHash.ActivePlayers.Max(player => player.CurrentRoundStatus); 
             gameHash.IsRoundSettlement = false;
             gameHash.CurrentBet = HighestBet;
             int newIndex = gameHash.FindNextActivePlayerIndex(currentIndex);
