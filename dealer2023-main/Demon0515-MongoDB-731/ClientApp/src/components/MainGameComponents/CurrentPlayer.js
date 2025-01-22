@@ -131,11 +131,23 @@ const CurrentPlayerDiv = () => {
                 <span className="PlayerStatus badge badge-info p-2">
                   {currentPlayer && currentPlayer.PlayerAmount}
                 </span>
-                <span
-                  className="PlayerName p-2"
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    gap: "5px",
+                    alignItems: "center",
+                    padding: "20px 0",
+                  }}
                 >
-                  {currentPlayer && currentPlayer.PlayerName} 
-                </span>
+                  <span className="PlayerName p-2">
+                    {currentPlayer && currentPlayer.PlayerName}
+                  </span>
+                  <div className="PlayerStatusNet ml-2">
+                    {currentPlayer.PlayerAmount +
+                      currentPlayer.PlayerNetStatusFinal}
+                  </div>
+                </div>
                 <div className="PlayerDeck row">
                   {currentPlayer &&
                     currentPlayer.PlayerCards &&
@@ -172,9 +184,7 @@ const CurrentPlayerDiv = () => {
             <CheckButton />
             <CallButton />
             <FoldButton />
-            <div className="PlayerStatusNet ml-2">
-              {currentPlayer.PlayerAmount + currentPlayer.PlayerNetStatusFinal}
-            </div>
+
             <ShowButton />
             <AddToPotButton BetTakeValueRef={BetTakeValueRef} />
             {/* {selectedCards.length === 0 && (
