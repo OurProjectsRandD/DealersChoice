@@ -56,12 +56,34 @@ const SettlementModalEndGame = (
   );
 
   return (
-    <Dialog
+      <Dialog
+
       open={props.open}
       keepMounted
-      onClose={handleClose}
-      aria-describedby="alert-dialog-slide-description"
-    >
+          //onClose={handleClose}
+
+          onClose={(event, reason) => {
+              // Prevent closing on backdrop click or Escape key
+              if (reason === "backdropClick" || reason === "escapeKeyDown") {
+                  return;
+              }
+              handleClose();
+          }}
+          disableEscapeKeyDown
+          hideBackdrop
+
+          aria-describedby="alert-dialog-slide-description" 
+          PaperProps={{
+              sx: {
+                  position: "absolute",
+                  //top: "45%",
+                  //left: "0%", // Adjust for your menu positioning
+                  //maxWidth: "300px", // Limit size to fit menu area
+                  //minWidth: "300px",
+              },
+          }}
+      >
+
       <DialogContent>
         <TableContainer component={Paper}>
           <Table aria-label="customized table">

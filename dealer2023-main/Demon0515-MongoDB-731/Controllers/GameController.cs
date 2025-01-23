@@ -150,7 +150,7 @@ namespace PersonalizedCardGame.Controllers
                 return gameHash.MeetingId;
             } catch(Exception ex)
             {
-                return null;
+                return ex.Message + ex.InnerException;
             }
         }
 
@@ -331,7 +331,7 @@ namespace PersonalizedCardGame.Controllers
 
         private GameHash OnPlayerAction(GameHash gameHash, int currentIndex)
         {
-            int HighestBet = gameHash.ActivePlayers.Max(player => player.CurrentRoundStatus);
+            int HighestBet = gameHash.ActivePlayers.Max(player => player.CurrentRoundStatus); 
             gameHash.IsRoundSettlement = false;
             gameHash.CurrentBet = HighestBet;
             int newIndex = gameHash.FindNextActivePlayerIndex(currentIndex);
@@ -845,7 +845,7 @@ namespace PersonalizedCardGame.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpPost] 
         public async Task<bool> Endgame([FromBody] GameControllerRequestModel model)
         {
             try
