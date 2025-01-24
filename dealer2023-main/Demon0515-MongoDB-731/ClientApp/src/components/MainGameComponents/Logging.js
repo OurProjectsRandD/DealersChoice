@@ -14,6 +14,7 @@ const Logging = () => {
         </span>
       </div>
 
+      {/* Hamburger Menu goes here */}
       <div className="CustomSideBar">
         {gameState.HandSteps.slice()
           .reverse()
