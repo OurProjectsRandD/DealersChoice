@@ -495,34 +495,42 @@ const MainGame = ({ isVideoChatAllowed = false }) => {
       <>
         <div className="container-fluid bg-black p-0" id="GameBoard">
           <div className="row">
-            <div className="col-lg-2">
-              <div
-                // remove inline style
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "flex-start",
-                  justifyContent: "space-between",
-                  gap: "20px",
-                }}
-              >
+            <div className="col-lg-2 mb-3">
+            {/* Hamburger Menu Toggle Button for Mobile */}
+              <div class="d-lg-none mb-2">
+                <button class="btn btn-primary ms-auto d-block" type="button" data-bs-toggle="collapse" data-bs-target="#mobileSidebar" aria-expanded="false" aria-controls="mobileSidebar">
+                  <i class="bi bi-list"></i>
+                </button>
+              </div>
+              <div class="collapse d-lg-block" id="mobileSidebar">
                 <div
                   // remove inline style
                   style={{
-                    height: "450px",
-                    overflow: "auto",
-                    width: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "flex-start",
+                    justifyContent: "space-between",
+                    gap: "20px",
                   }}
                 >
-                  <Logging />
-                </div>
+                  <div
+                    // remove inline style
+                    style={{
+                      height: "450px",
+                      overflow: "auto",
+                      width: "100%",
+                    }}
+                  >
+                    <Logging />
+                  </div>
 
-                <SettlementEndGame
-                  isShow={false}
-                  gameState={gameState}
-                  open={settlementModalEndGameOpen}
-                  setOpen={setSettlementModalEndGameOpen}
-                />
+                  <SettlementEndGame
+                    isShow={false}
+                    gameState={gameState}
+                    open={settlementModalEndGameOpen}
+                    setOpen={setSettlementModalEndGameOpen}
+                  />
+                </div>
               </div>
             </div>
             <div className="col-lg-10">
