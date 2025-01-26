@@ -42,7 +42,7 @@ const ShowButton = () => {
     return <></>;
   return (
     <button
-      className="btn ShowAll ml-1 mt-1 mr-1"
+      className="btn ShowAll mt-1 me-1 me-md-0"
       onClick={ShowAllEventHandler}
     >
       Show

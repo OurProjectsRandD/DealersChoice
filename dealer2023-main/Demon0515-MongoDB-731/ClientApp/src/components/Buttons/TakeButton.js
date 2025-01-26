@@ -79,7 +79,7 @@ const TakeButton = ({ BetTakeValueRef }) => {
   );
     if (gameState.PotSize > 0) {
         return (
-            <button className="btn Take ml-1 mt-1 mr-1" onClick={TakeEventHandler}>
+            <button className="btn Take mt-1 me-1 me-md-0" onClick={TakeEventHandler}>
                 Take
             </button>
         );

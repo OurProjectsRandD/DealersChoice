@@ -38,7 +38,7 @@ const ReturnToDeckButton = () => {
   if (selectedCards.length === 0) return <></>;
   return (
     <button
-      className="btn Discard ml-1 mt-1 mr-1"
+      className="btn Discard mt-1 me-1 me-md-0"
       data-playersno="X"
       onClick={ReturnToDeckEventHandler}
     >

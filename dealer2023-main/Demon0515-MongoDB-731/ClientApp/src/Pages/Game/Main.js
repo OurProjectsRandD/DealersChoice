@@ -545,32 +545,32 @@ const MainGame = ({ isVideoChatAllowed = false }) => {
 
               <div id="table">
                 <div className="row">
-                  <div className="col-2 seat">
+                  <div className="order-1 order-sm-0 col-6 col-md-3 col-lg-2 mt-2 mt-md-1 mt-lg-0 seat">
                     <Player ptr={2} dealerId={gameState.DealerId} />
                   </div>
-                  <div className="col-2 seat">
+                  <div className="order-2 order-sm-1 col-6 col-md-3 col-lg-2 mt-2 mt-md-1 mt-lg-0 seat">
                     <Player ptr={3} dealerId={gameState.DealerId} />
                   </div>
-                  <div className="col-2 seat">
+                  <div className="order-0 order-sm-2 col-12 col-sm-6 col-md-3 col-lg-2 mt-2 mt-md-1 mt-lg-0 seat">
                     <div id="potdiv">
                       <PotDiv />
                     </div>
                   </div>
-                  <div className="col-2 seat">
+                  <div className="order-3 col-6 col-md-3 col-lg-2 mt-2 mt-md-1 mt-lg-0 seat">
                     <Player ptr={4} dealerId={gameState.DealerId} />
                   </div>
-                  <div className="col-2 seat">
+                  <div className="order-4 col-6 col-md-3 col-lg-2 mt-2 mt-md-1 mt-lg-0 seat">
                     <Player ptr={5} dealerId={gameState.DealerId} />
                   </div>
-                  <div className="col-2 seat">
+                  <div className="order-5 col-6 col-md-3 col-lg-2 mt-2 mt-md-1 mt-lg-0 seat">
                     <Player ptr={6} dealerId={gameState.DealerId} />
                   </div>
                 </div>
                 <div className="row mt-3">
-                  <div className="col-10">
+                  <div className="col-12 col-md-10">
                     <CurrentPlayerDiv />
                   </div>
-                  <div className="col-2">
+                  <div className="col-12 col-md-2">
                     <DefaultPlayer ptr={1} />
                   </div>
                 </div>

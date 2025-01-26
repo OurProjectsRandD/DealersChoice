@@ -49,7 +49,7 @@ const AddToPotButton = ({ BetTakeValueRef }) => {
   );
   return (
     <button
-      className="btn AddToPot ml-1 mt-1 mr-1"
+      className="btn AddToPot mt-1 me-1 me-md-0"
       onClick={AddToPotEventHandler}
     >
       Add to pot
