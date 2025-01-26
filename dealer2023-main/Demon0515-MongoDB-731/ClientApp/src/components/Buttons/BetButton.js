@@ -64,7 +64,7 @@ const BetButton = ({ BetTakeValueRef }) => {
 
   if (gameState.CurrentId === user.Id && currentPlayer.PlayerCards.length > 0) {
     return (
-      <button className="btn Bet mt-1" onClick={BetEventHandler}>
+      <button className="btn Bet mt-1 me-1 me-md-0" onClick={BetEventHandler}>
         &nbsp;Bet&nbsp;
       </button>
     );
