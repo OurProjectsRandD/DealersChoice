@@ -32,7 +32,7 @@ const DiscardButton = () => {
   if (selectedCards.length > 0) {
     return (
       <button
-        className="btn Discard ml-1 mt-1 mr-1"
+        className="btn Discard mt-1 me-1 me-md-0"
         onClick={DiscardEventHandler}
       >
         Discard

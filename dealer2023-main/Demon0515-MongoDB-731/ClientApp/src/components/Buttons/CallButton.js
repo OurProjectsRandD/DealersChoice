@@ -38,7 +38,7 @@ const CallButton = ({ CurrentPlayer, gameHash, Sno, OnPlayerAction }) => {
     gameState.CurrentBet > 0
   )
     return (
-      <button className="btn Call ml-1 mt-1" onClick={CallEventHandler}>
+      <button className="btn Call mt-1 me-1 me-md-0" onClick={CallEventHandler}>
         Call
       </button>
     );
