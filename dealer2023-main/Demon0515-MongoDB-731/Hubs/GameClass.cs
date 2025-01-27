@@ -13,6 +13,7 @@ using Newtonsoft.Json.Linq;
 using Microsoft.EntityFrameworkCore;
 using PersonalizedCardGame.Models.GameState;
 using PersonalizedCardGame.Services;
+using PersonalizedCardGame.Controllers;
 
 namespace PersonalizedCardGame.Hubs
 {
@@ -23,6 +24,7 @@ namespace PersonalizedCardGame.Hubs
         private static readonly ConcurrentDictionary<string, string> Users = new ConcurrentDictionary<string, string>();
         private readonly DBCardGameContext _dbCardGameContext;
         private readonly GameStateService _GameStateService;
+        private readonly ILogger<AuthController> _logger; // Added logger dependency
         public GameClass(DBCardGameContext dbCardGameContext, GameStateService gameStateService)
         {
             _dbCardGameContext = dbCardGameContext;
@@ -227,6 +229,7 @@ namespace PersonalizedCardGame.Hubs
             }
             catch (Exception ex)
             {
+                _logger.LogError("OnDisconnection Error Status" + ex.Message, ex.InnerException, ex.StackTrace, ex.Source);
             }
         }
         public async Task AlertNotifictionVideo(string message)

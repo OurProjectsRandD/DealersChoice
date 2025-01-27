@@ -13,6 +13,16 @@ const FoldButton = () => {
     [gameState.ActivePlayers, user.Id]
   );
 
+  //my implementation
+  //const currentIndex = useMemo(() => {
+  //const index = gameState.ActivePlayers.findIndex(
+  //(x) => x.PlayerId === user.Id
+  //);
+
+  //console.log("Computed currentIndex:", index);
+  //return index;
+  //}, [gameState.ActivePlayers, user.Id]);
+
   const currentPlayer = useMemo(() => {
     if (currentIndex === -1) return {};
     return gameState.ActivePlayers[currentIndex];
@@ -20,6 +30,7 @@ const FoldButton = () => {
 
   const FoldEventHandler = useCallback(
     (ev) => {
+      console.log("event blablblbl:", currentIndex);
       Fold(user.Id, gameState.GameCode, currentIndex, () => {
         dispatch(fold(currentIndex));
       });
