@@ -121,7 +121,8 @@ export const gameStateSlice = createSlice({
         }
       });
       LogRocket.log(
-        `Pass ${action.payload.draggingCards.length} cards to ${action.payload.Index
+        `Pass ${action.payload.draggingCards.length} cards to ${
+          action.payload.Index
         }th ${action.payload.Type === 0 ? "Player" : "Community"}`,
         state
       );
@@ -255,6 +256,7 @@ export const gameStateSlice = createSlice({
       LogRocket.log(`${action.payload}th Player rejoined`, state);
     },
     fold: (state, action) => {
+      console.log("payload =====>", action.payload);
       state.ActivePlayers[action.payload].LastActionPerformed = " Fold";
       AddStep(state, action.payload, "folded", "Fold");
       state.ActivePlayers[action.payload].IsFolded = true;
@@ -398,14 +400,16 @@ export const gameStateSlice = createSlice({
         !state.ActivePlayers[action.payload].IsRealTimeChat;
     },
     handleCamera: (state, action) => {
-      state.ActivePlayers[action.payload.index].IsRealTimeChat = action.payload.value;
+      state.ActivePlayers[action.payload.index].IsRealTimeChat =
+        action.payload.value;
     },
     toggleMic: (state, action) => {
       // state.ActivePlayers[action.payload].IsRealTimeChatForMic =
       //   !state.ActivePlayers[action.payload].IsRealTimeChatForMic;
     },
     handleMic: (state, action) => {
-      state.ActivePlayers[action.payload.index].IsRealTimeChatForMic = action.payload.value;
+      state.ActivePlayers[action.payload.index].IsRealTimeChatForMic =
+        action.payload.value;
     },
     dealCards: (state, action) => {
       action.payload.dealCards.forEach((card) => {
