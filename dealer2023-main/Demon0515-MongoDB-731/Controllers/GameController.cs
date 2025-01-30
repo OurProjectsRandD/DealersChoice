@@ -957,7 +957,7 @@ namespace PersonalizedCardGame.Controllers
                 gameHash.ActivePlayers[model.Index].LastActionPerformed = " Fold";
                 gameHash.AddStep(model.Index, " folded", "Fold");
                 gameHash.ActivePlayers[model.Index].IsFolded = true;
-                gameHash.ActivePlayers[model.Index].PlayerCards.ForEach(card =>
+                gameHash.ActivePlayers[model.Index].PlayerCards.ForEach(card => 
                 {
                     card.Presentation = 1;
                 });
