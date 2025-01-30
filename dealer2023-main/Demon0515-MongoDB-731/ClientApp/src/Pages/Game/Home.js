@@ -216,8 +216,8 @@ const Home = () => {
   if (!isCreating)
     return (
       <div className="container p-2">
-        <div className="row banner my-5">
-          <div className="col-12 text-center">
+        <div className="row banner my-auto">
+          <div className="col-6 text-center">
             <h1>DealersChoice.club</h1>
             <h3>
               <u>Your</u> games, <u>your</u> rules.
@@ -226,9 +226,9 @@ const Home = () => {
               <u>Your</u> club.
             </h3>
           </div>
-        </div>
+        
 
-        <div className="row call-out my-5 MainPageDivTitle">
+        <div className="col-6 call-out MainPageDivTitle">
           <div className="col-md-8 m-2">
             <h2>Members can</h2>
             <div>
@@ -258,6 +258,7 @@ const Home = () => {
               </a>
             </h2>
           </div>
+                </div>
         </div>
         <div className="row create-join mt-5 justify-content-between">
           <div className="col-12 m-2 MainPageDivTitle">
