@@ -400,8 +400,11 @@ export const Fold = (UserId, GameCode, Index, feedback = () => {}) => {
       Index,
     },
   }).then((result) => {
-    if (result.data === false) alert("failed");
-    else feedback();
+    if (result.data === false) {
+      alert("failed");
+    } else {
+      feedback();
+    }
   });
 };
 
@@ -435,7 +438,13 @@ export const Rejoin = (UserId, GameCode, Index, feedback = () => {}) => {
   });
 };
 
-export const ToggleCamera = (UserId, GameCode, Index, Status,  feedback = () => {}) => {
+export const ToggleCamera = (
+  UserId,
+  GameCode,
+  Index,
+  Status,
+  feedback = () => {}
+) => {
   SendRequest({
     url: "Game/ToggleCamera",
     method: "post",
@@ -443,14 +452,20 @@ export const ToggleCamera = (UserId, GameCode, Index, Status,  feedback = () => 
       UserId,
       GameCode,
       Index,
-      Status
+      Status,
     },
   }).then((result) => {
     if (result.data === true) feedback();
     else alert("failed");
   });
 };
-export const ToggleMic = (UserId, GameCode, Index, Status,feedback = () => {}) => {
+export const ToggleMic = (
+  UserId,
+  GameCode,
+  Index,
+  Status,
+  feedback = () => {}
+) => {
   SendRequest({
     url: "Game/ToggleMic",
     method: "post",
@@ -458,7 +473,7 @@ export const ToggleMic = (UserId, GameCode, Index, Status,feedback = () => {}) =
       UserId,
       GameCode,
       Index,
-      Status
+      Status,
     },
   }).then((result) => {
     if (result.data === true) feedback();
@@ -471,7 +486,7 @@ export const decreaseVideoMinutes = async (
   setVideoMinute
 ) => {
   let minutes = await getMinutes(gameHash.MeetingId);
-    SendRequest({
+  SendRequest({
     url: "MembershipManage/_DecreaseVideoTime",
     method: "POST",
     data: {
@@ -480,7 +495,7 @@ export const decreaseVideoMinutes = async (
       MeetingId: gameHash.MeetingId,
     },
   }).then((res) => {
-    console.log(res)
+    console.log(res);
     alert("You have " + res.data.VideoTime + " video minutes left");
     dispatch(setVideoMinute(res.data.VideoTime));
     dispatch(setToken(res.data.Tokens));
@@ -501,7 +516,7 @@ export const decreaseVideoMinutesRuntime = async (
       MeetingId: gameHash.MeetingId,
     },
   }).then((res) => {
-    console.log(res)
+    console.log(res);
     //alert("You have " + res.data.VideoTime + " video minutes left");
     dispatch(setVideoMinute(res.data.VideoTime));
     dispatch(setToken(res.data.Tokens));
@@ -515,6 +530,9 @@ export const OnPlayerAction = (GameState) => {
   )[0].CurrentRoundStatus;
   GameState.IsRoundSettlement = false;
   let newIndex = NextCurrentIndex(GameState, -1);
+  console.log("new index =====>", newIndex);
+  console.log("current Id index ====>", GameState.activePlayers);
+  console.log("active players ======>", activePlayers);
   GameState.CurrentId = GameState.ActivePlayers[newIndex].PlayerId;
   let currentPlayerbet =
     GameState.CurrentBet - GameState.ActivePlayers[newIndex].CurrentRoundStatus;

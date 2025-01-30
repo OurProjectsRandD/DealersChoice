@@ -495,34 +495,42 @@ const MainGame = ({ isVideoChatAllowed = false }) => {
       <>
         <div className="container-fluid bg-black p-0" id="GameBoard">
           <div className="row">
-            <div className="col-lg-2">
-              <div
-                // remove inline style
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "flex-start",
-                  justifyContent: "space-between",
-                  gap: "20px",
-                }}
-              >
+            <div className="col-lg-2 mb-3">
+            {/* Hamburger Menu Toggle Button for Mobile */}
+              <div class="d-lg-none mb-2">
+                <button class="btn btn-primary ms-auto d-block" type="button" data-bs-toggle="collapse" data-bs-target="#mobileSidebar" aria-expanded="false" aria-controls="mobileSidebar">
+                  <i class="bi bi-list"></i>
+                </button>
+              </div>
+              <div class="collapse d-lg-block" id="mobileSidebar">
                 <div
                   // remove inline style
                   style={{
-                    height: "450px",
-                    overflow: "auto",
-                    width: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "flex-start",
+                    justifyContent: "space-between",
+                    gap: "20px",
                   }}
                 >
-                  <Logging />
-                </div>
+                  <div
+                    // remove inline style
+                    style={{
+                      height: "450px",
+                      overflow: "auto",
+                      width: "100%",
+                    }}
+                  >
+                    <Logging />
+                  </div>
 
-                <SettlementEndGame
-                  isShow={false}
-                  gameState={gameState}
-                  open={settlementModalEndGameOpen}
-                  setOpen={setSettlementModalEndGameOpen}
-                />
+                  <SettlementEndGame
+                    isShow={false}
+                    gameState={gameState}
+                    open={settlementModalEndGameOpen}
+                    setOpen={setSettlementModalEndGameOpen}
+                  />
+                </div>
               </div>
             </div>
             <div className="col-lg-10">
@@ -537,32 +545,32 @@ const MainGame = ({ isVideoChatAllowed = false }) => {
 
               <div id="table">
                 <div className="row">
-                  <div className="col-2 seat">
+                  <div className="order-1 order-sm-0 col-6 col-md-3 col-lg-2 mt-2 mt-md-1 mt-lg-0 seat">
                     <Player ptr={2} dealerId={gameState.DealerId} />
                   </div>
-                  <div className="col-2 seat">
+                  <div className="order-2 order-sm-1 col-6 col-md-3 col-lg-2 mt-2 mt-md-1 mt-lg-0 seat">
                     <Player ptr={3} dealerId={gameState.DealerId} />
                   </div>
-                  <div className="col-2 seat">
+                  <div className="order-0 order-sm-2 col-12 col-sm-6 col-md-3 col-lg-2 mt-2 mt-md-1 mt-lg-0 seat">
                     <div id="potdiv">
                       <PotDiv />
                     </div>
                   </div>
-                  <div className="col-2 seat">
+                  <div className="order-3 col-6 col-md-3 col-lg-2 mt-2 mt-md-1 mt-lg-0 seat">
                     <Player ptr={4} dealerId={gameState.DealerId} />
                   </div>
-                  <div className="col-2 seat">
+                  <div className="order-4 col-6 col-md-3 col-lg-2 mt-2 mt-md-1 mt-lg-0 seat">
                     <Player ptr={5} dealerId={gameState.DealerId} />
                   </div>
-                  <div className="col-2 seat">
+                  <div className="order-5 col-6 col-md-3 col-lg-2 mt-2 mt-md-1 mt-lg-0 seat">
                     <Player ptr={6} dealerId={gameState.DealerId} />
                   </div>
                 </div>
                 <div className="row mt-3">
-                  <div className="col-10">
+                  <div className="col-12 col-md-10">
                     <CurrentPlayerDiv />
                   </div>
-                  <div className="col-2">
+                  <div className="col-12 col-md-2">
                     <DefaultPlayer ptr={1} />
                   </div>
                 </div>

@@ -51,12 +51,12 @@ namespace PersonalizedCardGame.Controllers
             try
             {
                 if (!ModelState.IsValid) return BadRequest(new { field = "", message = "Invalid Model" });
-
+                //objet
                 AppUser newUser = new AppUser
                 {
                     Email = register.Email,
                     UserName = register.Username,
-                    DisplayName = register.DisplayName,
+                    DisplayName = register.DisplayName, 
                     FirstName = register.FirstName,
                     LastName = register.LastName,
                     ImageFileName = register.ImageFileName,

@@ -20,6 +20,7 @@ const FoldButton = () => {
 
   const FoldEventHandler = useCallback(
     (ev) => {
+      console.log("event blablblbl:", currentIndex);
       Fold(user.Id, gameState.GameCode, currentIndex, () => {
         dispatch(fold(currentIndex));
       });
@@ -28,7 +29,7 @@ const FoldButton = () => {
   );
   if (gameState.CurrentId === user.Id && currentPlayer.PlayerCards.length > 0)
     return (
-      <button className="btn Fold ml-1 mt-1" onClick={FoldEventHandler}>
+      <button className="btn Fold mt-1 me-1 me-md-0" onClick={FoldEventHandler}>
         Fold
       </button>
     );

@@ -32,7 +32,7 @@ const CheckButton = () => {
     gameState.CurrentBet === 0
   ) {
     return (
-      <button className="btn Pass ml-1 mt-1" onClick={CheckEventHandler}>
+      <button className="btn Pass mt-1 me-1 me-md-0" onClick={CheckEventHandler}>
         Check
       </button>
     );

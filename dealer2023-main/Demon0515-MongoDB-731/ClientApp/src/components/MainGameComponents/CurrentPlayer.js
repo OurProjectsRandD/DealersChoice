@@ -53,6 +53,10 @@ const CurrentPlayerDiv = () => {
       } catch (ex) {
         alert("drop at the right place!");
       }
+
+      // Log the currentIndex value before sending it to the backend
+      console.log("currentIndex being sent to the backend:", currentIndex);
+
       if (draggingCard.Index === currentIndex && draggingCard.Type === 0)
         return;
       PassCards(
@@ -172,7 +176,7 @@ const CurrentPlayerDiv = () => {
           <PassCardButton />
         </div>
         <div className="row PlayerActions bg-dark p-3 m-0">
-          <div className="col-12 d-flex justify-content-between">
+          <div className="col-12 d-flex flex-wrap justify-content-start justify-content-md-between">
             <input
               autoComplete="off"
               type="text"

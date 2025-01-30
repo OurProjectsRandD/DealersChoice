@@ -14,6 +14,7 @@ const Logging = () => {
         </span>
       </div>
 
+      {/* Hamburger Menu goes here */}
       <div className="CustomSideBar">
         {gameState.HandSteps.slice()
           .reverse()
@@ -27,7 +28,6 @@ const Logging = () => {
                       .reverse()
                       .map((actionStep) => (
                         <>
-                          <br />
                           <br />
                           {/* &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#8594;&nbsp; */}
                           <span
