@@ -18,13 +18,15 @@ namespace PersonalizedCardGame.Controllers
         private readonly TransactionService _TransactionService;
         private readonly MembershipService _MembershipService;
         private UserManager<AppUser> _UserManager;
-        public MembershipManageController(UserManager<AppUser> userManager, AssetService assetService, TransactionService transactionService, MembershipService membershipService,GameStateService gameStateService)
+        private readonly ILogger<MembershipManageController> _logger;
+        public MembershipManageController(UserManager<AppUser> userManager, AssetService assetService, TransactionService transactionService, MembershipService membershipService,GameStateService gameStateService, ILogger<MembershipManageController> logger)
         {
             _TransactionService = transactionService;
             _UserManager = userManager;
             _AssetService = assetService;
             _MembershipService = membershipService;
             _GameService = gameStateService;
+            _logger = logger;
         }
 
         [HttpPost]
@@ -37,16 +39,35 @@ namespace PersonalizedCardGame.Controllers
         [HttpPost]
         public async Task<Membership> _GetCurrentMembership()
         {
-            var asset = await _AssetService.GetCollection().Find(x => x.UserId == HttpContext.Items["UserId"] as string).FirstOrDefaultAsync();
-            var membership = await _MembershipService.GetMembershipByPlanIdAsync(asset.MembershipPlanId);
-            return membership!;
+            try
+            {
+                var asset = await _AssetService.GetCollection().Find(x => x.UserId == HttpContext.Items["UserId"] as string).FirstOrDefaultAsync();
+                var membership = await _MembershipService.GetMembershipByPlanIdAsync(asset.MembershipPlanId);
+                return membership!;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("_GetCurrentMembership on MembershipMange Exception point: {ex}", ex.Message + ex.InnerException + ex.StackTrace);
+                throw;
+            }
+            
         }
 
         [HttpPost]
         public async Task<Asset> _GetAsset()
         {
-            var asset = await _AssetService.GetCollection().Find(x => x.UserId == HttpContext.Items["UserId"] as string).FirstOrDefaultAsync();
-            return asset;
+            try
+            {
+                var asset = await _AssetService.GetCollection().Find(x => x.UserId == HttpContext.Items["UserId"] as string).FirstOrDefaultAsync();
+                _logger.LogInformation(asset.Id + "" + asset.MembershipName + "" + asset.UserId + "" + asset.BillingPeriod);
+                return asset;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("_GetCurrentMembership on MembershipMange Exception point: {ex}", ex.Message + ex.InnerException + ex.StackTrace);
+                throw;
+            }
+            
         }
 
         [HttpPost]
@@ -132,72 +153,90 @@ namespace PersonalizedCardGame.Controllers
         [HttpPost]
         public async Task<Dictionary<string, int>> _DecreaseVideoTime([FromBody] MembershipManageModel model)
         {
-            string? userId = HttpContext.Items["UserId"] as string;
-            var asset = await _AssetService.GetCollection().Find(x => x.UserId == userId).FirstOrDefaultAsync();
-            var user = await _UserManager.FindByIdAsync(userId!);
-            if (asset != null)
+            try
             {
-                asset.VideoTime -= model.VideoMinutes;
-                asset.Tokens -= model.VideoMinutes;
-                await _AssetService.UpdateAsync(asset.Id!, asset);
-                await _TransactionService.CreateAsync(new Transactions()
+                string? userId = HttpContext.Items["UserId"] as string;
+                var asset = await _AssetService.GetCollection().Find(x => x.UserId == userId).FirstOrDefaultAsync();
+                var user = await _UserManager.FindByIdAsync(userId!);
+                if (asset != null)
                 {
-                    UserId = asset.UserId,
-                    UserEmail = user!.Email,
-                    UserName = user!.UserName,
-                    Tokens = 0,
-                    VideoMinutes = -model.VideoMinutes,
-                    Description = "Used " + model.VideoMinutes + " in the Game " + model.GameCode + " , the meetingId is " + model.MeetingId
-                });
+                    asset.VideoTime -= model.VideoMinutes;
+                    asset.Tokens -= model.VideoMinutes;
+                    await _AssetService.UpdateAsync(asset.Id!, asset);
+                    await _TransactionService.CreateAsync(new Transactions()
+                    {
+                        UserId = asset.UserId,
+                        UserEmail = user!.Email,
+                        UserName = user!.UserName,
+                        Tokens = 0,
+                        VideoMinutes = -model.VideoMinutes,
+                        Description = "Used " + model.VideoMinutes + " in the Game " + model.GameCode + " , the meetingId is " + model.MeetingId
+                    });
 
-                return new Dictionary<string, int>
+                    return new Dictionary<string, int>
                   {
                       { "VideoTime", asset.VideoTime },
                       { "Tokens", asset.Tokens }
                   };
-            }
-            return new Dictionary<string, int>
+                }
+                return new Dictionary<string, int>
               {
                   { "VideoTime", -1 },
                   { "Tokens", -1 }
               };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("DecreaseVideoTime on MembershipMange Exception point: {ex}", ex.Message + ex.InnerException + ex.StackTrace);
+                throw;
+            }
+           
         }
         [HttpPost]
         public async Task<Dictionary<string, int>> _DecreaseVideoTimeRuntime([FromBody] MembershipManageModel model)
         {
-            string? userId = HttpContext.Items["UserId"] as string;
-            var gamestate = await _GameService.GetByGameCodeAsync(model.GameCode);
-            var actualminutes=model.VideoMinutes-gamestate.MeetingMinutes;
-            var asset = await _AssetService.GetCollection().Find(x => x.UserId == userId).FirstOrDefaultAsync();
-            var user = await _UserManager.FindByIdAsync(userId!);
-            if (asset != null)
+            try
             {
-                asset.VideoTime -= actualminutes;
-                asset.Tokens -= actualminutes;
-                gamestate.MeetingMinutes = model.VideoMinutes;
-                await _AssetService.UpdateAsync(asset.Id!, asset);
-                await _GameService.UpdateAsync(gamestate.Id!, gamestate);
-                await _TransactionService.CreateAsync(new Transactions()
+                string? userId = HttpContext.Items["UserId"] as string;
+                var gamestate = await _GameService.GetByGameCodeAsync(model.GameCode);
+                var actualminutes = model.VideoMinutes - gamestate.MeetingMinutes;
+                var asset = await _AssetService.GetCollection().Find(x => x.UserId == userId).FirstOrDefaultAsync();
+                var user = await _UserManager.FindByIdAsync(userId!);
+                if (asset != null)
                 {
-                    UserId = asset.UserId,
-                    UserEmail = user!.Email,
-                    UserName = user!.UserName,
-                    Tokens = 0,
-                    VideoMinutes = -model.VideoMinutes,
-                    Description = "Used " + model.VideoMinutes + " in the Game " + model.GameCode + " , the meetingId is " + model.MeetingId
-                });
+                    asset.VideoTime -= actualminutes;
+                    asset.Tokens -= actualminutes;
+                    gamestate.MeetingMinutes = model.VideoMinutes;
+                    await _AssetService.UpdateAsync(asset.Id!, asset);
+                    await _GameService.UpdateAsync(gamestate.Id!, gamestate);
+                    await _TransactionService.CreateAsync(new Transactions()
+                    {
+                        UserId = asset.UserId,
+                        UserEmail = user!.Email,
+                        UserName = user!.UserName,
+                        Tokens = 0,
+                        VideoMinutes = -model.VideoMinutes,
+                        Description = "Used " + model.VideoMinutes + " in the Game " + model.GameCode + " , the meetingId is " + model.MeetingId
+                    });
 
-                return new Dictionary<string, int>
+                    return new Dictionary<string, int>
                   {
                       { "VideoTime", asset.VideoTime },
                       { "Tokens", asset.Tokens }
                   };
-            }
-            return new Dictionary<string, int>
+                }
+                return new Dictionary<string, int>
               {
                   { "VideoTime", -1 },
                   { "Tokens", -1 }
               };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("DecreaseVideoTimeRunTime on MembershipMange Exception point: {ex}", ex.Message + ex.InnerException + ex.StackTrace);
+                throw;
+            }
+            
         }
     
 }
