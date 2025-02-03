@@ -75,7 +75,7 @@ namespace PersonalizedCardGame.Controllers
         public GameController(IHubContext<GameClass> hubcontext, UserManager<AppUser> userManager,
             GameStateService gameStateService, GameInviteService gameInviteService, MembershipService membershipService, PlayerService playerService, RecurringGameService recurringGameService, ILogger<GameController> logger,ILog log)
         {
-
+            
             _log.Info("Initiaizing!");
             if (_HubContext == null)
             {
@@ -99,7 +99,7 @@ namespace PersonalizedCardGame.Controllers
                 var user = await _UserManager.FindByIdAsync(UserId);
                 return user;
             }
-            _logger.LogInformation("GetUser method for user with UserId: {UserId}", UserId);
+            //_logger.LogInformation("GetUser method for user with UserId: {UserId}", UserId);
             _log.Info("Hello this file");
             return null;
         }
@@ -147,6 +147,7 @@ namespace PersonalizedCardGame.Controllers
                 return true;
             } catch (Exception ex)
             {
+                _log.Error(new { message = ex.Message,InnerException = ex.InnerException, StackTrace = ex.StackTrace});
                // _log.Error("Hello this file");
                 _log.Error("CreateGame on GameController Exception point: {ex}" + ex.Message + ex.InnerException + ex.StackTrace);
                 return false;
