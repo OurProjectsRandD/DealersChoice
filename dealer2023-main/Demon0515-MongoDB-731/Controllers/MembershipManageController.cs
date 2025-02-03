@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using log4net;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver;
@@ -19,7 +20,8 @@ namespace PersonalizedCardGame.Controllers
         private readonly MembershipService _MembershipService;
         private UserManager<AppUser> _UserManager;
         private readonly ILogger<MembershipManageController> _logger;
-        public MembershipManageController(UserManager<AppUser> userManager, AssetService assetService, TransactionService transactionService, MembershipService membershipService,GameStateService gameStateService, ILogger<MembershipManageController> logger)
+        private readonly ILog _log;
+        public MembershipManageController(UserManager<AppUser> userManager, AssetService assetService, TransactionService transactionService, MembershipService membershipService,GameStateService gameStateService, ILogger<MembershipManageController> logger,ILog log)
         {
             _TransactionService = transactionService;
             _UserManager = userManager;
@@ -27,6 +29,8 @@ namespace PersonalizedCardGame.Controllers
             _MembershipService = membershipService;
             _GameService = gameStateService;
             _logger = logger;
+            
+            _log = log ?? throw new ArgumentNullException(nameof(log));
         }
 
         [HttpPost]
@@ -47,7 +51,7 @@ namespace PersonalizedCardGame.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError("_GetCurrentMembership on MembershipMange Exception point: {ex}", ex.Message + ex.InnerException + ex.StackTrace);
+                _log.Error("_GetCurrentMembership on MembershipMange Exception point: {ex}"+ex.Message + ex.InnerException + ex.StackTrace);
                 throw;
             }
             
@@ -59,12 +63,12 @@ namespace PersonalizedCardGame.Controllers
             try
             {
                 var asset = await _AssetService.GetCollection().Find(x => x.UserId == HttpContext.Items["UserId"] as string).FirstOrDefaultAsync();
-                _logger.LogInformation(asset.Id + "" + asset.MembershipName + "" + asset.UserId + "" + asset.BillingPeriod);
+                _log.Info(asset.Id + "" + asset.MembershipName + "" + asset.UserId + "" + asset.BillingPeriod);
                 return asset;
             }
             catch (Exception ex)
             {
-                _logger.LogError("_GetCurrentMembership on MembershipMange Exception point: {ex}", ex.Message + ex.InnerException + ex.StackTrace);
+                _log.Error("_GetCurrentMembership on MembershipMange Exception point: {ex}" + ex.Message + ex.InnerException + ex.StackTrace);
                 throw;
             }
             
@@ -187,7 +191,7 @@ namespace PersonalizedCardGame.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError("DecreaseVideoTime on MembershipMange Exception point: {ex}", ex.Message + ex.InnerException + ex.StackTrace);
+                _log.Error("DecreaseVideoTime on MembershipMange Exception point: {ex}"+ ex.Message + ex.InnerException + ex.StackTrace);
                 throw;
             }
            
@@ -233,7 +237,7 @@ namespace PersonalizedCardGame.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError("DecreaseVideoTimeRunTime on MembershipMange Exception point: {ex}", ex.Message + ex.InnerException + ex.StackTrace);
+                _log.Error("DecreaseVideoTimeRunTime on MembershipMange Exception point: {ex}"+ ex.Message + ex.InnerException + ex.StackTrace);
                 throw;
             }
             

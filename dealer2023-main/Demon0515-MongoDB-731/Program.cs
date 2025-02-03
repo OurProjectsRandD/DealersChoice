@@ -1,9 +1,11 @@
 using Elmah.Io.AspNetCore;
+using log4net.Config;
 using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
+using PersonalizedCardGame.Extension;
 using PersonalizedCardGame.Hubs;
 using PersonalizedCardGame.Middleware;
 using PersonalizedCardGame.Models;
@@ -34,6 +36,20 @@ builder.Services.AddSingleton<GameHashTempService>();
 builder.Services.AddSingleton<GameStateService>();
 builder.Services.AddSingleton<UserService>();
 builder.Services.AddSingleton<SignInHistoryService>();
+
+
+// Determine the full path for the Logs folder
+var logDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Logs");
+if (!Directory.Exists(logDirectory))
+{
+    Directory.CreateDirectory(logDirectory);
+}
+
+// Load log4net configuration
+XmlConfigurator.Configure(new FileInfo(Path.Combine(builder.Environment.ContentRootPath, "log4net.config")));
+
+// Debug log to check path
+Console.WriteLine($"Logging to: {Path.Combine(logDirectory, "app.log")}");
 
 //mongodb configuration
 var mongoDBSetting = builder.Configuration.GetSection("MongoDBConfig");
@@ -83,6 +99,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/Auth/SignIn";
 });
+builder.Services.AddLog4net();
 
 builder.Services.AddSession(options =>
 {
