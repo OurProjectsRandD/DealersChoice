@@ -14,7 +14,7 @@ import React, {
   import { PassCards, KickPlayer } from "../../common/game/GameControl";
   import { passCard, playerLeft } from "../../slice/gameStateSlice";
   
-  const ParticipantView = ({ participantId }) => {
+  const ParticipantView = ({ participantId, setVideoStatus }) => {
     const micRef = useRef(null);
   
     const meetingAPI = useParticipant(participantId);
@@ -26,6 +26,10 @@ import React, {
         return mediaStream;
       }
     }, [meetingAPI.webcamStream, meetingAPI.webcamOn]);
+
+    useEffect(() => {
+      setVideoStatus(meetingAPI.webcamOn);
+    }, [meetingAPI.webcamOn, setVideoStatus]);
   
     useEffect(() => {
       if (micRef.current) {
@@ -46,7 +50,7 @@ import React, {
     }, [meetingAPI.micStream, meetingAPI.micOn]);
   
     return (
-      <div className="player-wrapper">
+      <div className={`player-wrapper ${videoStream ? "has-video" : ""}`}>
         <audio ref={micRef} autoPlay muted={meetingAPI.isLocal} />
         <ReactPlayer
           playsinline
@@ -57,6 +61,8 @@ import React, {
           playing={true}
           url={videoStream}
           className="react-player"
+          // style={{ width: "100%", height: "100%" }}
+          // height='100%'  
           onError={(err) => {
             console.log(err, "participant video error");
           }}
@@ -65,7 +71,7 @@ import React, {
     );
   };
   
-  const DefaultPlayer = ({ ptr }) => {
+  const DefaultPlayer = ({ ptr, setVideoStatus }) => {
   
     const gameState = useSelector((state) => state.gameState);
     const user = useSelector((state) => state.auth.user);
@@ -92,46 +98,48 @@ import React, {
     if (PlayerIndex === -1) return <></>;
   
     return (
-      <></>
-      // <div
-      //   className={
-      //     "Player" +
-      //     ptr +
-      //     " Player" +
-      //     (Player.IsFolded || Player.IsDisconnected ? " PlayerFolded" : "") +
-      //     (gameState.CurrentId === Player.PlayerId && gameState.Deck.length < 52
-      //       ? " bg-active"
-      //       : "")
-      //   }
-      //   data-sliderindex="0"
-      // >
-      //   <div>
-      //     <div className="row m-0 p-1">
-      //       <div
-      //         className={`PlayerName col${
-      //           gameState.DealerId === Player.PlayerId ? " green" : ""
-      //         }`}
-      //       >
-      //         {Player.PlayerName} 001
-      //       </div>
-      //     </div>
-      //     <div
-      //       id={"Player" + ptr}
-      //     >
-      //       {Player.IsRealTimeChat ? (
-      //         <ParticipantView participantId={Player.PlayerId} />
-      //       ) : Player.PlayerImage.length > 0 ? (
-      //         <img
-      //           alt=""
-      //           src={"/" + Player.PlayerImage}
-      //           style={{ width: "200px", height: "200px" }}
-      //         />
-      //       ) : (
-      //         <i className={"fas fa-user"}></i>
-      //       )}
-      //     </div>
-      //   </div>
-      // </div>
+      <>
+      <div
+        className={
+          "Player" +
+          ptr +
+          " Player"
+          // +
+          // (Player.IsFolded || Player.IsDisconnected ? " PlayerFolded" : "") +
+          // (gameState.CurrentId === Player.PlayerId && gameState.Deck.length < 52
+          //   ? " bg-active"
+          //   : "")
+        }
+        data-sliderindex="0"
+      >
+        <div>
+          {/* <div className="row m-0 p-1">
+            <div
+              className={`PlayerName col${
+                gameState.DealerId === Player.PlayerId ? " green" : ""
+              }`}
+            >
+              {Player.PlayerName} 001
+            </div>
+          </div> */}
+          <div
+            id={"Player" + ptr}
+          >
+            {Player.IsRealTimeChat ? (
+              <ParticipantView participantId={Player.PlayerId} setVideoStatus={setVideoStatus} />
+            ) : Player.PlayerImage.length > 0 ? (
+              <img
+                alt=""
+                src={"/" + Player.PlayerImage}
+                style={{ width: "200px", height: "200px" }}
+              />
+            ) : (
+              <i className={"fas fa-user"}></i>
+            )}
+          </div>
+        </div>
+      </div>
+      </>
     );
   };
   

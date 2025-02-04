@@ -90,7 +90,7 @@ const StartVideo = () => {
     );
   else
     return (
-      <button className="btn m-2" onClick={endVideo}>
+      <button className="btn me-2 mt-2" onClick={endVideo}>
         End Video
       </button>
     );

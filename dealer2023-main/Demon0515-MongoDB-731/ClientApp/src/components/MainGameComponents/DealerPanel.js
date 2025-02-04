@@ -73,9 +73,9 @@ const DealerPanel = () => {
 
   return (
     <>
-      <div className="PlayerDealer  m-3">
-        <div className="row align-items-center border-primary border-bottom mb-1 justify-content-between h-75">
-          <div className="col-2 text-center  h-100">
+      <div className="PlayerDealer">
+        <div className="row align-items-center border-primary border-bottom mb-1 justify-content-between p-3 p-sm-0">
+          <div className="col-2 col-sm-2 text-center  h-100">
             <input
               id="txtAnte"
               className="mt-0"
@@ -84,7 +84,7 @@ const DealerPanel = () => {
             />
             <AnteButton txtAnteRef={txtAnteRef} />
           </div>
-          <div className="col-3 text-center  h-100">
+          <div className="col-5 col-sm-3 text-center  h-100">
             <span>Deal</span>
             <input
               id="DealValue"
@@ -94,7 +94,7 @@ const DealerPanel = () => {
             />
             <span>Cards</span>
           </div>
-          <div className="col-3 text-center  h-100">
+          <div className="col-5 col-sm-3 text-center  h-100">
             <div>
               <input
                 autoComplete="off"
@@ -125,8 +125,8 @@ const DealerPanel = () => {
               </label>
             </div>
           </div>
-          <div className="col-1 text-center  h-100">to</div>
-          <div className="col-3 text-center  h-100">
+          <div className="col-2 col-sm-1 text-center  h-100">to</div>
+          <div className="col-8 col-sm-3 text-center  h-100">
             <div
               className="CardDealPlayer"
               style={{

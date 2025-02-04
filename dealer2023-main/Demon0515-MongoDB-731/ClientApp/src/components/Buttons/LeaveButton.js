@@ -58,7 +58,7 @@ const LeaveButton = () => {
   return (
     <>
       <button
-        className="btn btn-outline-danger BtnLeave m-2"
+        className="btn btn-outline-danger BtnLeave me-2 mt-2"
         onClick={LeaveEventHandler}
       >
         Leave Game

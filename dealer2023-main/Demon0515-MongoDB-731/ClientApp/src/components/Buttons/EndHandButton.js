@@ -25,7 +25,7 @@ const EndHandButton = () => {
   if (gameState.DealerId === user.Id)
     return (
       <>
-        <button className="btn BtnSettle m-2" onClick={SettelEventHandler}>
+        <button className="btn BtnSettle me-2 mt-2" onClick={SettelEventHandler}>
           End hand
         </button>
       </>
