@@ -46,7 +46,7 @@ const ParticipantView = ({ participantId }) => {
   }, [meetingAPI.micStream, meetingAPI.micOn]);
 
   return (
-    <div className="player-wrapper">
+    <div className={`player-wrapper ${videoStream ? "has-video" : ""}`}>
       <audio ref={micRef} autoPlay muted={meetingAPI.isLocal} />
       {videoStream ? (
         <ReactPlayer
@@ -58,6 +58,7 @@ const ParticipantView = ({ participantId }) => {
           playing={true}
           url={videoStream}
           className="react-player"
+          style={{ height: "100%", width: "100%" }} 
           onError={(err) => {
             console.log(err, "participant video error");
           }}

@@ -54,7 +54,7 @@ const GameOverButton = () => {
   if (user.Id === gameState.GameCreatorId)
     return (
       <>
-        <button className="btn BackToMenu m-2" onClick={BackToMenuEventHandler}>
+        <button className="btn BackToMenu me-2 mt-2" onClick={BackToMenuEventHandler}>
           Game Over
         </button>
         <SettlementModalEndGame

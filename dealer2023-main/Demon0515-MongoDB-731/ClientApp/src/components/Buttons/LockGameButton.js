@@ -18,7 +18,7 @@ const LockGameButton = () => {
 
   if (user.Id === gameState.GameCreatorId && isAuthorized)
     return (
-      <button className="btn BtnCancelHand m-2" onClick={clickEventHandler}>
+      <button className="btn BtnCancelHand me-2 mt-2" onClick={clickEventHandler}>
         {gameState.IsLocked ? "UnLock Game" : "Lock Game"}
       </button>
     );

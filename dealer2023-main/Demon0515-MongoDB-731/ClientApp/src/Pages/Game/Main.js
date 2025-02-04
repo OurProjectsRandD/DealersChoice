@@ -162,8 +162,8 @@ const MainGame = ({ isVideoChatAllowed = false }) => {
             dispatch,
             setVideoTime
           );
-          console.log(
-            `${stateRef.current.minutes} stateRef.current.minutes +${stateRef.current.gameHash.ActivePlayers.length} stateRef.current.gameHash.ActivePlayers.length`
+          console.log( 
+            `Active Players: ${stateRef.current.minutes} stateRef.current.minutes +${stateRef.current.gameHash.ActivePlayers.length} stateRef.current.gameHash.ActivePlayers.length`
           );
           console.log(
             stateRef.current.minutes +
@@ -247,6 +247,9 @@ const MainGame = ({ isVideoChatAllowed = false }) => {
   });
 
   useEffect(() => {
+    // console.log("Dealer: ", gameState.DealerId);
+    // console.log("Active Players:", JSON.stringify(stateRef.current.gameHash, null, 2));
+
     console.log("connection id: " + connection.connectionId);
     if (connection.connectionId === undefined) return;
 
@@ -490,6 +493,16 @@ const MainGame = ({ isVideoChatAllowed = false }) => {
     };
   }, [connection.connectionId]);
 
+// Get active players from gameState
+const activePlayers = stateRef.current.gameHash.ActivePlayers.map((player, index) => {
+  const ptrValue = index + 2; // Assign ptr dynamically (starts from 2)
+  return { ...player, ptr: ptrValue };
+});
+
+const totalPlayers = activePlayers.length;
+const middleIndex = Math.floor(totalPlayers / 2);
+
+
   if (!isLoading)
     return (
       <>
@@ -516,7 +529,7 @@ const MainGame = ({ isVideoChatAllowed = false }) => {
                   <div
                     // remove inline style
                     style={{
-                      height: "450px",
+                      // height: "450px",
                       overflow: "auto",
                       width: "100%",
                     }}
@@ -545,37 +558,55 @@ const MainGame = ({ isVideoChatAllowed = false }) => {
 
               <div id="table">
                 <div className="row">
-                  <div className="order-1 order-sm-0 col-6 col-md-3 col-lg-2 mt-2 mt-md-1 mt-lg-0 seat">
+                  <div className="order-1 order-sm-0 col-6 col-md-3 col-lg-2 mt-2 mt-md-1 mt-lg-0 seat" data-dealer="2">
                     <Player ptr={2} dealerId={gameState.DealerId} />
                   </div>
-                  <div className="order-2 order-sm-1 col-6 col-md-3 col-lg-2 mt-2 mt-md-1 mt-lg-0 seat">
+                  <div className="order-2 order-sm-0 col-6 col-md-3 col-lg-2 mt-2 mt-md-1 mt-lg-0 seat" data-dealer="3">
                     <Player ptr={3} dealerId={gameState.DealerId} />
                   </div>
-                  <div className="order-0 order-sm-2 col-12 col-sm-6 col-md-3 col-lg-2 mt-2 mt-md-1 mt-lg-0 seat">
+                  <div className="order-0 order-sm-0 col-12 col-sm-6 col-md-3 col-lg-2 mt-2 mt-md-1 mt-lg-0 seat">
                     <div id="potdiv">
                       <PotDiv />
                     </div>
                   </div>
-                  <div className="order-3 col-6 col-md-3 col-lg-2 mt-2 mt-md-1 mt-lg-0 seat">
+                  <div className="order-3 col-6 col-md-3 col-lg-2 mt-2 mt-md-1 mt-lg-0 seat" data-dealer="4">
                     <Player ptr={4} dealerId={gameState.DealerId} />
                   </div>
-                  <div className="order-4 col-6 col-md-3 col-lg-2 mt-2 mt-md-1 mt-lg-0 seat">
+                  <div className="order-4 col-6 col-md-3 col-lg-2 mt-2 mt-md-1 mt-lg-0 seat" data-dealer="5">
                     <Player ptr={5} dealerId={gameState.DealerId} />
                   </div>
-                  <div className="order-5 col-6 col-md-3 col-lg-2 mt-2 mt-md-1 mt-lg-0 seat">
+                  <div className="order-5 col-6 col-md-3 col-lg-2 mt-2 mt-md-1 mt-lg-0 seat" data-dealer="6">
                     <Player ptr={6} dealerId={gameState.DealerId} />
                   </div>
+                  {/* {activePlayers.slice(0, middleIndex).map((player, index) => (
+                    <div key={player.PlayerId} className={`order-1 order-sm-${index} col-6 col-md-3 col-lg-2 mt-2 mt-md-1 mt-lg-0 seat`} data-ptr={player.ptr}>
+                      <Player ptr={player.ptr} dealerId={gameState.DealerId} />
+                    </div>
+                  ))} */}
+
+                  {/* POT DIV - Always in Middle */}
+                  {/* <div className={`order-0 order-sm-${middleIndex} col-12 col-sm-6 col-md-3 col-lg-2 mt-2 mt-md-1 mt-lg-0 seat`}>
+                    <div id="potdiv">
+                      <PotDiv />
+                    </div>
+                  </div>
+
+                  {activePlayers.slice(middleIndex).map((player, index) => (
+                    <div key={player.PlayerId} className={`order-${middleIndex + index + 1} col-6 col-md-3 col-lg-2 mt-2 mt-md-1 mt-lg-0 seat`} data-ptr={player.ptr}>
+                      <Player ptr={player.ptr} dealerId={gameState.DealerId} />
+                    </div>
+                  ))} */}
                 </div>
                 <div className="row mt-3">
-                  <div className="col-12 col-md-10">
+                  <div className="col-12 col-md-12">
                     <CurrentPlayerDiv />
                   </div>
-                  <div className="col-12 col-md-2">
+                  {/* <div className="col-12 col-md-2">
                     <DefaultPlayer ptr={1} />
-                  </div>
+                  </div> */}
                 </div>
               </div>
-              <div className=" player-deal-card">
+              <div className="player-deal-card my-3 overflow-hidden">
                 {gameState.DealerId === user.Id && <DealerPanel />}
               </div>
               <GameControlPanel isMeetingJoined={isMeetingJoined} />

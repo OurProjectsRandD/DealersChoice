@@ -30,7 +30,7 @@ const CancelHandButton = () => {
   return (
     gameState.DealerId === user.Id && (
       <>
-        <button className="btn BtnCancelHand m-2" onClick={CancelEventHandler}>
+        <button className="btn BtnCancelHand me-2 mt-2" onClick={CancelEventHandler}>
           Cancel Hand
         </button>
         <ModalInfoCancelHandPrompt
