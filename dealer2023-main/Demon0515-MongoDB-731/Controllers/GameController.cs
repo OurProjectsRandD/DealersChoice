@@ -122,7 +122,7 @@ namespace PersonalizedCardGame.Controllers
 
                 //Create Game and initialize Deck as 52 cards
                 GameHash gameHash = new GameHash()
-                {
+                { 
                     GameCreatorId = user.Id.ToString(),
                     HostName = model.HostName,
                     MeetingId = model.MeetingId,
