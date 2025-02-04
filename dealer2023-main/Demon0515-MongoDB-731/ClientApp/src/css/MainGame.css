@@ -112,10 +112,11 @@ header .btn {
 }
 
 .PlayerCard.Selected {
-  width: 40px;
-  height: 60px;
+  /* width: 40px;
+  height: 60px; */
   border-color: black !important;
   border: 3px solid !important;
+  border-radius: 12px;
 }
 
 .fa-user {
@@ -345,10 +346,10 @@ img {
 }
 
 .PlayerCard {
-  border: 1px solid;
+  /* border: 1px solid; */
   /* padding: 0%; */
   border-radius: 5%;
-  width: 25%;
+  width: 10%;
   /*height: 100%;*/
   filter: brightness(100%);
   z-index: 25;
@@ -357,9 +358,9 @@ img {
 }
 
 .Player1 .PlayerDeck .PlayerCard {
-  border: 1px solid;
+  /* border: 1px solid; */
   /* padding: 0%; */
-  border-radius: 5%;
+  /* border-radius: 5%; */
   width: 10%;
   /*height: 100%;*/
   filter: brightness(100%);
@@ -602,7 +603,7 @@ button.stencil:hover {
 #table {
   padding: 20px;
   z-index: -10;
-  border-radius: 40px;
+  /* border-radius: 40px; */
   background-image: url("../images/greenfelt.jpg");
   background-size: cover;
   margin-bottom: 10px;
@@ -615,7 +616,7 @@ button.stencil:hover {
 }
 
 .Player {
-  border: 1px solid brown;
+  /* border: 1px solid brown; */
   background: #dee2e6;
   border-radius: 5px;
   text-align: center;
@@ -770,7 +771,7 @@ button.stencil:hover {
 }
 
 .bg-active {
-  border: 15px solid #d80808;
+  border: 2px solid #d80808;
 }
 
 .btn-success {
@@ -912,19 +913,32 @@ div#potdiv {
 }
 
 .player-wrapper {
-  height: 100px !important;
+  /* height: 100px !important; */
   overflow: hidden;
   object-fit: cover;
   object-position: center;
-  width: auto;
+  /* width: auto;
+  height: auto; */
+
+  position: relative;
+  width: 100%;
+  
+  overflow: hidden;
+}
+
+.player-wrapper.has-video{
+  height: 185px;
+}
+.player-wrapper:not(.has-video){
   height: auto;
 }
 
 .react-player {
-  padding-top: 56.25%;
-  position: relative;
+  /* padding-top: 56.25%; */
+  /* position: relative;
   width: 100% !important;
-  height: auto !important;
+  height: auto !important; */
+  
 }
 
 .react-player > div {
@@ -1006,8 +1020,13 @@ div#potdiv {
 
 .react-player video {
   /* height: 242px !important; */
-  width: 100% !important;
-  height: auto !important;
+  /* width: 100% !important;
+  height: auto !important; */
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: auto !important;
 }
 
 .PlayerDealer {
@@ -1016,12 +1035,12 @@ div#potdiv {
 }
 
 .PlayerDealer p {
+  margin-bottom: 0;
+  overflow: hidden;
+  padding: 3px 0;
+  text-overflow: ellipsis;
   white-space: nowrap;
   width: 50px;
-  padding: 3px 0px;
-  margin-bottom: 0px;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .dealerIconStyle {
@@ -1037,5 +1056,17 @@ div#potdiv {
 
 .player-deal-card {
   background: #f5f5f5;
-  border-radius: 10px;
+  /* border-radius: 10px; */
+}
+
+
+@media only screen and (max-width: 560px) {
+  .Player1 .PlayerDeck .PlayerCard{
+    width: 20%;
+  }
+  .PlayerDealer p {
+    width: 35px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }

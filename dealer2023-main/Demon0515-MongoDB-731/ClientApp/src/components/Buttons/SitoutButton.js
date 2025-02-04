@@ -48,7 +48,7 @@ const SitOutButton = () => {
         </button>
       ) : (
         <button
-          className="btn btn-primary BtnSitOut m-2"
+          className="btn btn-primary BtnSitOut me-2 mt-2"
           onClick={SitOutEventHandler}
         >
           Sit Out

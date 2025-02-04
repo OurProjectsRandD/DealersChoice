@@ -15,7 +15,7 @@ const InviteButton = () => {
   if (gameState.GameCreatorId === user.Id && isAuthorized) {
     return (
       <>
-        <button className="btn BtnCancelHand m-2" onClick={clickEventHandler}>
+        <button className="btn BtnCancelHand me-2 mt-2" onClick={clickEventHandler}>
           Invite
         </button>
         <InviteModal open={inviteModalOpen} setOpen={setInviteModalOpen} />

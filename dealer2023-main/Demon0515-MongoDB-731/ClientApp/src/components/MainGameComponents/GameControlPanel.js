@@ -17,7 +17,7 @@ const GameControlPanel = ({ isMeetingJoined }) => {
   return (
     <>
       <div className="row">
-        <div className="col-10">
+        <div className="col-12 col-sm-10">
           {!(gameState.PotSize === 0 && gameState.Deck.length === 52) && (
             <>
               <CancelHandButton />
@@ -31,7 +31,7 @@ const GameControlPanel = ({ isMeetingJoined }) => {
           {<InviteButton />}
           {gameState.VideoChatAllowed && <StartVideo />}
         </div>
-        <div className="col-2 text-center">
+        <div className="col-12 col-sm-2 text-center">
           <div className="bottom-icon">
             <TakePictureButton />
             {gameState.MeetingId !== null && <ToggleCameraButton />}

@@ -57,7 +57,6 @@ const Logging = () => {
                       .map((actionStep) => (
                         <>
                           <br />
-                          <br />
                           {/* &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#8594;&nbsp; */}
                           <span
                             className={`d-block log-entry ${

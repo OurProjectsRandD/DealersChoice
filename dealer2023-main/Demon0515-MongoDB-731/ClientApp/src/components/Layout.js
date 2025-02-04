@@ -6,7 +6,7 @@ const Layout = (props) => {
   return (
     <div className="container wider px-3 mb-2">
       <NavMenu />
-      <Container className="p-3 wider">{props.children}</Container>
+      <Container className="p-0 p-sm-3 wider">{props.children}</Container>
     </div>
   );
 };
