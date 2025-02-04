@@ -129,7 +129,7 @@ namespace PersonalizedCardGame.Controllers
                     GameCode = model.GameCode,
                     IsInvitesOnly = model.IsInvitesOnly == true ? true : false,
                     VideoChatAllowed = model.VideoChatAllowed == true ? true : false,
-                    DealerId = user.Id.ToString()
+                    DealerId = user.Id.ToString() 
                 };
                 gameHash.SetInitialDeck();
 
