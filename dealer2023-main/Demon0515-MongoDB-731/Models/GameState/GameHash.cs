@@ -98,11 +98,21 @@ namespace PersonalizedCardGame.Models.GameState
             do
             {
                 newIndex = (newIndex + 1) % this.ActivePlayers.Count;
+
                 if (this.ActivePlayers[newIndex].IsFolded == false && this.ActivePlayers[newIndex].IsDisconnected == false)
+
                     return newIndex;
-            } while (cnt++ < this.ActivePlayers.Count);
+            }
+            while (cnt++ < this.ActivePlayers.Count);
             return -1;
         }
+
+        //public int FindNextActivePlayerInde(int index)
+        //{
+        //    int newIndex = index;
+
+        //    for (newIndex ; index <= this.ActivePlayers.Count; index++ ; index ++) { }
+        //}
 
         public string FindNextActivePlayerId(int index)
         {

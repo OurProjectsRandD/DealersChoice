@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using MongoDB.Driver.Core.Connections;
 using Nancy.Routing.Trie;
 using PersonalizedCardGame.Controllers;
 using PersonalizedCardGame.Models;
@@ -12,8 +13,9 @@ namespace PersonalizedCardGame.Services
     public class GameStateService
     {
         private readonly IMongoCollection<GameHash> mongoCollection;
+        private readonly ILogger<GameStateService> _logger;
 
-        public GameStateService(IOptions<MongoDBSetting> options)
+        public GameStateService(IOptions<MongoDBSetting> options, ILogger<GameStateService> logger)
         {
             var mongoClient = new MongoClient(
             options.Value.ConnectionString);
@@ -22,6 +24,7 @@ namespace PersonalizedCardGame.Services
                 options.Value.DatabaseName);
 
             mongoCollection = mongoDatabase.GetCollection<GameHash>("GameStates");
+            _logger = logger;
         }
 
         public IMongoCollection<GameHash> GetCollection() => mongoCollection;
@@ -83,7 +86,8 @@ namespace PersonalizedCardGame.Services
                 await mongoCollection.FindOneAndUpdateAsync(filter, update, options);
                 return true;
             } catch (Exception ex)
-            {
+            { 
+                _logger.LogError("RemoveActiveplayer"+ ex.Message + ex.InnerException + ex.StackTrace);
                 return false;
             }
         }
@@ -97,6 +101,7 @@ namespace PersonalizedCardGame.Services
                 return result;
             } catch(Exception ex)
             {
+                _logger.LogError("FindByConnectionId on GameStateService" + ConnectionId +  ex.Message + ex.InnerException + ex.StackTrace);
                 return null;
             }
         }
@@ -198,32 +203,42 @@ namespace PersonalizedCardGame.Services
 
         public async Task<List<GameHash>> GetGamesByPeriod(int type)
         {
-            var currentTime = DateTime.Now;
-            DateTime startTime = currentTime;
-            switch (type)
+            try
             {
-                case 1:
-                    startTime = currentTime.Subtract(TimeSpan.FromHours(24));
-                    break;
-                case 2:
-                    int daysUntilMonday = ((int)currentTime.DayOfWeek - (int)DayOfWeek.Monday + 7) % 7;
-                    startTime = currentTime.AddDays(-daysUntilMonday);
-                    break;
-                case 3:
-                    startTime = new DateTime(currentTime.Year, currentTime.Month, 1);
-                    break;
-                default:
-                    break;
+                var currentTime = DateTime.Now;
+                DateTime startTime = currentTime;
+                switch (type)
+                {
+                    case 1:
+                        startTime = currentTime.Subtract(TimeSpan.FromHours(24));
+                        break;
+                    case 2:
+                        int daysUntilMonday = ((int)currentTime.DayOfWeek - (int)DayOfWeek.Monday + 7) % 7;
+                        startTime = currentTime.AddDays(-daysUntilMonday);
+                        break;
+                    case 3:
+                        startTime = new DateTime(currentTime.Year, currentTime.Month, 1);
+                        break;
+                    default:
+                        break;
+                }
+                FilterDefinition<GameHash> filter;
+                if (type == 0)
+                {
+                    filter = Builders<GameHash>.Filter.Eq(u => u.IsEnded, false);
+                }
+                else
+                    filter = Builders<GameHash>.Filter.Gte(u => u.CreatedDate, startTime);
+                var results = await mongoCollection.Find(filter).ToListAsync();
+                _logger.LogInformation("GetGamesByPeriod" + "Count" + results.Count);
+                return results;
             }
-            FilterDefinition<GameHash> filter;
-            if (type == 0)
+            catch (Exception ex)
             {
-                filter = Builders<GameHash>.Filter.Eq(u => u.IsEnded, false);
+               _logger.LogError("GetGamesByPeriod on GameStateService" + type + ex.Message + ex.InnerException + ex.StackTrace);
+                throw;
             }
-            else
-                filter = Builders<GameHash>.Filter.Gte(u => u.CreatedDate, startTime);
-            var results = await mongoCollection.Find(filter).ToListAsync();
-            return results;
+            
         }
     }
 }

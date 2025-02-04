@@ -58,6 +58,10 @@ const CurrentPlayerDiv = () => {
       } catch (ex) {
         alert("drop at the right place!");
       }
+
+      // Log the currentIndex value before sending it to the backend
+      console.log("currentIndex being sent to the backend:", currentIndex);
+
       if (draggingCard.Index === currentIndex && draggingCard.Type === 0)
         return;
       PassCards(

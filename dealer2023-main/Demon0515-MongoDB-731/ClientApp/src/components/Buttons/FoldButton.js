@@ -20,6 +20,7 @@ const FoldButton = () => {
 
   const FoldEventHandler = useCallback(
     (ev) => {
+      console.log("event blablblbl:", currentIndex);
       Fold(user.Id, gameState.GameCode, currentIndex, () => {
         dispatch(fold(currentIndex));
       });
