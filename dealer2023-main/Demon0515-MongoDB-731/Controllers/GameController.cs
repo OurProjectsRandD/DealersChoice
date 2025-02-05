@@ -76,7 +76,7 @@ namespace PersonalizedCardGame.Controllers
             GameStateService gameStateService, GameInviteService gameInviteService, MembershipService membershipService, PlayerService playerService, RecurringGameService recurringGameService, ILogger<GameController> logger,ILog log)
         {
             
-            _log.Info("Initiaizing!");
+           
             if (_HubContext == null)
             {
                 _HubContext = hubcontext;
@@ -1000,8 +1000,8 @@ namespace PersonalizedCardGame.Controllers
                 {
                     card.Presentation = 1;
                 });
-                _log.Info("Fold at GameHash Object Exception point: {ex}" + gameHash.Id +gameHash.MeetingId + gameHash.GameCode +
-                    gameHash.GameHand + gameHash.ActivePlayers +gameHash.CurrentBet);
+                _log.Info("Fold at GameHash Object Exception point: {ex}" + "ID="+  gameHash.Id + "MeetingId=" +gameHash.MeetingId + "GameCode=" +gameHash.GameCode +
+                    "GameHand ="+gameHash.GameHand + gameHash.ActivePlayers +gameHash.CurrentBet);
                 OnPlayerAction(gameHash, model.Index);
                 await _GameStateService.UpdateAsync(gameHash.Id!, gameHash);
                 gameHash.ActivePlayers.ForEach(async (player) =>
@@ -1032,7 +1032,8 @@ namespace PersonalizedCardGame.Controllers
             }
             catch (Exception ex)
             {
-                _log.Error("ToggleLock method on GameController Exception point: {ex}"+ ex.Message + ex.InnerException + ex.StackTrace);
+                _log.Error(new { ToggleLock = "ToggleLock method on GameController Exception point: {ex}", message = ex.Message, InnerException = ex.InnerException, StackTrace = ex.StackTrace });
+                //_log.Error("ToggleLock method on GameController Exception point: {ex}"+ ex.Message + ex.InnerException + ex.StackTrace);
                 return false;
             }
         }
@@ -1099,6 +1100,7 @@ namespace PersonalizedCardGame.Controllers
             }
             catch (Exception ex)
             {
+                _log.Error("ToggleMic method on GameController Exception point: {ex}" + ex.Message + ex.InnerException + ex.StackTrace);
                 // Ideally, log the exception here for troubleshooting purposes
                 return false;
             }
@@ -1120,10 +1122,11 @@ namespace PersonalizedCardGame.Controllers
                     InviteeEmail = model.InviteeEmail!,
                     GameCode = model.GameCode!
                 });
+                _log.Info("Invite Method"+ "Id=" + gameHash.Id + "Gamecode =" + gameHash.GameCode + "DealerId = " + gameHash.DealerId);
                 return true;
             } catch(Exception ex)
             {
-
+                _log.Error("Invite method on GameController Exception point: {ex}" + ex.Message + ex.InnerException + ex.StackTrace);
                 return false;
             }
         }
