@@ -1164,14 +1164,17 @@ namespace PersonalizedCardGame.Controllers
             try
             {
                 GameHash gameHash = await _GameStateService.GetByGameCodeAsync(model.GameCode!);
+                _log.Info("StartVideoMeeting" + "DealerId=" + gameHash.DealerId + "Gamecode=" + gameHash.GameCode);
                 gameHash.ActivePlayers.ForEach(async player =>
                 {
                     if (player.PlayerId != model.UserId)
                         await _HubContext.Clients.Client(player.ConnectionId).SendAsync("Join_Meeting");
+                    _log.Info("Client" + "UserId=" + model.UserId);
                 });
                 return true;
             } catch (Exception ex)
             {
+                _log.Error("StartVideoMeeting method on GameController Exception point: {ex}" + ex.Message + ex.InnerException + ex.StackTrace);
                 return false; 
 
             }
@@ -1194,6 +1197,7 @@ namespace PersonalizedCardGame.Controllers
             }
             catch (Exception ex)
             {
+                _log.Error("EndVideoMeeting method on GameController Exception point: {ex}" + ex.Message + ex.InnerException + ex.StackTrace);
                 return false;
             }
 
