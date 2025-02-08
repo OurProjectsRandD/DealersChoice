@@ -15,10 +15,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { PassCards } from "../../common/game/GameControl";
 import { passCard } from "../../slice/gameStateSlice";
 import DefaultPlayer from "../../components/MainGameComponents/DefaultPlayer";
-const CurrentPlayerDiv = () => {
-  //const [CardActionsVisible, setCardActionsVisible] = useState(true);
+
+const CurrentPlayerDiv = ({ gameState }) => {
   const dispatch = useDispatch();
-  const gameState = useSelector((state) => state.gameState);
+
   const draggingCard = useSelector((state) => state.card.draggingCard);
   const selectedCards = useSelector((state) => state.card.selectedCards);
   const user = useSelector((state) => state.auth.user);
@@ -59,9 +59,6 @@ const CurrentPlayerDiv = () => {
         alert("drop at the right place!");
       }
 
-      // Log the currentIndex value before sending it to the backend
-      console.log("currentIndex being sent to the backend:", currentIndex);
-
       if (draggingCard.Index === currentIndex && draggingCard.Type === 0)
         return;
       PassCards(
@@ -81,7 +78,7 @@ const CurrentPlayerDiv = () => {
         }
       );
     },
-    [currentIndex, dispatch, draggingCard, gameState.GameCode]
+    [currentIndex, dispatch, draggingCard, gameState.GameCode, user.Id]
   );
 
   const DragEnter = useCallback((ev) => {
@@ -137,7 +134,11 @@ const CurrentPlayerDiv = () => {
                 onDragEnd={DragEnd}
                 onDragLeave={DragEnd}
               >
-                <div className={`col-12 ${isVideoOn ? "col-sm-9" : "col-sm-12"} order-1 order-sm-0 d-flex flex-column flex-wrap align-items-center justify-content-between`}>
+                <div
+                  className={`col-12 ${
+                    isVideoOn ? "col-sm-9" : "col-sm-12"
+                  } order-1 order-sm-0 d-flex flex-column flex-wrap align-items-center justify-content-between`}
+                >
                   <span className="PlayerStatus badge badge-info p-2">
                     {currentPlayer && currentPlayer.PlayerAmount}
                   </span>
@@ -180,9 +181,13 @@ const CurrentPlayerDiv = () => {
                     <DefaultPlayer ptr={1} setVideoStatus={handleVideoStatus} />
                   </div>
                 )} */}
-                <div className={`col-12 col-sm-3 order-0 order-sm-1 ${isVideoOn ? "" : 'd-none'}`}>
-                    {/* <div>Video is {isVideoOn ? "On" : "Off"}</div> */}
-                    <DefaultPlayer ptr={1} setVideoStatus={handleVideoStatus} />
+                <div
+                  className={`col-12 col-sm-3 order-0 order-sm-1 ${
+                    isVideoOn ? "" : "d-none"
+                  }`}
+                >
+                  {/* <div>Video is {isVideoOn ? "On" : "Off"}</div> */}
+                  <DefaultPlayer ptr={1} setVideoStatus={handleVideoStatus} />
                 </div>
               </div>
             </div>

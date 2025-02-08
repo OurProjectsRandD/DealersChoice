@@ -6,6 +6,7 @@ import cameraStatusReducer from "./slice/cameraStatusSlice";
 import storage from "redux-persist/lib/storage";
 import { persistReducer, persistStore } from "redux-persist";
 import thunk from "redux-thunk";
+import { newGameStateReducer } from "./slice";
 
 const persistConfig = {
   key: "root",
@@ -16,7 +17,8 @@ const rootReducer = combineReducers({
   auth: authReducer,
   gameState: gameStateReducer,
   card: cardSliceReducer,
-  cameraStatus:cameraStatusReducer
+  cameraStatus: cameraStatusReducer,
+  newGameState: newGameStateReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

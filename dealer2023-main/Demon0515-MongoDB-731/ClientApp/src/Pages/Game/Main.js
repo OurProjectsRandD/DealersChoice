@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import "../../css/MainGame.css";
 import "../../css/Font-Awesome.min.css";
@@ -57,11 +57,11 @@ import {
 import SettlementModalEndGame from "../../components/Dialogs/SettlementModalEndGame";
 import { setMeetingJoined, setVideoTime } from "../../slice/authSlice";
 import { SettlementEndGame } from "../../components/Settlements/SettlementEndGame";
+import { setNewGameState } from "../../slice";
 
 const MainGame = ({ isVideoChatAllowed = false }) => {
   const stateRef = useRef();
   const navigator = useNavigate();
-  const [isLoading, setIsLoading] = useState(true);
   const [searchParams] = useSearchParams();
 
   //meeting related state
@@ -78,40 +78,42 @@ const MainGame = ({ isVideoChatAllowed = false }) => {
   // redux states
   const user = useSelector((state) => state.auth.user);
   const asset = useSelector((state) => state.auth.asset);
-  const gameState = useSelector((state) => state.gameState);
+
+  const { isLoading, ...gameState } = useSelector(
+    (state) => state.newGameState
+  );
+
   const dispatch = useDispatch();
   const GameCode = searchParams.get("GameCode");
   const [connection, setConnection] = useState({});
 
-  useEffect(() => {
-    document.body.classList.remove("public");
-    return () => {
-      document.body.classList.add("public");
-    };
-  });
-
   const preventrefresh = (e) => {
     e.preventDefault();
     e.returnValue = "data will get lost";
-    return e.returnValue; // Return the value
+    return e.returnValue;
   };
 
   useEffect(() => {
+    document.body.classList.remove("public");
     window.addEventListener("beforeunload", preventrefresh);
 
     return () => {
+      document.body.classList.add("public");
       window.removeEventListener("beforeunload", preventrefresh);
     };
-  });
-  // start connection with user.Id
-  useEffect(() => {
-    const startConnection = async () => {
-      let newConnection = await startConnectionWithGameCodeAndUserId(
+  }, []);
+
+  const initiateConnection = useCallback(async () => {
+    if (!GameCode || !user?.Id) return null;
+
+    try {
+      const connection = await startConnectionWithGameCodeAndUserId(
         GameCode,
         user.Id
       );
-      LogRocket.log("Connected to SignalR", newConnection.connectionId);
-      setConnection(newConnection);
+      LogRocket.log("Connected to SignalR", connection.connectionId);
+      setConnection(connection);
+
       SendRequest({
         method: "POST",
         url: "Game/JoinGame",
@@ -119,10 +121,9 @@ const MainGame = ({ isVideoChatAllowed = false }) => {
           GameCode: GameCode,
           UserId: user.Id,
           DisplayName: user.NickName,
-          ConnectionId: newConnection.connectionId,
+          ConnectionId: connection.connectionId,
         },
       }).then((result) => {
-        console.log("resultdat", result?.data);
         if (result.data === null || result.data === "") {
           alert(
             "Can't join game because of wrong game code, game is locked or didn't get invite"
@@ -130,13 +131,17 @@ const MainGame = ({ isVideoChatAllowed = false }) => {
           navigator("/");
           return;
         }
-        setIsLoading(false);
-        dispatch(setGameState(result.data));
+        dispatch(setNewGameState(result.data));
         LogRocket.log("Joined Game", result.data);
       });
-    };
-    startConnection();
-  }, []);
+    } catch (error) {
+      console.log("Error initiating connection");
+    }
+  }, [GameCode, navigator, user.Id, user.NickName, dispatch]);
+
+  useEffect(() => {
+    initiateConnection();
+  }, [initiateConnection]);
 
   //VideoSDK related function
 
@@ -162,7 +167,7 @@ const MainGame = ({ isVideoChatAllowed = false }) => {
             dispatch,
             setVideoTime
           );
-          console.log( 
+          console.log(
             `Active Players: ${stateRef.current.minutes} stateRef.current.minutes +${stateRef.current.gameHash.ActivePlayers.length} stateRef.current.gameHash.ActivePlayers.length`
           );
           console.log(
@@ -493,15 +498,15 @@ const MainGame = ({ isVideoChatAllowed = false }) => {
     };
   }, [connection.connectionId]);
 
-// Get active players from gameState
-const activePlayers = stateRef.current.gameHash.ActivePlayers.map((player, index) => {
-  const ptrValue = index + 2; // Assign ptr dynamically (starts from 2)
-  return { ...player, ptr: ptrValue };
-});
+  // Get active players from gameState
+  const activePlayers = stateRef.current.gameHash.ActivePlayers.map(
+    (player, index) => {
+      const ptrValue = index + 2; // Assign ptr dynamically (starts from 2)
+      return { ...player, ptr: ptrValue };
+    }
+  );
 
-const totalPlayers = activePlayers.length;
-const middleIndex = Math.floor(totalPlayers / 2);
-
+  const totalPlayers = activePlayers.length;
 
   if (!isLoading)
     return (
@@ -509,9 +514,16 @@ const middleIndex = Math.floor(totalPlayers / 2);
         <div className="container-fluid bg-black p-0" id="GameBoard">
           <div className="row">
             <div className="col-lg-2 mb-3">
-            {/* Hamburger Menu Toggle Button for Mobile */}
+              {/* Hamburger Menu Toggle Button for Mobile */}
               <div class="d-lg-none mb-2">
-                <button class="btn btn-primary ms-auto d-block" type="button" data-bs-toggle="collapse" data-bs-target="#mobileSidebar" aria-expanded="false" aria-controls="mobileSidebar">
+                <button
+                  class="btn btn-primary ms-auto d-block"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#mobileSidebar"
+                  aria-expanded="false"
+                  aria-controls="mobileSidebar"
+                >
                   <i class="bi bi-list"></i>
                 </button>
               </div>
@@ -558,10 +570,16 @@ const middleIndex = Math.floor(totalPlayers / 2);
 
               <div id="table">
                 <div className="row">
-                  <div className="order-1 order-sm-0 col-6 col-md-3 col-lg-2 mt-2 mt-md-1 mt-lg-0 seat" data-dealer="2">
+                  <div
+                    className="order-1 order-sm-0 col-6 col-md-3 col-lg-2 mt-2 mt-md-1 mt-lg-0 seat"
+                    data-dealer="2"
+                  >
                     <Player ptr={2} dealerId={gameState.DealerId} />
                   </div>
-                  <div className="order-2 order-sm-0 col-6 col-md-3 col-lg-2 mt-2 mt-md-1 mt-lg-0 seat" data-dealer="3">
+                  <div
+                    className="order-2 order-sm-0 col-6 col-md-3 col-lg-2 mt-2 mt-md-1 mt-lg-0 seat"
+                    data-dealer="3"
+                  >
                     <Player ptr={3} dealerId={gameState.DealerId} />
                   </div>
                   <div className="order-0 order-sm-0 col-12 col-sm-6 col-md-3 col-lg-2 mt-2 mt-md-1 mt-lg-0 seat">
@@ -569,13 +587,22 @@ const middleIndex = Math.floor(totalPlayers / 2);
                       <PotDiv />
                     </div>
                   </div>
-                  <div className="order-3 col-6 col-md-3 col-lg-2 mt-2 mt-md-1 mt-lg-0 seat" data-dealer="4">
+                  <div
+                    className="order-3 col-6 col-md-3 col-lg-2 mt-2 mt-md-1 mt-lg-0 seat"
+                    data-dealer="4"
+                  >
                     <Player ptr={4} dealerId={gameState.DealerId} />
                   </div>
-                  <div className="order-4 col-6 col-md-3 col-lg-2 mt-2 mt-md-1 mt-lg-0 seat" data-dealer="5">
+                  <div
+                    className="order-4 col-6 col-md-3 col-lg-2 mt-2 mt-md-1 mt-lg-0 seat"
+                    data-dealer="5"
+                  >
                     <Player ptr={5} dealerId={gameState.DealerId} />
                   </div>
-                  <div className="order-5 col-6 col-md-3 col-lg-2 mt-2 mt-md-1 mt-lg-0 seat" data-dealer="6">
+                  <div
+                    className="order-5 col-6 col-md-3 col-lg-2 mt-2 mt-md-1 mt-lg-0 seat"
+                    data-dealer="6"
+                  >
                     <Player ptr={6} dealerId={gameState.DealerId} />
                   </div>
                   {/* {activePlayers.slice(0, middleIndex).map((player, index) => (
@@ -599,7 +626,7 @@ const middleIndex = Math.floor(totalPlayers / 2);
                 </div>
                 <div className="row mt-3">
                   <div className="col-12 col-md-12">
-                    <CurrentPlayerDiv />
+                    <CurrentPlayerDiv gameState={gameState} />
                   </div>
                   {/* <div className="col-12 col-md-2">
                     <DefaultPlayer ptr={1} />

@@ -1000,7 +1000,7 @@ namespace PersonalizedCardGame.Controllers
                 {
                     card.Presentation = 1;
                 });
-                _log.Info("Fold at GameHash Object Exception point: {ex}" + "ID="+  gameHash.Id + "MeetingId=" +gameHash.MeetingId + "GameCode=" +gameHash.GameCode +
+                _log.Info("Fold Methodt: {ex}" + "ID="+  gameHash.Id + "MeetingId=" +gameHash.MeetingId + "GameCode=" +gameHash.GameCode +
                     "GameHand ="+gameHash.GameHand + gameHash.ActivePlayers +gameHash.CurrentBet);
                 OnPlayerAction(gameHash, model.Index);
                 await _GameStateService.UpdateAsync(gameHash.Id!, gameHash);
@@ -1008,7 +1008,7 @@ namespace PersonalizedCardGame.Controllers
                 {
                     if (player.PlayerId != model.UserId)
                         await _HubContext.Clients.Client(player.ConnectionId).SendAsync("Fold", model.Index!);
-                    _log.Info("Fold Exception point: {gameHash}" + player.PlayerId + player.IsFolded+ player.IsFolded +player.ConnectionId);
+                    _log.Info("Fold Method: {gameHash}" + player.PlayerId + player.IsFolded+ player.IsFolded +player.ConnectionId);
                 });
                 return true;
             }
