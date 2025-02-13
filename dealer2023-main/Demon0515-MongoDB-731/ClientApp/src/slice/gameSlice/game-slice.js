@@ -1,4 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
+import {
+  AddStep,
+  NextCurrentId,
+  OnPlayerAction,
+} from "../../common/game/GameControl";
+
+/**
+ * @TODO: move all functions dependent on states out of the reducers into the action dispatchers
+ */
 
 const initialState = {
   isLoading: false,
@@ -75,6 +84,163 @@ const slice = createSlice({
       state.CommunityCards = action.payload.CommunityCards;
       state.HandSteps = action.payload.HandSteps;
       state.Deck = action.payload.Deck;
+    },
+
+    // PLAYER CONNECTED STATE
+    playerConnected(state, action) {
+      state.isLoading = false;
+
+      let playerIndex = state.ActivePlayers.findIndex(
+        (ele) => ele.PlayerId === action.payload.Userid
+      );
+
+      if (playerIndex !== -1) {
+        state.ActivePlayers[playerIndex].ConnectionId =
+          action.payload.ConnectionId;
+        state.ActivePlayers[playerIndex].IsDisconnected = false;
+      }
+    },
+
+    // PLAYER JOIN GAME
+    playerJoinGame(state, action) {
+      state.isLoading = false;
+
+      const { userId, playerImage, userName, connectionId } = action.payload;
+      let index = state.ActivePlayers.findIndex((x) => x.PlayerId === userId);
+
+      if (index !== -1) {
+        return;
+      }
+
+      state.ActivePlayers.push({
+        PlayerId: userId,
+        PlayerImage: playerImage,
+        PlayerName: userName,
+        ConnectionId: connectionId,
+        PlayerNetStatusFinal: 0,
+        PlayerCards: [],
+        PlayerAmount: 0,
+        IsSitOut: false,
+        IsFolded: false,
+        IsRealTimeChat: true,
+        IsRealTimeChatForMic: true,
+        IsDisconnected: false,
+        CurrentRoundStatus: 0,
+        Balance: 0,
+        LastActionPerformed: "",
+      });
+
+      if (state.ActivePlayers.length === 2) {
+        state.CurrentId = state.ActivePlayers[1].PlayerId;
+      }
+    },
+
+    // PASS CARD STATE
+    passCard(state, action) {
+      state.isLoading = false;
+      const { draggingCards, Type, Index } = action.payload;
+
+      draggingCards.forEach((draggingCard) => {
+        if (draggingCard.Type === 0) {
+          state.ActivePlayers[draggingCard.Index].PlayerCards =
+            state.ActivePlayers[draggingCard.Index].PlayerCards.filter(
+              (x) => x.Value !== draggingCard.Value
+            );
+        } else {
+          state.CommunityCards = state.CommunityCards.filter(
+            (x) => x.Value !== draggingCard.Value
+          );
+        }
+
+        if (Type === 0) {
+          state.ActivePlayers[Index].PlayerCards.push({
+            Value: draggingCard.Value,
+            Presentation: draggingCard.Presentation,
+          });
+        } else {
+          state.CommunityCards.push({
+            Value: draggingCard.Value,
+            Presentation: 0,
+            CommunityIndex: action.payload.Index,
+          });
+        }
+      });
+    },
+
+    // PLAYER LEFT
+    playerLeft(state, action) {
+      state.isLoading = false;
+      const { index } = action.payload;
+
+      let dealerIndex = state.ActivePlayers.findIndex(
+        (x) => x.PlayerId === state.DealerId
+      );
+      let currentPlayerIndex = state.ActivePlayers.findIndex(
+        (x) => x.PlayerId === state.CurrentId
+      );
+
+      if (dealerIndex === index) {
+        state.DealerId = NextCurrentId(state, dealerIndex);
+      }
+      if (currentPlayerIndex === index) {
+      }
+      state.CurrentId = NextCurrentId(state, currentPlayerIndex);
+      state.ActivePlayers.splice(index, 1);
+
+      // if (dealerIndex === action.payload) {
+      //   // state.DealerId = NextCurrentId();
+      //   console.log("state ====== ", state);
+      //   console.log("dealer index ======= ", dealerIndex);
+      // }
+    },
+
+    // PLAYER DISCONNECTED
+    playerDisconnected(state, action) {
+      state.isLoading = false;
+      state.ActivePlayers[action.payload.index].IsDisconnected = true;
+      if (
+        state.CurrentId === state.ActivePlayers[action.payload.index].PlayerId
+      )
+        state.CurrentId = NextCurrentId(state, action.payload.index);
+      if (state.DealerId === state.ActivePlayers[action.payload.index].PlayerId)
+        state.DealerId = NextCurrentId(state, action.payload.index);
+    },
+
+    // BET
+    bet(state, action) {
+      state.isLoading = false;
+      const { Index, Amount } = action.payload;
+
+      state.ActivePlayers[Index].PlayerAmount -= action.payload.Amount;
+      state.PotSize += Amount;
+      state.ActivePlayers[Index].CurrentRoundStatus += Amount;
+
+      let actionMsg = " bet: " + Amount;
+      if (state.CurrentBet < Amount) {
+        actionMsg =
+          " raised by: " + (Amount - state.CurrentBet) + "- bet: " + Amount;
+
+        state.CurrentBet = Amount;
+      }
+      state.ActivePlayers[Index].LastActionPerformed = actionMsg;
+      AddStep(state, Index, actionMsg, "Bet");
+      OnPlayerAction(Index);
+    },
+
+    // TAKE
+    take(state, action) {
+      state.isLoading = false;
+      const { Index, Amount } = action.payload;
+
+      state.ActivePlayers[Index].LastActionPerformed = " Took $" + Amount;
+      state.ActivePlayers[Index].PlayerAmount += Amount;
+      state.PotSize -= Amount;
+      AddStep(
+        state,
+        Index,
+        state.ActivePlayers[Index].LastActionPerformed,
+        "Take"
+      );
     },
   },
 });

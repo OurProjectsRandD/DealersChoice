@@ -1,13 +1,110 @@
+import LogRocket from "logrocket";
 import { actions } from "./game-slice";
 
 export function setNewGameState(payload) {
   return async (dispatch) => {
     dispatch(actions.startLoading());
-    console.log("state payload =====", payload);
     try {
       dispatch(actions.setState(payload));
     } catch (error) {
-      console.log("errorr ===", error);
+      dispatch(actions.hasError(error));
+    }
+  };
+}
+
+export function findPlayerLeftIndex(payload) {
+  return async (dispatch) => {
+    dispatch(actions.startLoading());
+    try {
+      dispatch(actions.playerLeft(payload));
+      LogRocket.log(`${payload}th Player Left Game`, payload.gameState);
+    } catch (error) {
+      dispatch(actions.hasError(error));
+    }
+  };
+}
+
+export function playerConnectedAction(payload) {
+  return async (dispatch) => {
+    dispatch(actions.startLoading());
+    try {
+      dispatch(actions.playerConnected(payload));
+      LogRocket.log(`${payload.UserId} Connected`, payload.gameState);
+    } catch (error) {
+      dispatch(actions.hasError(error));
+    }
+  };
+}
+
+export function playerJoinGameAction(payload) {
+  return async (dispatch) => {
+    dispatch(actions.startLoading());
+    try {
+      dispatch(actions.playerJoinGame(payload));
+      LogRocket.log(
+        `${payload.userName} Joined joined the game`,
+        payload.gameState
+      );
+    } catch (error) {
+      dispatch(actions.hasError(error));
+    }
+  };
+}
+
+export function passCardAction(payload) {
+  return async (dispatch) => {
+    dispatch(actions.startLoading());
+    try {
+      dispatch(actions.passCard(payload));
+      LogRocket.log(
+        `Pass ${payload.draggingCards.length} cards to ${payload.Index}th ${
+          payload.Type === 0 ? "Player" : "Community"
+        }`,
+        payload.gameState
+      );
+    } catch (error) {
+      dispatch(actions.hasError(error));
+    }
+  };
+}
+
+export function playerDisconnectedAction(payload) {
+  return async (dispatch) => {
+    dispatch(actions.startLoading());
+    try {
+      dispatch(actions.playerDisconnected(payload));
+      LogRocket.log(`${payload}th Player Disconnected`, payload.gameState);
+    } catch (error) {
+      dispatch(actions.hasError(error));
+    }
+  };
+}
+
+export function betAction(payload) {
+  return async (dispatch) => {
+    dispatch(actions.startLoading());
+    try {
+      dispatch(actions.bet(payload));
+      LogRocket.log(
+        `${payload.Index}th Player betted ${payload.Amount}`,
+        payload.gameState
+      );
+    } catch (error) {
+      dispatch(actions.hasError(error));
+    }
+  };
+}
+
+export function takeAction(payload) {
+  return async (dispatch) => {
+    dispatch(actions.startLoading());
+    try {
+      dispatch(actions.take(payload));
+      LogRocket.log(
+        `${payload.Index}th Player took $${payload.Amount}`,
+        payload.gameState
+      );
+    } catch (error) {
       dispatch(actions.hasError(error));
     }
   };

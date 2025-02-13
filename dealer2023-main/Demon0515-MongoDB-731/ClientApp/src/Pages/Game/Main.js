@@ -57,7 +57,16 @@ import {
 import SettlementModalEndGame from "../../components/Dialogs/SettlementModalEndGame";
 import { setMeetingJoined, setVideoTime } from "../../slice/authSlice";
 import { SettlementEndGame } from "../../components/Settlements/SettlementEndGame";
-import { setNewGameState } from "../../slice";
+import {
+  betAction,
+  findPlayerLeftIndex,
+  passCardAction,
+  playerConnectedAction,
+  playerDisconnectedAction,
+  playerJoinGameAction,
+  setNewGameState,
+  takeAction,
+} from "../../slice";
 
 const MainGame = ({ isVideoChatAllowed = false }) => {
   const stateRef = useRef();
@@ -274,9 +283,10 @@ const MainGame = ({ isVideoChatAllowed = false }) => {
 
     connection.on("Other_Connected", (UserId, ConnectionId) => {
       dispatch(
-        playerConnected({
-          ConnectionId,
+        playerConnectedAction({
           UserId,
+          ConnectionId,
+          gameState: { ...gameState },
         })
       );
     });
@@ -288,11 +298,12 @@ const MainGame = ({ isVideoChatAllowed = false }) => {
       "Other_Joined",
       (userId, playerImage, userName, connectionId) => {
         dispatch(
-          playerJoin({
+          playerJoinGameAction({
             userId,
             playerImage,
             userName,
             connectionId,
+            gameState: { ...gameState },
           })
         );
       }
@@ -300,7 +311,8 @@ const MainGame = ({ isVideoChatAllowed = false }) => {
 
     connection.on("PassCard", (draggingCards, currentIndex, type) => {
       dispatch(
-        passCard({
+        passCardAction({
+          gameState: { ...gameState },
           draggingCards: draggingCards.map((x) => ({
             Index: x.index,
             Type: x.type,
@@ -315,7 +327,7 @@ const MainGame = ({ isVideoChatAllowed = false }) => {
     });
 
     connection.on("Player_Left", (index, leftId) => {
-      dispatch(playerLeft(index));
+      dispatch(findPlayerLeftIndex({ index, gameState: { ...gameState } }));
     });
 
     connection.on("Kicked_Out", () => {
@@ -325,12 +337,15 @@ const MainGame = ({ isVideoChatAllowed = false }) => {
 
     connection.on("Player_Disconnected", (index) => {
       alert("Player_Disconnected");
-      dispatch(playerDisconnected(index));
+      dispatch(
+        playerDisconnectedAction({ index, gamseState: { ...gameState } })
+      );
     });
 
     connection.on("Bet", (index, amount) => {
       dispatch(
-        bet({
+        betAction({
+          gamseState: { ...gameState },
           Amount: amount,
           Index: index,
         })
@@ -339,9 +354,10 @@ const MainGame = ({ isVideoChatAllowed = false }) => {
 
     connection.on("Take", (index, amount) => {
       dispatch(
-        take({
-          Index: index,
+        takeAction({
+          gamseState: { ...gameState },
           Amount: amount,
+          Index: index,
         })
       );
     });
