@@ -242,6 +242,92 @@ const slice = createSlice({
         "Take"
       );
     },
+
+    // DISCARD
+    discard(state, action) {
+      state.isLoading = false;
+
+      const { Index, selectedCards } = action.payload;
+      state.ActivePlayers[Index].LastActionPerformed =
+        "Discarded " + selectedCards.length + " cards";
+
+      selectedCards.forEach((element) => {
+        if (element.Type === 0) {
+          state.ActivePlayers[Index].PlayerCards = state.ActivePlayers[
+            Index
+          ].PlayerCards.filter((item) => item.Value !== element.Value);
+        } else {
+          state.CommunityCards = state.CommunityCards.filter(
+            (item) => item.Value !== element.Value
+          );
+        }
+      });
+
+      AddStep(
+        state,
+        Index,
+        state.ActivePlayers[Index].LastActionPerformed,
+        "Discard"
+      );
+    },
+  },
+
+  // RETURN TO DECK
+  returnToDeck(state, action) {
+    const { Index, selectedCards } = action.payload;
+
+    state.isLoading = false;
+    state.ActivePlayers[Index].LastActionPerformed =
+      " Returned " + selectedCards.length + " cards";
+
+    selectedCards.forEach((card) => {
+      if (card.Type === 0) {
+        state.ActivePlayers[Index].PlayerCards = state.ActivePlayers[
+          Index
+        ].PlayerCards.filter((obj) => obj.Value !== card.Value);
+      }
+
+      if (card.Type === 1) {
+        state.CommunityCards = state.CommunityCards.filter(
+          (obj) => obj.Value !== card.Value
+        );
+      }
+
+      state.Deck.push(card.Value);
+    });
+
+    AddStep(
+      state,
+      Index,
+      state.ActivePlayers[Index].LastActionPerformed,
+      "ReturnToDeck"
+    );
+  },
+
+  // SHOW
+  show(state, action) {
+    state.isLoading = false;
+    const { selectedCards, Index } = action.payload;
+
+    if (selectedCards.length === 0) {
+      state.ActivePlayers[Index].PlayerCards.forEach(
+        (card) => (card.Presentation = 0)
+      );
+    } else {
+      selectedCards.forEach((card) => {
+        if (card.Type === 0) {
+          let index = state.ActivePlayers[Index].PlayerCards.findIndex(
+            (x) => x.Value === card.Value
+          );
+
+          if (index !== -1) {
+            state.ActivePlayers[Index].PlayerCards[index].Presentation = 0;
+          } else {
+            state.CommunityCards.find((x) => x.Value === card.Value);
+          }
+        }
+      });
+    }
   },
 });
 

@@ -109,3 +109,51 @@ export function takeAction(payload) {
     }
   };
 }
+
+export function discardAction(payload) {
+  return async (dispatch) => {
+    dispatch(actions.startLoading());
+
+    try {
+      dispatch(actions.discard(payload));
+      LogRocket.log(
+        `${payload.Index}th Player discarded ${payload.selectedCards.length} cards`,
+        payload.gameState
+      );
+    } catch (error) {
+      dispatch(actions.hasError(error));
+    }
+  };
+}
+
+export function returnToDeckAction(payload) {
+  return async (dispatch) => {
+    dispatch(actions.startLoading());
+
+    try {
+      dispatch(actions.returnToDeck(payload));
+      LogRocket.log(
+        `${payload.Index}th Player returned ${payload.selectedCards.length} cards to deck`,
+        payload.gameState
+      );
+    } catch (error) {
+      dispatch(actions.hasError(error));
+    }
+  };
+}
+
+export function showAction(payload) {
+  return async (dispatch) => {
+    dispatch(actions.startLoading());
+
+    try {
+      dispatch(actions.show(payload));
+      LogRocket.log(
+        `${payload.Index}th Player showed cards`,
+        payload.gameState
+      );
+    } catch (error) {
+      dispatch(actions.hasError(error));
+    }
+  };
+}
