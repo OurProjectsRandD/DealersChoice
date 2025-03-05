@@ -3,14 +3,14 @@ import ChooseCommunityModal from "../Dialogs/ChooseCommunityModal";
 import { useDispatch, useSelector } from "react-redux";
 import { setDraggingCard } from "../../slice/cardSlice";
 import { PassCards } from "../../common/game/GameControl";
-import { passCard } from "../../slice/gameStateSlice";
+import { passCardAction } from "../../slice";
 
 const PotDiv = () => {
   const [chooseCommunityModalOpen, setChooseCommunityModalOpen] =
     useState(false);
   const [card, setCard] = useState({});
   const dispatch = useDispatch();
-  const gameState = useSelector((state) => state.gameState);
+  const gameState = useSelector((state) => state.newGameState);
   const draggingCard = useSelector((state) => state.card.draggingCard);
   const user = useSelector((state) => state.auth.user);
 
@@ -39,7 +39,7 @@ const PotDiv = () => {
         1,
         () => {
           dispatch(
-            passCard({
+            passCardAction({
               draggingCards: [draggingCard],
               Index: communityIndex,
               type: 1,
@@ -48,7 +48,7 @@ const PotDiv = () => {
         }
       );
     },
-    [dispatch, draggingCard, gameState.GameCode]
+    [dispatch, draggingCard, gameState.GameCode, user.Id]
   );
 
   const AllowDropCommunity = useCallback((ev) => {

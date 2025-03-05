@@ -14,14 +14,14 @@ const LeaveButton = () => {
   const navigator = useNavigate();
   const [myModalLeaveOpen, setMyModalLeaveOpen] = useState(false);
   const meetingAPI = useMeeting({
-    onMeetingLeft: () => { },
+    onMeetingLeft: () => {},
   });
 
   const LeaveEventHandler = useCallback((ev) => {
     setMyModalLeaveOpen(true);
   }, []);
 
-  const gameState = useSelector((state) => state.gameState);
+  const gameState = useSelector((state) => state.newGameState);
   const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
 

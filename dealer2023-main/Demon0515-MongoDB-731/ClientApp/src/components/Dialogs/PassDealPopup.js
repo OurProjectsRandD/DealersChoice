@@ -7,11 +7,11 @@ import DialogTitle from "@mui/material/DialogTitle";
 import { GetUserNameFromPlayerId } from "../../common/game/basic";
 import { useDispatch, useSelector } from "react-redux";
 import { PassDeal } from "../../common/game/GameControl";
-import { passDeal } from "../../slice/gameStateSlice";
+import { passDealAction } from "../../slice";
 
 const PassDealPopUp = (props = { open: false, setOpen: false }) => {
   const dispatch = useDispatch();
-  const gameState = useSelector((state) => state.gameState);
+  const gameState = useSelector((state) => state.newGameState);
   const user = useSelector((state) => state.auth.user);
   const handleClose = useCallback(() => {
     props.setOpen(false);
@@ -20,7 +20,7 @@ const PassDealPopUp = (props = { open: false, setOpen: false }) => {
   const PassDealPlayer = useCallback(
     (dealerId) => {
       PassDeal(user.Id, gameState.GameCode, dealerId, () => {
-        dispatch(passDeal(dealerId));
+        dispatch(passDealAction(dealerId));
       });
     },
     [dispatch, gameState.GameCode, user.Id]

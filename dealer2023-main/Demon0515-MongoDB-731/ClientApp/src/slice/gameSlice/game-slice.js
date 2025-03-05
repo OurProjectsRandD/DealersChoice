@@ -4,6 +4,7 @@ import {
   NextCurrentId,
   OnPlayerAction,
 } from "../../common/game/GameControl";
+import { GetNewDeck } from "../../common/game/CommonGame";
 
 /**
  * @TODO: move all functions dependent on states out of the reducers into the action dispatchers
@@ -227,6 +228,133 @@ const slice = createSlice({
       OnPlayerAction(Index);
     },
 
+    // ADD TO POT
+    addToPot(state, action) {
+      state.isLoading = false;
+
+      state.ActivePlayers[action.payload.Index].PlayerAmount -=
+        action.payload.Amount;
+      state.PotSize += action.payload.Amount;
+      state.ActivePlayers[action.payload.Index].LastActionPerformed =
+        " added " + action.payload.Amount + "$ to pot";
+      AddStep(
+        state,
+        action.payload.Index,
+        "added " + action.payload.Amount + "$ to pot",
+        "AddToPot"
+      );
+    },
+
+    // ANTE
+    ante(state, action) {
+      state.isLoading = false;
+
+      state.ActivePlayers.filter(
+        (player) => !player.IsFolded && !player.IsDisconnected
+      ).forEach((player) => {
+        player.PlayerAmount -= action.payload.Amount;
+        state.PotSize += action.payload.Amount;
+      });
+      state.ActivePlayers[action.payload.Index].LastActionPerformed =
+        "Ante " + action.payload.Amount;
+      AddStep(
+        state,
+        action.payload.Index,
+        "anted " + action.payload.Amount + "$",
+        "Ante"
+      );
+    },
+
+    // CALL
+    call(state, action) {
+      state.isLoading = false;
+
+      const betamount = state.CurrentBet;
+      const currentPlayer = state.ActivePlayers[action.payload];
+      const currentplayerbet = betamount - currentPlayer.CurrentRoundStatus;
+      currentPlayer.CurrentRoundStatus = betamount;
+      const actionMsg = " called with " + currentplayerbet;
+      currentPlayer.PlayerAmount -= currentplayerbet;
+      state.PotSize += currentplayerbet;
+      currentPlayer.LastActionPerformed = actionMsg;
+      AddStep(state, action.payload, actionMsg, "Call");
+      OnPlayerAction(state, action.payload);
+    },
+
+    cancelHand(state, action) {
+      state.isLoading = false;
+
+      state.ActivePlayers.forEach((player) => {
+        if (player.PlayerAmount < 0) state.PotSize += player.PlayerAmount;
+        player.PlayerAmount = 0;
+        player.Balance = 0;
+        player.CurrentRoundStatus = 0;
+        player.PlayerCards = [];
+        player.LastActionPerformed = "";
+        if (!player.IsSitOut) player.IsFolded = false;
+      });
+      state.BetStatus = "New Hand. No bet yet.";
+      state.CurrentBet = 0;
+      state.CommunityCards = [];
+      state.Deck = GetNewDeck();
+      let index = state.ActivePlayers.findIndex(
+        (x) => x.PlayerId === state.DealerId
+      );
+
+      AddStep(state, index, "cancelled hand", "Cancel_Hand");
+      state.GameHand += 1;
+      state.Round = 0;
+      state.HandSteps.push({
+        HandId: state.GameHand,
+        BettingRounds: [],
+      });
+      let dealerIndex = state.ActivePlayers.findIndex(
+        (x) => x.PlayerId === state.DealerId
+      );
+      state.CurrentId = NextCurrentId(state, dealerIndex);
+    },
+
+    check(state, action) {
+      state.isLoading = false;
+
+      state.ActivePlayers[action.payload].LastActionPerformed = " Pass";
+      AddStep(state, action.payload, " pass", "check");
+      OnPlayerAction(state);
+    },
+
+    sitout(state, action) {
+      state.isLoading = false;
+
+      state.ActivePlayers[action.payload].LastActionPerformed = " Sitout";
+      AddStep(state, action.payload, "sitout", "Sitout");
+      state.ActivePlayers[action.payload].IsSitOut = true;
+      state.ActivePlayers[action.payload].IsFolded = true;
+      state.ActivePlayers[action.payload].PlayerCards.forEach(
+        (playerCard) => (playerCard.Presentation = 1)
+      );
+      OnPlayerAction(state);
+    },
+
+    rejoin(state, action) {
+      state.isLoading = false;
+
+      state.ActivePlayers[action.payload].LastActionPerformed = " Rejoin";
+      AddStep(state, action.payload, "rejoined", "Rejoin");
+      state.ActivePlayers[action.payload].IsSitOut = false;
+    },
+
+    fold(state, action) {
+      state.isLoading = false;
+      // console.log("payload =====>", action.payload);
+      state.ActivePlayers[action.payload].LastActionPerformed = " Fold";
+      AddStep(state, action.payload, "folded", "Fold");
+      state.ActivePlayers[action.payload].IsFolded = true;
+      state.ActivePlayers[action.payload].PlayerCards.forEach(
+        (playerCard) => (playerCard.Presentation = 1)
+      );
+      OnPlayerAction(state);
+    },
+
     // TAKE
     take(state, action) {
       state.isLoading = false;
@@ -328,6 +456,114 @@ const slice = createSlice({
         }
       });
     }
+  },
+
+  // END HAND
+  endHand(state, action) {
+    state.isLoading = false;
+    state.IsRoundSettlement = true;
+
+    AddStep(state, -1, "ended hand", "EndHand");
+
+    state.ActivePlayers.forEach((obj) => {
+      obj.PlayerNetStatusFinal = obj.PlayerNetStatusFinal + obj.PlayerAmount;
+      obj.PlayerAmount = 0;
+      obj.Balance = 0;
+      obj.CurrentRoundStatus = 0;
+      obj.LastActionPerformed = "";
+      obj.PlayerCards = [];
+      //if you'r not sitout, set IsFolded as false
+      if (!obj.IsSitOut) obj.IsFolded = false;
+    });
+    state.CommunityCards = [];
+    state.CurrentBet = 0;
+    state.Deck = GetNewDeck();
+    state.GameHand += 1;
+    state.Round = 0;
+    state.HandSteps.push({
+      HandId: state.GameHand,
+      BettingRounds: [],
+    });
+
+    state.BetStatus = "New Hand. No bet yet.";
+    let dealerIndex = state.ActivePlayers.findIndex(
+      (x) => x.PlayerId === state.DealerId
+    );
+    state.CurrentId = NextCurrentId(state, dealerIndex);
+  },
+
+  // END GAME
+  endGame(state, action) {
+    state.isLoading = false;
+    state.IsEnded = true;
+  },
+
+  // TOGGLE CAMERA
+  toggleCamera(state, action) {
+    state.isLoading = false;
+    state.ActivePlayers[action.payload].IsRealTimeChat =
+      !state.ActivePlayers[action.payload].IsRealTimeChat;
+  },
+
+  // HANDLE CAMERA
+  handleCamera(state, action) {
+    state.isLoading = false;
+    state.ActivePlayers[action.payload.index].IsRealTimeChat =
+      action.payload.value;
+  },
+
+  // DEAL CARD
+  handleMic(state, action) {
+    state.isLoading = false;
+    state.ActivePlayers[action.payload.index].IsRealTimeChatForMic =
+      action.payload.value;
+  },
+
+  // DEAL CARD
+  dealCards(state, action) {
+    state.isLoading = false;
+
+    action.payload.dealCards.forEach((card) => {
+      state.Deck = state.Deck.filter((x) => x !== card.Value);
+      if (card.Type === 0) {
+        if (!state.ActivePlayers[card.Index].IsFolded)
+          state.ActivePlayers[card.Index].PlayerCards.push({
+            Value: card.Value,
+            Presentation: card.Presentation,
+          });
+      } else {
+        state.CommunityCards.push({
+          Value: card.Value,
+          Presentation: card.Presentation,
+          CommunityIndex: card.Index,
+        });
+      }
+    });
+    let dealerIndex = state.ActivePlayers.findIndex(
+      (x) => x.PlayerId === state.DealerId
+    );
+    state.ActivePlayers[dealerIndex].LastActionPerformed =
+      action.payload.LastActionPerformed;
+    AddStep(state, dealerIndex, action.payload.LastActionPerformed, "Deal");
+  },
+
+  // PASS DEAL
+  passDeal(state, action) {
+    state.isLoading = false;
+
+    state.DealerId = action.payload;
+    if (state.Deck.length === 52) {
+      let newDealerIndex = state.ActivePlayers.findIndex(
+        (x) => x.PlayerId === state.DealerId
+      );
+      state.CurrentId = NextCurrentId(state, newDealerIndex);
+    }
+  },
+
+  // TOGGLE LOCK
+  toggleLock(state, action) {
+    state.isLoading = false;
+    state.IsLocked = !state.IsLocked;
   },
 });
 

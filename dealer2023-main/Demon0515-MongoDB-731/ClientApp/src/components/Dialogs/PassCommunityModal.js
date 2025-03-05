@@ -13,7 +13,7 @@ const PassCommunityModal = (
     dealCardToCommunity: () => {},
   }
 ) => {
-  const gameState = useSelector((state) => state.gameState);
+  const gameState = useSelector((state) => state.newGameState);
 
   const handleClose = useCallback(() => {
     props.setOpen(false);

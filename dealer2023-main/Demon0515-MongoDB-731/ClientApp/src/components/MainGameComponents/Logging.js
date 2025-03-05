@@ -3,7 +3,7 @@ import { capitalizeFirstLetter } from "../../common/game/basic";
 import { useSelector } from "react-redux";
 
 const Logging = () => {
-  const gameState = useSelector((state) => state.gameState);
+  const gameState = useSelector((state) => state.newGameState);
 
   return (
     <div className="bg-black text-light my-top mb-2">

@@ -6,12 +6,13 @@ import {
   Endgame,
   decreaseVideoMinutes,
 } from "../../common/game/GameControl";
-import { endGame } from "../../slice/gameStateSlice";
 import SettlementModalEndGame from "../Dialogs/SettlementModalEndGame";
 import { setVideoTime } from "../../slice/authSlice";
+import { endGameAction } from "../../slice";
+
 const GameOverButton = () => {
   const dispatch = useDispatch();
-  const gameState = useSelector((state) => state.gameState);
+  const gameState = useSelector((state) => state.newGameState);
   const user = useSelector((state) => state.auth.user);
 
   const currentIndex = useMemo(
@@ -34,7 +35,7 @@ const GameOverButton = () => {
       }
 
       Endgame(user.Id, gameState.GameCode, currentIndex, () => {
-        dispatch(endGame());
+        dispatch(endGameAction());
         setSettlementModalEndGameOpen(true);
         // Show Summary
         if (meetingAPI !== undefined) {
@@ -54,7 +55,10 @@ const GameOverButton = () => {
   if (user.Id === gameState.GameCreatorId)
     return (
       <>
-        <button className="btn BackToMenu me-2 mt-2" onClick={BackToMenuEventHandler}>
+        <button
+          className="btn BackToMenu me-2 mt-2"
+          onClick={BackToMenuEventHandler}
+        >
           Game Over
         </button>
         <SettlementModalEndGame

@@ -23,33 +23,6 @@ import { authToken } from "../../util/VideoSDK";
 import VideoMinutesRunOutNotification from "../../components/Dialogs/VideoMinutesRunOutNotfication";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  addToPot,
-  ante,
-  bet,
-  call,
-  cancelHand,
-  check,
-  dealCards,
-  discard,
-  endGame,
-  endHand,
-  fold,
-  handleCamera,
-  passCard,
-  passDeal,
-  playerConnected,
-  playerDisconnected,
-  playerJoin,
-  playerLeft,
-  rejoin,
-  returnToDeck,
-  setGameState,
-  show,
-  sitout,
-  take,
-  toggleCamera,
-} from "../../slice/gameStateSlice";
-import {
   decreaseVideoMinutes,
   startConnectionWithGameCodeAndUserId,
   decreaseVideoMinutesRuntime,
@@ -58,13 +31,28 @@ import SettlementModalEndGame from "../../components/Dialogs/SettlementModalEndG
 import { setMeetingJoined, setVideoTime } from "../../slice/authSlice";
 import { SettlementEndGame } from "../../components/Settlements/SettlementEndGame";
 import {
+  addToPotAction,
+  anteAction,
   betAction,
+  callAction,
+  cancelHandAction,
+  checkAction,
+  dealCardsAction,
+  discardAction,
+  endGameAction,
+  endHandAction,
   findPlayerLeftIndex,
+  foldAction,
   passCardAction,
+  passDealAction,
   playerConnectedAction,
   playerDisconnectedAction,
   playerJoinGameAction,
+  rejoinAction,
+  returnToDeckAction,
   setNewGameState,
+  showAction,
+  sitOutAction,
   takeAction,
 } from "../../slice";
 
@@ -363,12 +351,12 @@ const MainGame = ({ isVideoChatAllowed = false }) => {
     });
 
     connection.on("Call", (index) => {
-      dispatch(call(index));
+      dispatch(callAction(index));
     });
 
     connection.on("AddToPot", (index, amount) => {
       dispatch(
-        addToPot({
+        addToPotAction({
           Index: index,
           Amount: amount,
         })
@@ -377,7 +365,7 @@ const MainGame = ({ isVideoChatAllowed = false }) => {
 
     connection.on("Ante", (index, amount) => {
       dispatch(
-        ante({
+        anteAction({
           Index: index,
           Amount: amount,
         })
@@ -385,16 +373,16 @@ const MainGame = ({ isVideoChatAllowed = false }) => {
     });
 
     connection.on("Cancel_Hand", () => {
-      dispatch(cancelHand());
+      dispatch(cancelHandAction());
     });
 
     connection.on("Check", (index) => {
-      dispatch(check(index));
+      dispatch(checkAction(index));
     });
 
     connection.on("Discard", (draggingCards, index) => {
       dispatch(
-        discard({
+        discardAction({
           selectedCards: draggingCards.map((x) => ({
             Index: x.index,
             Type: x.type,
@@ -409,7 +397,7 @@ const MainGame = ({ isVideoChatAllowed = false }) => {
 
     connection.on("ReturnToDeck", (draggingCards, index) => {
       dispatch(
-        returnToDeck({
+        returnToDeckAction({
           selectedCards: draggingCards.map((x) => ({
             Index: x.index,
             Type: x.type,
@@ -424,7 +412,7 @@ const MainGame = ({ isVideoChatAllowed = false }) => {
 
     connection.on("Show", (draggingCards, index) => {
       dispatch(
-        show({
+        showAction({
           selectedCards: draggingCards.map((x) => ({
             Index: x.index,
             Type: x.type,
@@ -438,23 +426,23 @@ const MainGame = ({ isVideoChatAllowed = false }) => {
     });
 
     connection.on("End_Hand", (index) => {
-      dispatch(endHand(index));
+      dispatch(endHandAction(index));
     });
 
     connection.on("Fold", (index) => {
-      dispatch(fold(index));
+      dispatch(foldAction(index));
     });
 
     connection.on("Sitout", (index) => {
-      dispatch(sitout(index));
+      dispatch(sitOutAction(index));
     });
 
     connection.on("Rejoin", (index) => {
-      dispatch(rejoin(index));
+      dispatch(rejoinAction(index));
     });
 
     connection.on("Endgame", (index) => {
-      dispatch(endGame(index));
+      dispatch(endGameAction(index));
       setSettlementModalEndGameOpen(true);
     });
 
@@ -468,7 +456,7 @@ const MainGame = ({ isVideoChatAllowed = false }) => {
 
     connection.on("DealCards", (DealCards, action) => {
       dispatch(
-        dealCards({
+        dealCardsAction({
           dealCards: DealCards.map((x) => ({
             Index: x.index,
             Type: x.type,
@@ -482,7 +470,7 @@ const MainGame = ({ isVideoChatAllowed = false }) => {
     });
 
     connection.on("PassDeal", (dealerId) => {
-      dispatch(passDeal(dealerId));
+      dispatch(passDealAction(dealerId));
     });
     return () => {
       connection.off("Other_Connected");

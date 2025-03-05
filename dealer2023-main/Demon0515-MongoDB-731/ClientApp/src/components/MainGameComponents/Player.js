@@ -12,7 +12,7 @@ import ReactPlayer from "react-player";
 import { useParticipant } from "@videosdk.live/react-sdk";
 import { useDispatch, useSelector } from "react-redux";
 import { PassCards, KickPlayer } from "../../common/game/GameControl";
-import { passCard, playerLeft } from "../../slice/gameStateSlice";
+import { passCardAction, playerLeftAction } from "../../slice";
 
 const ParticipantView = ({ participantId }) => {
   const micRef = useRef(null);
@@ -58,7 +58,7 @@ const ParticipantView = ({ participantId }) => {
           playing={true}
           url={videoStream}
           className="react-player"
-          style={{ height: "100%", width: "100%" }} 
+          style={{ height: "100%", width: "100%" }}
           onError={(err) => {
             console.log(err, "participant video error");
           }}
@@ -74,7 +74,7 @@ const Player = ({ ptr }) => {
   const [toggleRemoveButtonVisible, setToggleRemoveButtonVisible] =
     useState(false);
 
-  const gameState = useSelector((state) => state.gameState);
+  const gameState = useSelector((state) => state.newGameState);
   const user = useSelector((state) => state.auth.user);
   const draggingCard = useSelector((state) => state.card.draggingCard);
   const dispatch = useDispatch();
@@ -112,7 +112,7 @@ const Player = ({ ptr }) => {
         () => {
           //change state if successful
           dispatch(
-            passCard({
+            passCardAction({
               draggingCards: [draggingCard],
               Index: PlayerIndex,
               Type: 0,
@@ -121,7 +121,7 @@ const Player = ({ ptr }) => {
         }
       );
     },
-    [PlayerIndex, dispatch, draggingCard, gameState.GameCode]
+    [PlayerIndex, dispatch, draggingCard, gameState.GameCode, user.Id]
   );
 
   const AllowDrop = useCallback((ev) => {
@@ -137,7 +137,7 @@ const Player = ({ ptr }) => {
   const RemovePlayer = useCallback(
     (Player) => {
       KickPlayer(gameState.GameCode, PlayerIndex, () => {
-        dispatch(playerLeft(PlayerIndex));
+        dispatch(playerLeftAction(PlayerIndex));
         LogRocket.log("Kicked Player " + Player.PlayerName, {
           GameCode: gameState.GameCode,
           GameHash: gameState,
@@ -165,13 +165,16 @@ const Player = ({ ptr }) => {
       <div>
         <div className="row m-0 p-1">
           <div
-            className={`PlayerName col${gameState.DealerId === Player.PlayerId ? " green" : ""
-              }`}
+            className={`PlayerName col${
+              gameState.DealerId === Player.PlayerId ? " green" : ""
+            }`}
             onClick={() =>
               setToggleRemoveButtonVisible(!toggleRemoveButtonVisible)
             }
           >
-            <div className="PlayerDealer"><p>{Player.PlayerName}</p></div>
+            <div className="PlayerDealer">
+              <p>{Player.PlayerName}</p>
+            </div>
             {gameState.GameCreatorId === user.Id && (
               <span
                 className="PlayerStatusNet col-auto my-auto btn"

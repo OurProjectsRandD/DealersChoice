@@ -1,11 +1,11 @@
 import React, { useCallback, useMemo } from "react";
 import { Ante } from "../../common/game/GameControl";
 import { useDispatch, useSelector } from "react-redux";
-import { ante } from "../../slice/gameStateSlice";
+import { anteAction } from "../../slice";
 
 const AnteButton = ({ txtAnteRef }) => {
   const dispatch = useDispatch();
-  const gameState = useSelector((state) => state.gameState);
+  const gameState = useSelector((state) => state.newGameState);
   const user = useSelector((state) => state.auth.user);
 
   const currentIndex = useMemo(
@@ -35,7 +35,7 @@ const AnteButton = ({ txtAnteRef }) => {
         }
         Ante(user.Id, gameState.GameCode, currentIndex, anteValue, () => {
           dispatch(
-            ante({
+            anteAction({
               Index: currentIndex,
               Amount: anteValue,
               GameCode: gameState.GameCode,
@@ -50,7 +50,15 @@ const AnteButton = ({ txtAnteRef }) => {
         alert("No Active Player");
       }
     },
-    [currentIndex, gameState, txtAnteRef]
+    [
+      currentIndex,
+      dispatch,
+      gameState.ActivePlayers,
+      gameState.DealerId,
+      gameState.GameCode,
+      txtAnteRef,
+      user.Id,
+    ]
   );
   return (
     <button className="btn btn Ante mt-0" onClick={AnteEventHandler}>

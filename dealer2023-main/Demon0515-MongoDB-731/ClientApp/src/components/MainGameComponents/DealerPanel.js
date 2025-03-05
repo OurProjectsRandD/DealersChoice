@@ -10,7 +10,7 @@ const DealerPanel = () => {
   const [passCommunityModalOpen, setPassCommunityModalOpen] = useState(false);
   const [passDealPopUpOpen, setPassDealPopUpOpen] = useState(false);
   const dispatch = useDispatch();
-  const gameState = useSelector((state) => state.gameState);
+  const gameState = useSelector((state) => state.newGameState);
   const user = useSelector((state) => state.auth.user);
 
   const txtAnteRef = useRef(null);
@@ -45,7 +45,7 @@ const DealerPanel = () => {
             DealValueRef.current.value = "";
           }
         );
-      } catch (err) { }
+      } catch (err) {}
     },
     [cardDealType, gameState.GameCode, user.Id]
   );

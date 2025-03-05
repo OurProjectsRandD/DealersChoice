@@ -6,7 +6,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { useDispatch, useSelector } from "react-redux";
 import { PassCards, ReturnToDeck, Show } from "../../common/game/GameControl";
-import { passCard, returnToDeck, show } from "../../slice/gameStateSlice";
+import { passCardAction, returnToDeckAction, showAction } from "../../slice";
 
 const ChooseCommunityModal = (
   props = {
@@ -18,7 +18,7 @@ const ChooseCommunityModal = (
   }
 ) => {
   const dispatch = useDispatch();
-  const gameState = useSelector((state) => state.gameState);
+  const gameState = useSelector((state) => state.newGameState);
   const user = useSelector((state) => state.auth.user);
 
   const cardImage = useMemo(() => {
@@ -46,7 +46,7 @@ const ChooseCommunityModal = (
       0,
       () => {
         dispatch(
-          passCard({
+          passCardAction({
             draggingCards: [props.Card],
             Index: currentIndex,
             Type: 0,
@@ -55,7 +55,7 @@ const ChooseCommunityModal = (
         props.setOpen(false);
       }
     );
-  }, [currentIndex, dispatch, gameState, props.Card, user.Id]);
+  }, [currentIndex, dispatch, gameState.GameCode, props, user.Id]);
 
   const moveToDeckHandler = useCallback(() => {
     ReturnToDeck(
@@ -65,7 +65,7 @@ const ChooseCommunityModal = (
       [props.Card],
       () => {
         dispatch(
-          returnToDeck({
+          returnToDeckAction({
             Index: currentIndex,
             selectedCards: [props.Card],
           })
@@ -73,19 +73,19 @@ const ChooseCommunityModal = (
         props.setOpen(false);
       }
     );
-  }, [currentIndex, dispatch, gameState.GameCode, props.Card, user.Id]);
+  }, [currentIndex, dispatch, gameState.GameCode, props, user.Id]);
 
   const showHandler = useCallback(() => {
     Show(user.Id, gameState.GameCode, currentIndex, [props.Card], 1, () => {
       dispatch(
-        show({
+        showAction({
           selectedCards: [props.Card],
           Index: currentIndex,
         })
       );
       props.setOpen(false);
     });
-  }, [currentIndex, dispatch, gameState.GameCode, props.Card, user.Id]);
+  }, [currentIndex, dispatch, gameState.GameCode, props, user.Id]);
 
   return (
     <Dialog

@@ -13,14 +13,13 @@ import DiscardButton from "../Buttons/DiscardButton";
 import ReturnToDeckButton from "../Buttons/ReturnToDeckButton";
 import { useDispatch, useSelector } from "react-redux";
 import { PassCards } from "../../common/game/GameControl";
-import { passCard } from "../../slice/gameStateSlice";
 import DefaultPlayer from "../../components/MainGameComponents/DefaultPlayer";
+import { passCardAction } from "../../slice";
 
 const CurrentPlayerDiv = ({ gameState }) => {
   const dispatch = useDispatch();
 
   const draggingCard = useSelector((state) => state.card.draggingCard);
-  const selectedCards = useSelector((state) => state.card.selectedCards);
   const user = useSelector((state) => state.auth.user);
   const [isVideoOn, setIsVideoOn] = useState(false);
 
@@ -69,7 +68,7 @@ const CurrentPlayerDiv = ({ gameState }) => {
         0,
         () => {
           dispatch(
-            passCard({
+            passCardAction({
               draggingCards: [draggingCard],
               Index: currentIndex,
               Type: 0,

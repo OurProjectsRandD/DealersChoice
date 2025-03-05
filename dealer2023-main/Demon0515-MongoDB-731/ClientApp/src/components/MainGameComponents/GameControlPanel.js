@@ -12,7 +12,7 @@ import { useSelector } from "react-redux";
 import StartVideo from "../Buttons/StartVideoButton";
 
 const GameControlPanel = ({ isMeetingJoined }) => {
-  const gameState = useSelector((state) => state.gameState);
+  const gameState = useSelector((state) => state.newGameState);
 
   return (
     <>

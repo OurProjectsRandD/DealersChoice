@@ -12,7 +12,7 @@ import { buyTokens } from "../../slice/authSlice";
 
 const VideoMinutesRunOutNotification = ({ open, setOpen }) => {
   const meetingAPI = useMeeting();
-  const gameState = useSelector((state) => state.gameState);
+  const gameState = useSelector((state) => state.newGameState);
   const user = useSelector((state) => state.auth.user);
   const [purchaseModalOpen, setPurchaseModalOpen] = useState(false);
   const dispatch = useDispatch();

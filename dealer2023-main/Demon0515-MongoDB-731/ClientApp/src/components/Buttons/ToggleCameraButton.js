@@ -4,15 +4,24 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   ToggleCamera,
   checkIfJoinedMeeting,
-  ToggleMic
+  ToggleMic,
 } from "../../common/game/GameControl";
-import { toggleCamera, handleCamera, handleMic, toggleMic, toggleMicforrefresh } from "../../slice/gameStateSlice";
-import { setCameraStatus, setCameraStatusoff } from "../../slice/cameraStatusSlice";
+import {
+  toggleCamera,
+  handleCamera,
+  handleMic,
+  toggleMic,
+  toggleMicforrefresh,
+} from "../../slice/gameStateSlice";
+import {
+  setCameraStatus,
+  setCameraStatusoff,
+} from "../../slice/cameraStatusSlice";
 
 const ToggleCameraButton = () => {
   const meetingAPI = useMeeting();
   const dispatch = useDispatch();
-  const gameState = useSelector((state) => state.gameState);
+  const gameState = useSelector((state) => state.newGameState);
   const isMeetingJoined = useSelector((state) => state.auth.isMeetingJoined);
   const user = useSelector((state) => state.auth.user);
   const isCameraOn = useSelector((state) => state.cameraStatus.isCameraOn);
@@ -33,36 +42,42 @@ const ToggleCameraButton = () => {
       meetingAPI.enableWebcam();
       meetingAPI.unmuteMic();
 
-      ToggleCamera(user.Id, gameState.GameCode, currentIndex,true, () => {
-        console.log("useEffect first time only for camera ", currentPlayer.IsRealTimeChat);
+      ToggleCamera(user.Id, gameState.GameCode, currentIndex, true, () => {
+        console.log(
+          "useEffect first time only for camera ",
+          currentPlayer.IsRealTimeChat
+        );
         dispatch(handleCamera({ index: currentIndex, value: true }));
       });
 
       ToggleMic(user.Id, gameState.GameCode, currentIndex, true, () => {
-        console.log("useEffect first time only for mic ", currentPlayer.IsRealTimeChatForMic);
+        console.log(
+          "useEffect first time only for mic ",
+          currentPlayer.IsRealTimeChatForMic
+        );
         dispatch(handleMic({ index: currentIndex, value: true }));
       });
     }
-
   }, []);
 
   // console.log(  "user name is ==>",currentIndex, currentPlayer.PlayerName, " check mic ", currentPlayer.IsRealTimeChatForMic, currentPlayer);
 
-
   const handleWebCamera = (status) => {
     if (status && !currentPlayer.IsRealTimeChat) {
-      console.log("check status and DB camera value ==>  camera off, need to On");
+      console.log(
+        "check status and DB camera value ==>  camera off, need to On"
+      );
       meetingAPI.enableWebcam();
     } else {
       console.log("Camera Off");
       meetingAPI.disableWebcam();
     }
 
-    ToggleCamera(user.Id, gameState.GameCode, currentIndex,status,() => {
+    ToggleCamera(user.Id, gameState.GameCode, currentIndex, status, () => {
       console.log("Toggle  01 ");
       dispatch(handleCamera({ index: currentIndex, value: status }));
     });
-  }
+  };
 
   const handleWebMic = (status) => {
     if (status && !currentPlayer.IsRealTimeChatForMic) {
@@ -71,30 +86,26 @@ const ToggleCameraButton = () => {
     } else {
       meetingAPI.muteMic();
       console.log("Mic Off");
-
     }
 
-    ToggleMic(user.Id, gameState.GameCode, currentIndex,status, () => {
+    ToggleMic(user.Id, gameState.GameCode, currentIndex, status, () => {
       dispatch(handleMic({ index: currentIndex, value: status }));
     });
-  }
-
-
+  };
 
   if (!isMeetingJoined) return <></>;
 
   if (!currentPlayer.IsRealTimeChat)
     return (
       <>
-
-        <button 
+        <button
           className="btn ml-1 mt-1 stencil"
           style={{ color: "white" }}
           onClick={() => handleWebCamera(true)}
         >
           <i className="bi bi-camera-video-off h4"></i>
         </button>
-        
+
         {currentPlayer.IsRealTimeChatForMic ? (
           // Render this if IsRealTimeChatForMic is true
           <button
@@ -106,7 +117,7 @@ const ToggleCameraButton = () => {
           </button>
         ) : (
           // Render this if IsRealTimeChatForMic is false
-          <button 
+          <button
             className="btn ml-1 mt-1 stencil"
             style={{ color: "white" }}
             onClick={() => handleWebMic(true)}
@@ -138,7 +149,7 @@ const ToggleCameraButton = () => {
           </button>
         ) : (
           // Render this if IsRealTimeChatForMic is false
-          <button 
+          <button
             className="btn ml-1 mt-1 stencil"
             style={{ color: "white" }}
             onClick={() => handleWebMic(true)}
@@ -146,8 +157,6 @@ const ToggleCameraButton = () => {
             <i className="bi bi-mic-mute-fill h4"></i>
           </button>
         )}
-
-
       </>
     );
 };
