@@ -511,6 +511,7 @@ const MainGame = ({ isVideoChatAllowed = false }) => {
   );
 
   const totalPlayers = activePlayers.length;
+  // console.log("total players =====", totalPlayers);
 
   if (!isLoading)
     return (

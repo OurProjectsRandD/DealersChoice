@@ -1,11 +1,11 @@
 import React, { useCallback, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AddToPot } from "../../common/game/GameControl";
-import { addToPot } from "../../slice/gameStateSlice";
+import { addToPotAction } from "../../slice";
 
 const AddToPotButton = ({ BetTakeValueRef }) => {
   const dispatch = useDispatch();
-  const gameState = useSelector((state) => state.gameState);
+  const gameState = useSelector((state) => state.newGameState);
   const user = useSelector((state) => state.auth.user);
 
   const currentIndex = useMemo(
@@ -31,7 +31,7 @@ const AddToPotButton = ({ BetTakeValueRef }) => {
         } else {
           AddToPot(user.Id, gameState.GameCode, currentIndex, betamount, () => {
             dispatch(
-              addToPot({
+              addToPotAction({
                 GameCode: gameState.GameCode,
                 Index: currentIndex,
                 Amount: betamount,

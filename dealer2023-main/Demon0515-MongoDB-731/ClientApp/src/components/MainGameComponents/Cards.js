@@ -6,7 +6,7 @@ const Cards = ({ playerIndex, obj, isCurrent = false }) => {
   const dispatch = useDispatch();
   const selectedCards = useSelector((state) => state.card.selectedCards);
   const user = useSelector((state) => state.auth.user);
-  const gameState = useSelector((state) => state.gameState);
+  const gameState = useSelector((state) => state.newGameState);
   const getCardImage = useCallback((obj) => {
     return obj && obj.Value && obj.Value.length === 3
       ? obj.Value[2] + obj.Value[0] + obj.Value[1]

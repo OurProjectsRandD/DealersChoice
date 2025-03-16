@@ -1,12 +1,12 @@
 import React, { useCallback, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ReturnToDeck } from "../../common/game/GameControl";
-import { returnToDeck } from "../../slice/gameStateSlice";
 import { setSelectedCards } from "../../slice/cardSlice";
+import { returnToDeckAction } from "../../slice";
 
 const ReturnToDeckButton = () => {
   const dispatch = useDispatch();
-  const gameState = useSelector((state) => state.gameState);
+  const gameState = useSelector((state) => state.newGameState);
   const selectedCards = useSelector((state) => state.card.selectedCards);
   const user = useSelector((state) => state.auth.user);
 
@@ -24,7 +24,7 @@ const ReturnToDeckButton = () => {
         selectedCards,
         () => {
           dispatch(
-            returnToDeck({
+            returnToDeckAction({
               selectedCards,
               Index: currentIndex,
             })

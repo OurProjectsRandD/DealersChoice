@@ -1,11 +1,11 @@
 import React, { useCallback, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Check } from "../../common/game/GameControl";
-import { check } from "../../slice/gameStateSlice";
+import { checkAction } from "../../slice";
 
 const CheckButton = () => {
   const dispatch = useDispatch();
-  const gameState = useSelector((state) => state.gameState);
+  const gameState = useSelector((state) => state.newGameState);
   const user = useSelector((state) => state.auth.user);
 
   const currentIndex = useMemo(
@@ -21,7 +21,7 @@ const CheckButton = () => {
   const CheckEventHandler = useCallback(
     (ev) => {
       Check(user.Id, gameState.GameCode, currentIndex, () => {
-        dispatch(check(currentIndex));
+        dispatch(checkAction(currentIndex));
       });
     },
     [currentIndex, dispatch, gameState, user]
@@ -32,7 +32,10 @@ const CheckButton = () => {
     gameState.CurrentBet === 0
   ) {
     return (
-      <button className="btn Pass mt-1 me-1 me-md-0" onClick={CheckEventHandler}>
+      <button
+        className="btn Pass mt-1 me-1 me-md-0"
+        onClick={CheckEventHandler}
+      >
         Check
       </button>
     );

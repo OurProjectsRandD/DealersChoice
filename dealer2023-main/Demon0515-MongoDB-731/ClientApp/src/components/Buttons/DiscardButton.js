@@ -2,12 +2,12 @@ import React, { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useMemo } from "react";
 import { Discard } from "../../common/game/GameControl";
-import { discard } from "../../slice/gameStateSlice";
 import { setSelectedCards } from "../../slice/cardSlice";
+import { discardAction } from "../../slice";
 
 const DiscardButton = () => {
   const dispatch = useDispatch();
-  const gameState = useSelector((state) => state.gameState);
+  const gameState = useSelector((state) => state.newGameState);
   const selectedCards = useSelector((state) => state.card.selectedCards);
   const user = useSelector((state) => state.auth.user);
 
@@ -19,7 +19,7 @@ const DiscardButton = () => {
   const DiscardEventHandler = useCallback(() => {
     Discard(user.Id, gameState.GameCode, currentIndex, selectedCards, () => {
       dispatch(
-        discard({
+        discardAction({
           selectedCards,
           Index: currentIndex,
         })

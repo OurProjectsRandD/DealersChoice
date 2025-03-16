@@ -7,7 +7,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import { useDispatch, useSelector } from "react-redux";
 import { PassCards } from "../../common/game/GameControl";
 import { setSelectedCards } from "../../slice/cardSlice";
-import { passCard } from "../../slice/gameStateSlice";
+import { passCardAction } from "../../slice";
 
 const PassCardModal = (
   props = {
@@ -16,17 +16,19 @@ const PassCardModal = (
   }
 ) => {
   const user = useSelector((state) => state.auth.user);
-  const gameState = useSelector((state) => state.gameState);
+  const gameState = useSelector((state) => state.newGameState);
   const selectedCards = useSelector((state) => state.card.selectedCards);
   const dispatch = useDispatch();
+
   const handleClose = useCallback(() => {
     props.setOpen(false);
   }, [props]);
+
   const handlePassCard = useCallback(
     (index, type) => {
       PassCards(user.Id, gameState.GameCode, selectedCards, index, type, () => {
         dispatch(
-          passCard({
+          passCardAction({
             draggingCards: selectedCards,
             Index: index,
             Type: type,

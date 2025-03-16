@@ -52,7 +52,15 @@ const LeaveButton = () => {
       });
       navigator("/");
     },
-    [currentIndex, gameState, meetingAPI, user.Id]
+    [
+      currentIndex,
+      dispatch,
+      gameState.GameCode,
+      gameState.GameCreatorId,
+      meetingAPI,
+      navigator,
+      user.Id,
+    ]
   );
 
   return (

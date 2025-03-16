@@ -1,11 +1,11 @@
 import React, { useCallback, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Bet } from "../../common/game/GameControl";
-import { bet } from "../../slice/gameStateSlice";
+import { betAction } from "../../slice";
 
 const BetButton = ({ BetTakeValueRef }) => {
   const dispatch = useDispatch();
-  const gameState = useSelector((state) => state.gameState);
+  const gameState = useSelector((state) => state.newGameState);
   const user = useSelector((state) => state.auth.user);
 
   const currentIndex = useMemo(
@@ -51,7 +51,7 @@ const BetButton = ({ BetTakeValueRef }) => {
         // if betamount is suitable.
         else {
           Bet(user.Id, gameState.GameCode, currentIndex, betamount, () => {
-            dispatch(bet({ Index: currentIndex, Amount: betamount }));
+            dispatch(betAction({ Index: currentIndex, Amount: betamount }));
           });
         }
 

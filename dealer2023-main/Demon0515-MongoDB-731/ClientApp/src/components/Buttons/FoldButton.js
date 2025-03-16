@@ -1,11 +1,11 @@
 import React, { useCallback, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Fold } from "../../common/game/GameControl";
-import { fold } from "../../slice/gameStateSlice";
+import { foldAction } from "../../slice";
 
 const FoldButton = () => {
   const dispatch = useDispatch();
-  const gameState = useSelector((state) => state.gameState);
+  const gameState = useSelector((state) => state.newGameState);
   const user = useSelector((state) => state.auth.user);
 
   const currentIndex = useMemo(
@@ -22,7 +22,7 @@ const FoldButton = () => {
     (ev) => {
       console.log("event blablblbl:", currentIndex);
       Fold(user.Id, gameState.GameCode, currentIndex, () => {
-        dispatch(fold(currentIndex));
+        dispatch(foldAction(currentIndex));
       });
     },
     [currentIndex, dispatch, gameState, user]

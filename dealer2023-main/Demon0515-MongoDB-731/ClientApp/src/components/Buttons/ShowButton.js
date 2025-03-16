@@ -1,11 +1,11 @@
 import React, { useCallback, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Show } from "../../common/game/GameControl";
-import { show } from "../../slice/gameStateSlice";
 import { setSelectedCards } from "../../slice/cardSlice";
+import { showAction } from "../../slice";
 const ShowButton = () => {
   const dispatch = useDispatch();
-  const gameState = useSelector((state) => state.gameState);
+  const gameState = useSelector((state) => state.newGameState);
   const selectedCards = useSelector((state) => state.card.selectedCards);
   const user = useSelector((state) => state.auth.user);
 
@@ -23,7 +23,7 @@ const ShowButton = () => {
     (ev) => {
       Show(user.Id, gameState.GameCode, currentIndex, selectedCards, 0, () => {
         dispatch(
-          show({
+          showAction({
             Index: currentIndex,
             selectedCards: selectedCards,
           })

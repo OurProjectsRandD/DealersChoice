@@ -1,11 +1,11 @@
 import React, { useCallback, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { call } from "../../slice/gameStateSlice";
 import { Call } from "../../common/game/GameControl";
+import { callAction } from "../../slice";
 
 const CallButton = ({ CurrentPlayer, gameHash, Sno, OnPlayerAction }) => {
   const dispatch = useDispatch();
-  const gameState = useSelector((state) => state.gameState);
+  const gameState = useSelector((state) => state.newGameState);
   const user = useSelector((state) => state.auth.user);
 
   const currentIndex = useMemo(
@@ -25,7 +25,7 @@ const CallButton = ({ CurrentPlayer, gameHash, Sno, OnPlayerAction }) => {
         alert("Cannot call on bet - 0");
       } else {
         Call(user.Id, gameState.GameCode, currentIndex, () => {
-          dispatch(call(currentIndex));
+          dispatch(callAction(currentIndex));
         });
       }
     },
