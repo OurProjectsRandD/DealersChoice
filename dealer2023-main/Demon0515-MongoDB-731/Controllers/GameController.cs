@@ -169,6 +169,7 @@ namespace PersonalizedCardGame.Controllers
             }
         }
 
+        //update
         [HttpPost]
         [HttpPost]
         public async Task<GameHash?> JoinGame([FromBody] GameControllerRequestModel model)
