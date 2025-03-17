@@ -42,27 +42,34 @@ const DealerPanel = () => {
           cardDealType,
           () => {
             setPassCommunityModalOpen(false);
-            DealValueRef.current.value = "";
+            // DealValueRef.current.value = "";
+            DealValueRef.current.value = null;
           }
         );
-      } catch (err) {}
+      } catch (err) {
+        console.log("error dealing card to player = ", err);
+      }
     },
     [cardDealType, gameState.GameCode, user.Id]
   );
 
   const daelCardToCommunity = useCallback(
     (communityIndex) => {
-      DealCards(
-        user.Id,
-        gameState.GameCode,
-        DealValueRef.current.value,
-        communityIndex,
-        1,
-        cardDealType,
-        () => {
-          setPassCommunityModalOpen(false);
-        }
-      );
+      try {
+        DealCards(
+          user.Id,
+          gameState.GameCode,
+          DealValueRef.current.value,
+          communityIndex,
+          1,
+          cardDealType,
+          () => {
+            setPassCommunityModalOpen(false);
+          }
+        );
+      } catch (err) {
+        console.log("error dealing card to community = ", err);
+      }
     },
     [cardDealType, gameState.GameCode, user.Id]
   );
@@ -91,6 +98,7 @@ const DealerPanel = () => {
               className="p-0"
               ref={DealValueRef}
               autoComplete="off"
+              inputMode="numeric"
             />
             <span>Cards</span>
           </div>

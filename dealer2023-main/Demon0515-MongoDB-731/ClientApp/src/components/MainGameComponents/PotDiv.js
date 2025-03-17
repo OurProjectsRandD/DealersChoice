@@ -43,6 +43,7 @@ const PotDiv = () => {
               draggingCards: [draggingCard],
               Index: communityIndex,
               type: 1,
+              gameState,
             })
           );
         }

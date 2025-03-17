@@ -32,6 +32,7 @@ const PassCardModal = (
             draggingCards: selectedCards,
             Index: index,
             Type: type,
+            gameState,
           })
         );
       });

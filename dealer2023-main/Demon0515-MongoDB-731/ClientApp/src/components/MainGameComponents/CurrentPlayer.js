@@ -72,12 +72,13 @@ const CurrentPlayerDiv = ({ gameState }) => {
               draggingCards: [draggingCard],
               Index: currentIndex,
               Type: 0,
+              gameState,
             })
           );
         }
       );
     },
-    [currentIndex, dispatch, draggingCard, gameState.GameCode, user.Id]
+    [currentIndex, dispatch, draggingCard, gameState, user.Id]
   );
 
   const DragEnter = useCallback((ev) => {

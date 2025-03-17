@@ -116,12 +116,13 @@ const Player = ({ ptr }) => {
               draggingCards: [draggingCard],
               Index: PlayerIndex,
               Type: 0,
+              gameState,
             })
           );
         }
       );
     },
-    [PlayerIndex, dispatch, draggingCard, gameState.GameCode, user.Id]
+    [PlayerIndex, dispatch, draggingCard, gameState, user.Id]
   );
 
   const AllowDrop = useCallback((ev) => {

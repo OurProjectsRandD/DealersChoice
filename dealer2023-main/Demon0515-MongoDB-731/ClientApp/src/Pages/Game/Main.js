@@ -252,7 +252,6 @@ const MainGame = ({ isVideoChatAllowed = false }) => {
     // console.log("Dealer: ", gameState.DealerId);
     // console.log("Active Players:", JSON.stringify(stateRef.current.gameHash, null, 2));
 
-    console.log("connection id: " + connection.connectionId);
     if (connection.connectionId === undefined) return;
 
     connection.on("Join_Meeting", () => {

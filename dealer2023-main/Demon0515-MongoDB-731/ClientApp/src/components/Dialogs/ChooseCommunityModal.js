@@ -50,6 +50,7 @@ const ChooseCommunityModal = (
             draggingCards: [props.Card],
             Index: currentIndex,
             Type: 0,
+            gameState,
           })
         );
         props.setOpen(false);

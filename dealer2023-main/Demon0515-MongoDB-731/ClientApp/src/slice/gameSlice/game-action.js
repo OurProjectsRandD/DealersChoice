@@ -283,7 +283,7 @@ export function dealCardsAction(payload) {
     dispatch(actions.startLoading());
 
     try {
-      dispatch(actions.dealCards(payload));
+      dispatch(actions.dealCard(payload));
     } catch (error) {
       dispatch(actions.hasError(error));
     }
