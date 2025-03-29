@@ -196,11 +196,12 @@ namespace PersonalizedCardGame.Controllers
                 }
 
                 var activePlayer = gameHash.ActivePlayers.FirstOrDefault(x => x.PlayerId == model.UserId);
-                _log.Info("activePlayer variable in join method  GameController" + "activePlayerId=" + activePlayer.PlayerId + "activeName=" + activePlayer.PlayerName + "commectionId=" + activePlayer.ConnectionId);
+                
                 var notificationTasks = new List<Task>();
 
                 if (activePlayer != null)
                 {
+                    _log.Info("activePlayer variable in join method  GameController" + "activePlayerId=" + activePlayer.PlayerId);
                     //activePlayer.IsRealTimeChat = true;
                     //activePlayer.IsRealTimeChatForMic = true;
 
@@ -226,8 +227,10 @@ namespace PersonalizedCardGame.Controllers
                     }
 
                     var user = await _UserManager.FindByIdAsync(model.UserId!);
-                    _log.Info("user variable in GameController" + "LastName" + user.LastName + "FirstName" +user.FirstName +"PhoneNumber"+ user.PhoneNumber + "Id" +user.Id);
+                    _log.Info("user variable in GameController GOT HERE ****");
                     var playerImage = user?.ImageFileName ?? string.Empty;
+
+                    _log.Info("user variable in GameController aFTER HERE HERE ****");
 
                     var newPlayer = new ActivePlayer()
                     {

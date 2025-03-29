@@ -191,6 +191,7 @@ namespace PersonalizedCardGame.Models.GameState
                         PlayerName = ActivePlayers[index].PlayerName,
                         Action = action,
                         Amount = 0,
+
                         Description = actionMessage
                     });
                     break;
