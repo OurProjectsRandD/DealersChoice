@@ -184,10 +184,10 @@ namespace PersonalizedCardGame.Controllers
                   };
                 }
                 return new Dictionary<string, int>
-              {
-                  { "VideoTime", -1 },
-                  { "Tokens", -1 }
-              };
+                  {
+                      { "VideoTime", -1 },
+                      { "Tokens", -1 }
+                  };
             }
             catch (Exception ex)
             {

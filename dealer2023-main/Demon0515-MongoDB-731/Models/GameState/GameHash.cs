@@ -1,10 +1,13 @@
-﻿using MongoDB.Bson;
+﻿using log4net;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using PersonalizedCardGame.Services;
 
 namespace PersonalizedCardGame.Models.GameState
 {
     public class GameHash
     {
+        private static readonly ILog _log = LogManager.GetLogger(typeof(GameHash));
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string? Id { get; set; }
@@ -92,20 +95,45 @@ namespace PersonalizedCardGame.Models.GameState
             return ActivePlayers.Find(x => x.PlayerId == DealerId);
         }
 
+
         public int FindNextActivePlayerIndex(int index)
         {
-            int newIndex = index, cnt = 0;
-            do
+            try
             {
-                newIndex = (newIndex + 1) % this.ActivePlayers.Count;
-
-                if (this.ActivePlayers[newIndex].IsFolded == false && this.ActivePlayers[newIndex].IsDisconnected == false)
-
-                    return newIndex;
+                int newIndex = index, cnt = 0;
+                do
+                {
+                    newIndex = (newIndex + 1) % this.ActivePlayers.Count;
+                    if (this.ActivePlayers[newIndex].IsFolded == false &&
+                        this.ActivePlayers[newIndex].IsDisconnected == false)
+                        return newIndex;
+                }
+                while (cnt++ < this.ActivePlayers.Count);
+                return -1;
             }
-            while (cnt++ < this.ActivePlayers.Count);
-            return -1;
+            catch (Exception ex)
+            {
+                _log.Error($"FindNextActivePlayerIndex failed | Index: {index} | " +
+                         $"ActivePlayers: {this.ActivePlayers?.Count} | " +
+                         $"Error: {ex.Message}");
+                return -1;
+            }
         }
+
+        //public int FindNextActivePlayerIndex(int index)
+        //{
+        //    int newIndex = index, cnt = 0;
+        //    do
+        //    {
+        //        newIndex = (newIndex + 1) % this.ActivePlayers.Count;
+
+        //        if (this.ActivePlayers[newIndex].IsFolded == false && this.ActivePlayers[newIndex].IsDisconnected == false)
+
+        //            return newIndex;
+        //    }
+        //    while (cnt++ < this.ActivePlayers.Count);
+        //    return -1;
+        //}
 
         //public int FindNextActivePlayerInde(int index)
         //{

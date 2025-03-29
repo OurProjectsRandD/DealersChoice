@@ -1,4 +1,5 @@
-﻿using log4net;
+﻿using Elmah.Io.Client;
+using log4net;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -177,20 +178,25 @@ namespace PersonalizedCardGame.Controllers
             try
             {
                 GameHash gameHash = await _GameStateService.GetByGameCodeAsync(model.GameCode!);
+                _log.Info("JoinGame method checking gameHash variable" + "GameCode=" + gameHash.GameCode + "Id=" + gameHash.Id + "IsEnded=" + gameHash.IsEnded + "createdDate=" + gameHash.CreatedDate);
 
                 // Check for game restrictions.
                 if (gameHash.IsLocked && gameHash.GameCreatorId != model.UserId)
+                {
+                    _log.Info("checking for restrictions");
                     return null;
+                }
 
                 if (gameHash.IsInvitesOnly && gameHash.GameCreatorId != model.UserId)
                 {
                     var user = await _UserManager.FindByIdAsync(model.UserId!);
                     if (user == null || await _GameInviteService.GetByUserIdAndGameAsync(model.GameCode, user.Email!) == null)
-                   _log.Info("JoinGame GameController Exception point: {gameHash}"+ gameHash.CurrentId +gameHash.Id +gameHash.Round + gameHash.CreatedDate);
+                   _log.Info(" game controller gamehash  variaable conditoint: {gameHash}"+ gameHash.CurrentId +gameHash.Id +gameHash.Round + gameHash.CreatedDate);
                     return null;
                 }
 
                 var activePlayer = gameHash.ActivePlayers.FirstOrDefault(x => x.PlayerId == model.UserId);
+                _log.Info("activePlayer variable in join method  GameController" + "activePlayerId=" + activePlayer.PlayerId + "activeName=" + activePlayer.PlayerName + "commectionId=" + activePlayer.ConnectionId);
                 var notificationTasks = new List<Task>();
 
                 if (activePlayer != null)
@@ -220,6 +226,7 @@ namespace PersonalizedCardGame.Controllers
                     }
 
                     var user = await _UserManager.FindByIdAsync(model.UserId!);
+                    _log.Info("user variable in GameController" + "LastName" + user.LastName + "FirstName" +user.FirstName +"PhoneNumber"+ user.PhoneNumber + "Id" +user.Id);
                     var playerImage = user?.ImageFileName ?? string.Empty;
 
                     var newPlayer = new ActivePlayer()
@@ -249,13 +256,13 @@ namespace PersonalizedCardGame.Controllers
                 }
 
                 await Task.WhenAll(notificationTasks);
-                _log.Info("Join the Game!");
+                _log.Info("Join the Game! method");
 
                 return gameHash;
             }
             catch (Exception ex)
             {
-                _log.Error("JoinGame GameController Exception point: {ex}" + ex.Message + ex.InnerException + ex.StackTrace);
+                _log.Error("JoinGame GameController Exception point: {ex}" + "message=" +ex.Message + "InnerException=" +ex.InnerException + "StackTrace=" +ex.StackTrace +"Source=" + ex.Source);
                 // Ideally, log the exception here for troubleshooting purposes.
                 return null;
             }
@@ -267,22 +274,31 @@ namespace PersonalizedCardGame.Controllers
         {
             try
             {
+                _log.Info("PassCards GameController method checking the input" + "amount=" +model.Amount + "InviteeEmail=" + model.InviteeEmail + "Index="+ model.Index + "GameCode="+ model.GameCode);
                 var gameHash = await _GameStateService.GetByGameCodeAsync(model.GameCode!);
+                _log.Info("PassCards method variable on GameController method checking the variable" + "GameCode=" + gameHash.GameCode + "GameCreatorId=" + gameHash.GameCreatorId + "Id=" + gameHash.Id + "MeetingId=" + gameHash.MeetingId + "DealerId"+ gameHash.DealerId + "CreatedDate" + gameHash.CreatedDate);
+
                 var removeResult = await _GameStateService.RemoveCards(model.GameCode!, model.DraggingCards);
+
+                _log.Info("PassCards method removeResult variable on GameController method checking the variable");
                 var addResult = await _GameStateService.AddCards(model.GameCode!, model.DraggingCards, (int)model.Index!, (int)model.Type!);
+                _log.Info("PassCards method addResult variable on GameController method checking the variable" + addResult);
                 if (removeResult && addResult)
                 {
                     gameHash.ActivePlayers.ForEach(async Player =>
                     {
+                        _log.Info("PassCards method addResult ForEach on GameController method checking foreach");
                         if (Player.PlayerId != model.UserId)
                             await _HubContext.Clients.Client(Player.ConnectionId).SendAsync("PassCard", model.DraggingCards, model.Index!, model.Type!);
+
+                        _log.Info("PassCards method from the Client HubContext" + "ConnectionId" + Player.ConnectionId + "DraggingCards" + model.DraggingCards + "Index" + model.Index + "Type" + model.Type);
                     });
                     return true;
                 }
                 return false;
             } catch (Exception ex) {
-                Console.WriteLine(ex.Message);
-                _log.Error("PassCards GameController method Exception point: {ex}" + ex.Message + ex.InnerException + ex.StackTrace);
+                //Console.WriteLine(ex.Message);
+                _log.Error("PassCards Method Exception point:{ex}" +"Message="+ex.Message+"InnerException=" + ex.InnerException +"StackTrace="+ex.StackTrace + "TargetSite"+ex.TargetSite +"Source="+ex.Source);
                 return false;
             }
         }
@@ -294,21 +310,33 @@ namespace PersonalizedCardGame.Controllers
             try
             {
                 var user = await GetUser(HttpContext);
+                _log.Info($"Kick Player with user variable" + "LastName=" +user.LastName + "phoneNumber=" +user.PhoneNumber + "Id=" + user.Id);
                 var gameHash = await _GameStateService.GetByGameCodeAsync(model.GameCode!);
-                if (gameHash.GameCreatorId != user!.Id.ToString())
+                _log.Info("gameHash variable under KickPlayer" + "Id=" + gameHash.Id + "GameCode=" + gameHash.GameCode + "PotSize=" + gameHash.PotSize +"currentId=" +gameHash.CurrentId);
+                if (gameHash.GameCreatorId != user!.Id.ToString()) 
+                {
+                    _log.Info("check condition on kickPlayer" + "GameCreatorId" + gameHash.GameCreatorId + "UserId=" + user.Id);
                     return false;
+                }
+                    
                 
                 //current player is left
                 if (gameHash.CurrentId == gameHash.ActivePlayers[model.Index!].PlayerId)
+                {
                     gameHash.CurrentId = gameHash.FindNextActivePlayerId(model.Index!);
-                
+                    _log.Info("current player" + "currentId=" + gameHash.CurrentId);
+                }
+
                 //dealer player is kicked out
-                else if (gameHash.DealerId == gameHash.ActivePlayers[model.Index!].PlayerId)
+                else if (gameHash.DealerId == gameHash.ActivePlayers[model.Index!].PlayerId) 
+
                     gameHash.DealerId = gameHash.FindNextActivePlayerId(model.Index!);
+                   _log.Info("current player under kickplayer" + "DealerId=" + gameHash.DealerId);
                 ActivePlayer player = gameHash.ActivePlayers[model.Index];
                 gameHash.ActivePlayers.RemoveAt(model.Index!);
 
                 await _GameStateService.UpdateAsync(gameHash.Id!, gameHash);
+                _log.Info("UpdateAsync Id in kickPlayer method" + "Id=" + gameHash.Id);
                 gameHash.ActivePlayers.ForEach(async Player =>
                 {
                     if (Player.PlayerId != user.Id.ToString())
@@ -318,7 +346,7 @@ namespace PersonalizedCardGame.Controllers
                 return true;
             } catch (Exception ex)
             {
-                _log.Error("KickPlayer GameController method Exception point: {ex}" + ex.Message + ex.InnerException + ex.StackTrace);
+                _log.Error("KickPlayer method Exception point:{ex}" + "Message=" + ex.Message + "InnerException=" + ex.InnerException + "StackTrace=" + ex.StackTrace + "TargetSite" + ex.TargetSite + "Source=" + ex.Source);
                 return false;
             }
         }
@@ -346,7 +374,7 @@ namespace PersonalizedCardGame.Controllers
             }
             catch (Exception ex)
             {
-                _log.Error("LeftGame GameController method Exception point: {ex}" + ex.Message + ex.InnerException + ex.StackTrace);
+                _log.Error("LeftGame method Exception point:{ex}" + "Message=" + ex.Message + "InnerException=" + ex.InnerException + "StackTrace=" + ex.StackTrace + "TargetSite" + ex.TargetSite + "Source=" + ex.Source);
                 return false;
             }
         }
@@ -355,13 +383,17 @@ namespace PersonalizedCardGame.Controllers
         {
             try
             {
+                _log.Info("first entrance" + gameHash.Id + gameHash.HostName + "potSize=" + gameHash.PotSize + gameHash.Round + "CurrentBet=" + gameHash.CurrentBet + "GameCreatorId=" + gameHash.GameCreatorId + "CurrentIndex" + currentIndex);
                 int HighestBet = gameHash.ActivePlayers.Max(player => player.CurrentRoundStatus);
+                _log.Info("OnPlayerAction controller HighestBet variable" + HighestBet);
                 gameHash.IsRoundSettlement = false;
                 gameHash.CurrentBet = HighestBet;
 
+                _log.Info("OnPlayerAction controller HighestBet variable" + HighestBet + "CurrentBet=" + gameHash.CurrentBet + "IsRoundSettlement=" + gameHash.IsRoundSettlement);
 
 
                 int newIndex = gameHash.FindNextActivePlayerIndex(currentIndex);
+                _log.Info($"{newIndex}" + "NewIdex got here ********************************************");
 
                 Console.WriteLine(newIndex);
                 _log.Info("OnPlayerAction GameController variable" + newIndex);
@@ -371,8 +403,12 @@ namespace PersonalizedCardGame.Controllers
                 _log.Info("OnPlayerAction GameController under OnPlayerAction" + gameHash.CurrentId+ "newIndex" +newIndex);
                 int currentPlayerbet = gameHash.CurrentBet - gameHash.ActivePlayers[newIndex].CurrentRoundStatus;
 
+                _log.Info("In OnPlayerAction method, it got to currentPlayerbet variable=" +  currentPlayerbet);
+
                
                 gameHash.BetStatusIndex = newIndex;
+
+                _log.Info("*******BetStatusIndex= "+gameHash.BetStatusIndex);
                 gameHash.BetStatus = "The bet is " +
                         currentPlayerbet +
                         " to " +
@@ -395,16 +431,20 @@ namespace PersonalizedCardGame.Controllers
                     }
                     gameHash.HandSteps[gameHash.GameHand].BettingRounds.Add(new RoundStep()
                     {
+                        
                         RoundId = gameHash.Round,
+
+                       
                     });
+                    _log.Info("***** check under OnPlayerAction"+"Id="+gameHash.Id +"GameCode=" + gameHash.GameCode + "GameHand=" + gameHash.GameHand);
                 }
 
-                _log.Error("OnPlayerAction GameController return under OnplayerAction" + "gameHash" +gameHash);
+                _log.Info("OnPlayerAction GameController return under OnplayerAction" + "Id=" +gameHash.Id + "Round" + gameHash.Round + "CreatedDate" + gameHash.CreatedDate +"DealerId" + gameHash.DealerId + "GameHand" +  gameHash.GameHand);
                 return gameHash;
             }
             catch (Exception ex)
             {
-                _log.Error("OnPlayerAction on GameController Exception point: {ex}" + ex.Message + ex.InnerException + ex.StackTrace);
+                _log.Error("OnPlayerAction method Exception point:{ex}" + "Message=" + ex.Message + "InnerException=" + ex.InnerException + "StackTrace=" + ex.StackTrace + "TargetSite" + ex.TargetSite + "Source=" + ex.Source);
                 throw;
             }
             
@@ -417,7 +457,7 @@ namespace PersonalizedCardGame.Controllers
             {
                 GameHash gameHash = await _GameStateService.GetByGameCodeAsync(model.GameCode!);
 
-                _log.Info("Amount" + model.Amount + "ID" + model.DealerId +"Hello this file");
+                _log.Info("Bet method" + "Amount=" + model.Amount + "ID=" + model.DealerId +"Hello this file");
 
                 gameHash.ActivePlayers[model.Index].PlayerAmount -= model.Amount;
                 gameHash.ActivePlayers[model.Index].CurrentRoundStatus += model.Amount;
@@ -443,7 +483,7 @@ namespace PersonalizedCardGame.Controllers
                 });
                 return true;
             } catch(Exception ex) {
-                _log.Error("Bet on GameController Exception point: {ex}" +  ex.Message + ex.InnerException + ex.StackTrace);
+                _log.Error("Bet method Exception point:{ex}" + "Message=" + ex.Message + "InnerException=" + ex.InnerException + "StackTrace=" + ex.StackTrace + "TargetSite" + ex.TargetSite + "Source=" + ex.Source);
                 return false;
             }
         }
@@ -475,7 +515,7 @@ namespace PersonalizedCardGame.Controllers
                 });
                 return true;
             } catch(Exception ex) {
-                _log.Error("Call GameController Exception point: {ex}" +  ex.Message + ex.InnerException + ex.StackTrace);
+                _log.Error("Call method Exception point:{ex}" + "Message=" + ex.Message + "InnerException=" + ex.InnerException + "StackTrace=" + ex.StackTrace + "TargetSite" + ex.TargetSite + "Source=" + ex.Source);
                 return false;
             }
             
@@ -506,7 +546,7 @@ namespace PersonalizedCardGame.Controllers
                 return true;
             } catch(Exception ex)
             {
-                _log.Error("AddToPot GameController method Exception point: {ex}"+ ex.Message + ex.InnerException + ex.StackTrace);
+                _log.Error("AddToPot method Exception point:{ex}" + "Message=" + ex.Message + "InnerException=" + ex.InnerException + "StackTrace=" + ex.StackTrace + "TargetSite" + ex.TargetSite + "Source=" + ex.Source);
                 return false;
             }
         }
@@ -543,7 +583,7 @@ namespace PersonalizedCardGame.Controllers
             }
             catch (Exception ex)
             {
-                _log.Error("Ante on GameController method Exception point: {ex}" +  ex.Message + ex.InnerException + ex.StackTrace);
+                _log.Error("Ante method Exception point:{ex}" + "Message=" + ex.Message + "InnerException=" + ex.InnerException + "StackTrace=" + ex.StackTrace + "TargetSite" + ex.TargetSite + "Source=" + ex.Source);
                 return false;
             }
         }
@@ -587,7 +627,7 @@ namespace PersonalizedCardGame.Controllers
                 });
                 return true;
             } catch(Exception ex) {
-                _log.Error("CancelHand on GameController method Exception point: {ex}"+ ex.Message + ex.InnerException + ex.StackTrace);
+                _log.Error("CancelHand method Exception point:{ex}" + "Message=" + ex.Message + "InnerException=" + ex.InnerException + "StackTrace=" + ex.StackTrace + "TargetSite" + ex.TargetSite + "Source=" + ex.Source);
                 return false;
             }
         }
@@ -610,7 +650,7 @@ namespace PersonalizedCardGame.Controllers
                 return true;
             } catch(Exception ex)
             {
-                _log.Error("check method Exception point: {ex}" + ex.Message + ex.InnerException + ex.StackTrace);
+                _log.Error("Check method Exception point:{ex}" + "Message=" + ex.Message + "InnerException=" + ex.InnerException + "StackTrace=" + ex.StackTrace + "TargetSite" + ex.TargetSite + "Source=" + ex.Source);
                 return false;
             }
         }
@@ -639,7 +679,7 @@ namespace PersonalizedCardGame.Controllers
                 return true;
             } catch(Exception ex)
             {
-                _log.Error("Discard on GameController method Exception point: {ex}" + ex.Message + ex.InnerException + ex.StackTrace);
+                _log.Error("Discard method Exception point:{ex}" + "Message=" + ex.Message + "InnerException=" + ex.InnerException + "StackTrace=" + ex.StackTrace + "TargetSite" + ex.TargetSite + "Source=" + ex.Source);
                 return false;
             }
         }
@@ -669,7 +709,7 @@ namespace PersonalizedCardGame.Controllers
             }
             catch (Exception ex)
             {
-                _log.Error("Show method on GameController Exception point: {ex}"+ ex.Message + ex.InnerException + ex.StackTrace);
+                _log.Error("show method Exception point:{ex}" + "Message=" + ex.Message + "InnerException=" + ex.InnerException + "StackTrace=" + ex.StackTrace + "TargetSite" + ex.TargetSite + "Source=" + ex.Source);
                 return false;
             }
         }
@@ -703,7 +743,7 @@ namespace PersonalizedCardGame.Controllers
             }
             catch (Exception ex)
             {
-                _log.Error("ReturnToDeck method on GameController Exception point: {ex}" + ex.Message + ex.InnerException + ex.StackTrace);
+                _log.Error("ReturnToDeck method Exception point:{ex}" + "Message=" + ex.Message + "InnerException=" + ex.InnerException + "StackTrace=" + ex.StackTrace + "TargetSite" + ex.TargetSite + "Source=" + ex.Source);
                 return false;
             }
         }
@@ -803,7 +843,7 @@ namespace PersonalizedCardGame.Controllers
                 return true;
             } catch(Exception ex)
             {
-                _log.Error("DealCards method on GameController Exception point: {ex}" + ex.Message + ex.InnerException + ex.StackTrace);
+                _log.Error("DisCards method Exception point:{ex}" + "Message=" + ex.Message + "InnerException=" + ex.InnerException + "StackTrace=" + ex.StackTrace + "TargetSite" + ex.TargetSite + "Source=" + ex.Source);
                 return false;
             }
         }
@@ -829,7 +869,7 @@ namespace PersonalizedCardGame.Controllers
                 return true;
             } catch(Exception ex)
             {
-                _log.Error("PassDeal method on GameController Exception point: {ex}" +  ex.Message + ex.InnerException + ex.StackTrace);
+                _log.Error("passDeal method Exception point:{ex}" + "Message=" + ex.Message + "InnerException=" + ex.InnerException + "StackTrace=" + ex.StackTrace + "TargetSite" + ex.TargetSite + "Source=" + ex.Source);
                 return false;
             }
         }
@@ -855,7 +895,7 @@ namespace PersonalizedCardGame.Controllers
             }
             catch (Exception ex)
             {
-                _log.Error("Take method on GameController Exception point: {ex}" + ex.Message + ex.InnerException + ex.StackTrace);
+                _log.Error("Take method Exception point:{ex}" + "Message=" + ex.Message + "InnerException=" + ex.InnerException + "StackTrace=" + ex.StackTrace + "TargetSite" + ex.TargetSite + "Source=" + ex.Source);
                 return false;
             }
         }
@@ -902,7 +942,7 @@ namespace PersonalizedCardGame.Controllers
             }
             catch (Exception ex)
             {
-                _log.Error("Endhand method on GameController Exception point: {ex}" + ex.Message + ex.InnerException + ex.StackTrace);
+                _log.Error("Endhand method Exception point:{ex}" + "Message=" + ex.Message + "InnerException=" + ex.InnerException + "StackTrace=" + ex.StackTrace + "TargetSite" + ex.TargetSite + "Source=" + ex.Source);
                 return false;
             }
         }
@@ -925,7 +965,7 @@ namespace PersonalizedCardGame.Controllers
             }
             catch (Exception ex)
             {
-                _log.Error("Endgame method on GameController Exception point: {ex}" + ex.Message + ex.InnerException + ex.StackTrace);
+                _log.Error("Endgame method Exception point:{ex}" + "Message=" + ex.Message + "InnerException=" + ex.InnerException + "StackTrace=" + ex.StackTrace + "TargetSite" + ex.TargetSite + "Source=" + ex.Source);
                 return false;
             }
         }
@@ -956,7 +996,7 @@ namespace PersonalizedCardGame.Controllers
             }
             catch (Exception ex)
             {
-                _log.Error("sitout method on GameController Exception point: {ex}" + ex.Message + ex.InnerException + ex.StackTrace);
+                _log.Error("Site method Exception point:{ex}" + "Message=" + ex.Message + "InnerException=" + ex.InnerException + "StackTrace=" + ex.StackTrace + "TargetSite" + ex.TargetSite + "Source=" + ex.Source);
                 return false;
             }
         }
@@ -982,7 +1022,7 @@ namespace PersonalizedCardGame.Controllers
             }
             catch (Exception ex)
             {
-                _log.Error("Rejoin method on GameController Exception point: {ex}"+ ex.Message + ex.InnerException + ex.StackTrace);
+                _log.Error("Rejoin method Exception point:{ex}" + "Message=" + ex.Message + "InnerException=" + ex.InnerException + "StackTrace=" + ex.StackTrace + "TargetSite" + ex.TargetSite + "Source=" + ex.Source);
                 return false;
             }
         }
@@ -1001,21 +1041,23 @@ namespace PersonalizedCardGame.Controllers
                 {
                     card.Presentation = 1;
                 });
-                _log.Info("Fold Methodt: {ex}" + "ID="+  gameHash.Id + "MeetingId=" +gameHash.MeetingId + "GameCode=" +gameHash.GameCode +
+                _log.Info("Fold Method" + "ID="+  gameHash.Id + "MeetingId=" +gameHash.MeetingId + "GameCode=" +gameHash.GameCode +
                     "GameHand ="+gameHash.GameHand + gameHash.ActivePlayers +gameHash.CurrentBet);
                 OnPlayerAction(gameHash, model.Index);
                 await _GameStateService.UpdateAsync(gameHash.Id!, gameHash);
+
+                _log.Info("Update under fold" + "gameHashId=" + gameHash.Id);
                 gameHash.ActivePlayers.ForEach(async (player) =>
                 {
                     if (player.PlayerId != model.UserId)
                         await _HubContext.Clients.Client(player.ConnectionId).SendAsync("Fold", model.Index!);
-                    _log.Info("Fold Method: {gameHash}" + player.PlayerId + player.IsFolded+ player.IsFolded +player.ConnectionId);
+                    _log.Info("Fold Method" + player.PlayerId + player.IsFolded+ player.IsFolded +player.ConnectionId);
                 });
                 return true;
             }
             catch (Exception ex)
             {
-                _log.Error("Fold method on GameController Exception point: {ex}" + ex.Message + ex.InnerException + ex.StackTrace);
+                _log.Error("Fold method Exception point:{ex}" + "Message=" + ex.Message + "InnerException=" + ex.InnerException + "StackTrace=" + ex.StackTrace + "TargetSite" + ex.TargetSite + "Source=" + ex.Source);
                 return false;
             }
         }
@@ -1033,8 +1075,8 @@ namespace PersonalizedCardGame.Controllers
             }
             catch (Exception ex)
             {
-                _log.Error(new { ToggleLock = "ToggleLock method on GameController Exception point: {ex}", message = ex.Message, InnerException = ex.InnerException, StackTrace = ex.StackTrace });
-                //_log.Error("ToggleLock method on GameController Exception point: {ex}"+ ex.Message + ex.InnerException + ex.StackTrace);
+              //  _log.Error(new { ToggleLock = "ToggleLock method on GameController Exception point: {ex}", message = ex.Message, InnerException = ex.InnerException, StackTrace = ex.StackTrace });
+                _log.Error("ToggleLock method Exception point:{ex}" + "Message=" + ex.Message + "InnerException=" + ex.InnerException + "StackTrace=" + ex.StackTrace + "TargetSite" + ex.TargetSite + "Source=" + ex.Source);
                 return false;
             }
         }
@@ -1070,7 +1112,7 @@ namespace PersonalizedCardGame.Controllers
             catch (Exception ex)
             {
                 // Ideally, log the exception here for troubleshooting purposes
-                _log.Error("ToggleCamera method on GameController Exception point: {ex}" +  ex.Message + ex.InnerException + ex.StackTrace);
+                _log.Error("ToggleCamera method Exception point:{ex}" + "Message=" + ex.Message + "InnerException=" + ex.InnerException + "StackTrace=" + ex.StackTrace + "TargetSite" + ex.TargetSite + "Source=" + ex.Source);
                 return false;
             }
         }
@@ -1101,7 +1143,7 @@ namespace PersonalizedCardGame.Controllers
             }
             catch (Exception ex)
             {
-                _log.Error("ToggleMic method on GameController Exception point: {ex}" + ex.Message + ex.InnerException + ex.StackTrace);
+                _log.Error("ToggleMic method Exception point:{ex}" + "Message=" + ex.Message + "InnerException=" + ex.InnerException + "StackTrace=" + ex.StackTrace + "TargetSite" + ex.TargetSite + "Source=" + ex.Source);
                 // Ideally, log the exception here for troubleshooting purposes
                 return false;
             }
@@ -1127,7 +1169,7 @@ namespace PersonalizedCardGame.Controllers
                 return true;
             } catch(Exception ex)
             {
-                _log.Error("Invite method on GameController Exception point: {ex}" + ex.Message + ex.InnerException + ex.StackTrace);
+                _log.Error("Invite method Exception point:{ex}" + "Message=" + ex.Message + "InnerException=" + ex.InnerException + "StackTrace=" + ex.StackTrace + "TargetSite" + ex.TargetSite + "Source=" + ex.Source);
                 return false;
             }
         }

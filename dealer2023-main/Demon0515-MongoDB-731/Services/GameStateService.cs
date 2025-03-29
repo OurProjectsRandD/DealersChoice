@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Diagnostics;
+﻿using log4net;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -14,8 +15,9 @@ namespace PersonalizedCardGame.Services
     {
         private readonly IMongoCollection<GameHash> mongoCollection;
         private readonly ILogger<GameStateService> _logger;
+        private static readonly ILog _log = LogManager.GetLogger(typeof(GameStateService));
 
-        public GameStateService(IOptions<MongoDBSetting> options, ILogger<GameStateService> logger)
+        public GameStateService(IOptions<MongoDBSetting> options, ILogger<GameStateService> logger, ILog log)
         {
             var mongoClient = new MongoClient(
             options.Value.ConnectionString);
@@ -165,8 +167,45 @@ namespace PersonalizedCardGame.Services
             
         }
 
-        public async Task UpdateAsync(string id, GameHash gameHash) =>
-            await mongoCollection.ReplaceOneAsync(x => x.Id == id, gameHash);
+        //public async Task UpdateAsync(string id, GameHash gameHash) =>
+        //    await mongoCollection.ReplaceOneAsync(x => x.Id == id, gameHash);
+
+
+        public async Task UpdateAsync(string id, GameHash gameHash)
+        {
+            try
+            {
+                var result = await mongoCollection.ReplaceOneAsync(x => x.Id == id, gameHash);
+
+                if (result.MatchedCount == 0)
+                {
+                    _log.Warn($"No document found with ID: {id}. Update operation did not modify any documents.");
+                }
+                else
+                {
+                    _log.Debug($"Successfully updated document with ID: {id}. Modified count: {result.ModifiedCount}");
+                }
+            }
+            catch (MongoException mongoEx)
+            {
+                _log.Error($"[MongoDB Update Failed] Document ID: {id} | GameHash: {gameHash?.ToString()} | " +
+                          $"Error Type: {mongoEx.GetType().Name} | " +
+                          $"Message: {mongoEx.Message} | " +
+                          $"Stack: {mongoEx.StackTrace}");
+                throw; // Re-throw to let caller handle
+            }
+            catch (Exception ex)
+            {
+                _log.Error($"[Update Operation Failed] Document ID: {id} | " +
+                          $"Unexpected error: {ex.GetType().Name} | " +
+                          $"Message: {ex.Message} | " +
+                          $"Stack: {ex.StackTrace}");
+                throw new ApplicationException($"Failed to update document {id}", ex);
+            }
+        }
+
+
+
 
         public async Task RemoveAsync(string id) =>
             await mongoCollection.DeleteOneAsync(x => x.Id == id);
