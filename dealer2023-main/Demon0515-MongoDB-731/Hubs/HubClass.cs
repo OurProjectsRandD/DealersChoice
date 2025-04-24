@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Nancy.Json;
 using System;
+using System.Collections.Concurrent;
 
 namespace SignalRChat.Hubs
 {
@@ -18,7 +19,15 @@ namespace SignalRChat.Hubs
 
             lst.Add(user + "===" + message);
 
-            await Clients.All.SendAsync("ReceiveMessage", user, message);
+            try
+            {
+                await Clients.All.SendAsync("ReceiveMessage", user, message);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                throw; // Re-throw to notify the client
+            }
         }
 
         public async Task SendMessage2(string user, string message, string test)
@@ -32,61 +41,47 @@ namespace SignalRChat.Hubs
             await Clients.All.SendAsync("ReceiveMessage", user, message);
         }
 
-
-
-
         public async Task ReceiveOnLoad(string user, string message)
         {
             var val1 = Context.ConnectionId;
             var val2 = Context.User;
             var val3 = Clients.Caller;
 
-            // string val1 = "";
             JavaScriptSerializer js = new JavaScriptSerializer();
-            string jsonData = js.Serialize(lst); // {"Name":"C-
-
-
+            string jsonData = js.Serialize(lst);
 
             await Clients.All.SendAsync("ReceiveMessage", user, jsonData);
         }
 
-
         public override Task OnConnectedAsync()
         {
-
-            //var x = Clients.Caller
             var xx = Context.GetHttpContext();
 
-            UserHandler.ConnectedIds.Add(Context.ConnectionId);
+            // Use TryAdd instead of Add for ConcurrentDictionary
+            UserHandler.ConnectedIds.TryAdd(Context.ConnectionId, true);
             return base.OnConnectedAsync();
         }
 
-        public override Task OnDisconnectedAsync(Exception exception)
+        public override Task OnDisconnectedAsync(Exception? exception) // Fix for CS8765: Allow nullable exception
         {
-
-            UserHandler.ConnectedIds.Remove(Context.ConnectionId);
-            return base.OnConnectedAsync();
+            // Use TryRemove instead of Remove for ConcurrentDictionary
+            UserHandler.ConnectedIds.TryRemove(Context.ConnectionId, out _);
+            return base.OnDisconnectedAsync(exception);
         }
-
-
     }
 
     public static class UserHandler
     {
-        public static HashSet<string> ConnectedIds = new HashSet<string>();
+        public static ConcurrentDictionary<string, bool> ConnectedIds = new();
     }
 
 
 
     public class UserConnection
     {
-        public string UserName { get; set; }
-
-        public string UserUniqueId { get; set; }
-
-        public string ConnectionId { get; set; }
-
-
+        public required string UserName { get; set; } // Fix for CS8618: Add 'required' modifier
+        public required string UserUniqueId { get; set; } // Fix for CS8618: Add 'required' modifier
+        public required string ConnectionId { get; set; } // Fix for CS8618: Add 'required' modifier
     }
 
 

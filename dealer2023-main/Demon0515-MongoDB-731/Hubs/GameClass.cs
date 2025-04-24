@@ -208,24 +208,35 @@ namespace PersonalizedCardGame.Hubs
         {
             try
             {
-                /*GameHash gameHash = _GameStateService.FindByConnectionId(Context.ConnectionId);
-                if (gameHash == null)
-                    return;
-                int index = gameHash.ActivePlayers.FindIndex(x => x.ConnectionId == Context.ConnectionId);
-                if (index != -1)
+
+                _logger.LogInformation("OnDisconnection information Status" /*+ exception.Message, exception.InnerException, exception.StackTrace, exception.Source*/);
+
+
                 {
-                    ActivePlayer player = gameHash.ActivePlayers[index];
-                    player.IsDisconnected = true;
-                    if (player.PlayerId == gameHash.DealerId)
-                        gameHash.DealerId = gameHash.FindNextCurrentId(index);
-                    if (player.PlayerId == gameHash.CurrentId)
-                        gameHash.CurrentId = gameHash.FindNextCurrentId(index);
+                    if (exception != null)
+                        Console.WriteLine($"Disconnected due to: {exception}");
+                    await base.OnDisconnectedAsync(exception);
                 }
-                await _GameStateService.UpdateAsync(gameHash.Id!, gameHash);
-                gameHash.ActivePlayers.ForEach(async Player =>
-                {
-                    await this.Clients.Client(Player.ConnectionId).SendAsync("Player_Disconnected", index);
-                });*/
+
+
+                //GameHash gameHash = _GameStateService.FindByConnectionId(Context.ConnectionId);
+                //if (gameHash == null)
+                //    return;
+                //int index = gameHash.ActivePlayers.FindIndex(x => x.ConnectionId == Context.ConnectionId);
+                //if (index != -1)
+                //{
+                //    ActivePlayer player = gameHash.ActivePlayers[index];
+                //    player.IsDisconnected = true;
+                //    if (player.PlayerId == gameHash.DealerId)
+                //        gameHash.DealerId = gameHash.FindNextCurrentId(index);
+                //    if (player.PlayerId == gameHash.CurrentId)
+                //        gameHash.CurrentId = gameHash.FindNextCurrentId(index);
+                //}
+                //await _GameStateService.UpdateAsync(gameHash.Id!, gameHash);
+                //gameHash.ActivePlayers.ForEach(async Player =>
+                //{
+                //    await this.Clients.Client(Player.ConnectionId).SendAsync("Player_Disconnected", index);
+                //});
             }
             catch (Exception ex)
             {

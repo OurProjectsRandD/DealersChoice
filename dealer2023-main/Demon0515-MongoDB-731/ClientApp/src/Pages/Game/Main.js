@@ -100,6 +100,7 @@ const MainGame = ({ isVideoChatAllowed = false }) => {
     };
   }, []);
 
+  //InitiateConnection to signal R
   const initiateConnection = useCallback(async () => {
     if (!GameCode || !user?.Id) return null;
 
@@ -327,6 +328,7 @@ const MainGame = ({ isVideoChatAllowed = false }) => {
       dispatch(
         playerDisconnectedAction({ index, gamseState: { ...gameState } })
       );
+      console.log("player_Disconected vvv" + index + gameState);
     });
 
     connection.on("Bet", (index, amount) => {

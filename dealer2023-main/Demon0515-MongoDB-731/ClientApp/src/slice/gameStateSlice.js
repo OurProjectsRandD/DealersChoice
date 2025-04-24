@@ -256,13 +256,14 @@ export const gameStateSlice = createSlice({
       LogRocket.log(`${action.payload}th Player rejoined`, state);
     },
     fold: (state, action) => {
-      console.log("payload =====>", action.payload);
+      console.log("payloadAtFold =====>", action.payload);
       state.ActivePlayers[action.payload].LastActionPerformed = " Fold";
       AddStep(state, action.payload, "folded", "Fold");
       state.ActivePlayers[action.payload].IsFolded = true;
       state.ActivePlayers[action.payload].PlayerCards.forEach(
         (playerCard) => (playerCard.Presentation = 1)
       );
+      console.log("gamestateAtFold =====>", state);
       OnPlayerAction(state);
       LogRocket.log(`${action.payload}th Player folede`, state);
     },

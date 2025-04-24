@@ -15,6 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { PassCards } from "../../common/game/GameControl";
 import DefaultPlayer from "../../components/MainGameComponents/DefaultPlayer";
 import { passCardAction } from "../../slice";
+import { useEffect } from "react";
 
 const CurrentPlayerDiv = ({ gameState }) => {
   const dispatch = useDispatch();
@@ -38,6 +39,12 @@ const CurrentPlayerDiv = ({ gameState }) => {
   }, [currentIndex, gameState.ActivePlayers]);
 
   const BetTakeValueRef = useRef(null);
+
+  useEffect(() => {
+    if (currentPlayer.PlayerCards) {
+      console.log("Number of PlayerCards:", currentPlayer.PlayerCards);
+    }
+  }, [currentPlayer.PlayerCards]);
 
   const AllowDrop = useCallback((ev) => {
     $(".fas").addClass("Droppable");
@@ -150,6 +157,7 @@ const CurrentPlayerDiv = ({ gameState }) => {
                       alignItems: "center",
                     }}
                   >
+                    <h1>here</h1>
                     <span className="PlayerName p-2">
                       {currentPlayer && currentPlayer.PlayerName}
                     </span>

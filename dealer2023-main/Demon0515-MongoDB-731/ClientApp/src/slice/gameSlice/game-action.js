@@ -283,8 +283,10 @@ export function dealCardsAction(payload) {
     dispatch(actions.startLoading());
 
     try {
+      console.log("dealing card");
       dispatch(actions.dealCard(payload));
     } catch (error) {
+      console.log("error dealing cards");
       dispatch(actions.hasError(error));
     }
   };

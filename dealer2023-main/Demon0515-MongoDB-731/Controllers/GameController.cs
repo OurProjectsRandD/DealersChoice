@@ -798,7 +798,7 @@ namespace PersonalizedCardGame.Controllers
                 }
                 else
                 {
-                    action = "Deal " + model.Amount + " cars to " + (model.Type == 0 ? activePlayers[model.Index!].PlayerName : "community " + (model.Index + 1));
+                    action = "Deal " + model.Amount + " card to " + (model.Type == 0 ? activePlayers[model.Index!].PlayerName : "community " + (model.Index + 1));
                     for (int i = 0; i < model.Amount; i++)
                     {
                         string card_value = gameHash.SelectFromDeck();
@@ -839,10 +839,26 @@ namespace PersonalizedCardGame.Controllers
                 gameHash.GetDealer().LastActionPerformed = action;
                 gameHash.AddStep(gameHash.GetDealerIndex(), action, "Deal");
                 await _GameStateService.UpdateAsync(gameHash.Id!, gameHash);
-                gameHash.ActivePlayers.ForEach(async (player) =>
+
+                foreach (var player in gameHash.ActivePlayers)
                 {
-                    await _HubContext.Clients.Client(player.ConnectionId).SendAsync("DealCards", draggingCards, action);
-                });
+                           //      var tasks = gameHash.ActivePlayers.Select(player =>
+                           //     _HubContext.Clients.Client(player.ConnectionId)
+                           //         .SendAsync("DealCards", draggingCards, action)
+                           // );
+
+                           //await Task.WhenAll(tasks);
+
+
+
+                    await _HubContext.Clients.Client(player.ConnectionId)
+                        .SendAsync("DealCards", draggingCards, action);
+                }
+
+                //gameHash.ActivePlayers.ForEach(async (player) =>
+                //{
+                //    await _HubContext.Clients.Client(player.ConnectionId).SendAsync("DealCards", draggingCards, action);
+                //});
                 return true;
             } catch(Exception ex)
             {
@@ -852,6 +868,7 @@ namespace PersonalizedCardGame.Controllers
         }
 
         [HttpPost]
+
         public async Task<bool> PassDeal([FromBody] GameControllerRequestModel model)
         {
             try
@@ -1050,11 +1067,26 @@ namespace PersonalizedCardGame.Controllers
                 await _GameStateService.UpdateAsync(gameHash.Id!, gameHash);
 
                 _log.Info("Update under fold" + "gameHashId=" + gameHash.Id);
+
+
                 gameHash.ActivePlayers.ForEach(async (player) =>
                 {
+
+                    //  var foldTasks = gameHash.ActivePlayers
+                    //.Where(player => player.PlayerId != model.UserId)
+                    //.Select(player =>
+                    //{
+                    //    _log.Info("Fold Method" + player.PlayerId + player.IsFolded + player.IsFolded + player.ConnectionId);
+                    //    return _HubContext.Clients.Client(player.ConnectionId).SendAsync("Fold", model.Index!);
+                    //});
+
+                    //       await Task.WhenAll(foldTasks);
+
+
+
                     if (player.PlayerId != model.UserId)
                         await _HubContext.Clients.Client(player.ConnectionId).SendAsync("Fold", model.Index!);
-                    _log.Info("Fold Method" + player.PlayerId + player.IsFolded+ player.IsFolded +player.ConnectionId);
+                    _log.Info("Fold Method" + player.PlayerId + player.IsFolded + player.IsFolded + player.ConnectionId);
                 });
                 return true;
             }

@@ -91,7 +91,9 @@ const Player = ({ ptr }) => {
   }, [currentIndex, gameState.ActivePlayers.length, ptr]);
 
   const Player = useMemo(() => {
+    //kingsley commente out
     if (PlayerIndex === -1) return null;
+    console.log(gameState.ActivePlayers);
     return gameState.ActivePlayers[PlayerIndex];
   }, [PlayerIndex, gameState.ActivePlayers]);
 
@@ -149,6 +151,8 @@ const Player = ({ ptr }) => {
   );
 
   if (PlayerIndex === -1) return <></>;
+  //define a const in a useEffect and set it to  the value of the player cards from gamestate(redux) also add gamestate asa dependency to the useEffect then use the
+  // value defined in the useEffcet to loop over the cards
 
   return (
     <div
@@ -231,6 +235,7 @@ const Player = ({ ptr }) => {
               );
             })}
         </div>
+
         <span className="PlayerAction badge badge-primary mx-auto">
           {Player.LastActionPerformed}
         </span>

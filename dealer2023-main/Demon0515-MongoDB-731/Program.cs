@@ -19,8 +19,8 @@ var services = builder.Services;
 // Add services to the container.
 builder.Services.AddControllersWithViews().AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = null);
 
-builder.Services.AddDbContext<DBCardGameContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString(builder.Environment.IsDevelopment() ? "DbCoreConnectionString" : "DbCoreConnectionString_Deploy") ?? throw new InvalidOperationException("Connection string 'DbCoreConnectionString' not found.")));
+//builder.Services.AddDbContext<DBCardGameContext>(options =>
+    //options.UseSqlServer(builder.Configuration.GetConnectionString(builder.Environment.IsDevelopment() ? "DbCoreConnectionString" : "DbCoreConnectionString_Deploy") ?? throw new InvalidOperationException("Connection string 'DbCoreConnectionString' not found.")));
 
 builder.Services.Configure<MongoDBSetting>(
     builder.Configuration.GetSection("MongoDBConfig"));
@@ -81,18 +81,18 @@ services.AddCors(options => options.AddPolicy("CorsPolicy",
         }));
 services.AddDistributedMemoryCache();
 
-services.Configure<ElmahIoOptions>(builder.Configuration.GetSection("ElmahIo"));
-services.AddElmahIo(options =>
-{
-    options.OnMessage = msg =>
-    {
-        // Add additional properties to log messages
-        msg.Application = "PersonalizedCardGame";
-        msg.Version = "1.0.0";
-        msg.Hostname = Environment.MachineName;
-    };
+//services.Configure<ElmahIoOptions>(builder.Configuration.GetSection("ElmahIo"));
+//services.AddElmahIo(options =>
+//{
+//    options.OnMessage = msg =>
+//    {
+//        // Add additional properties to log messages
+//        msg.Application = "PersonalizedCardGame";
+//        msg.Version = "1.0.0";
+//        msg.Hostname = Environment.MachineName;
+//    };
    
-});
+//});
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.ConfigureApplicationCookie(options =>
@@ -134,7 +134,7 @@ app.MapControllerRoute(
     pattern: "{controller}/{action=Index}/{id?}");
 
 app.UseMiddleware<JwtMiddleware>();
-app.UseElmahIo();
+//app.UseElmahIo();
 app.MapHub<GameClass>("/GameClass"/*, 
     options.Transports = HttpTransportType.WebSockets;
 }*/);

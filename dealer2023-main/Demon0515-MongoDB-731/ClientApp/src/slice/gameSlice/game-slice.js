@@ -342,7 +342,8 @@ const slice = createSlice({
 
     fold(state, action) {
       state.isLoading = false;
-      // console.log("payload =====>", action.payload);
+      console.log("payloadAtFold =====>", action.payload);
+      
       state.ActivePlayers[action.payload].LastActionPerformed = " Fold";
       AddStep(state, action.payload, "folded", "Fold");
       state.ActivePlayers[action.payload].IsFolded = true;

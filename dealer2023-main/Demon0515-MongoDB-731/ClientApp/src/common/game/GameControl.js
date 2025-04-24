@@ -521,6 +521,7 @@ export const decreaseVideoMinutesRuntime = async (
     dispatch(setToken(res.data.Tokens));
   });
 };
+
 export const OnPlayerAction = (GameState) => {
   let activePlayers = [...GameState.ActivePlayers];
 
@@ -530,6 +531,7 @@ export const OnPlayerAction = (GameState) => {
   GameState.IsRoundSettlement = false;
   let newIndex = NextCurrentIndex(GameState, -1);
   console.log("new index =====>", newIndex);
+  //console.log("gamestate ======>", JSON.stringify(GameState, null, 2));
   console.log("current Id index ====>", GameState.activePlayers);
   console.log("active players ======>", activePlayers);
   GameState.CurrentId = GameState.ActivePlayers[newIndex].PlayerId;
@@ -550,6 +552,7 @@ export const OnPlayerAction = (GameState) => {
     ).length ===
     GameState.ActivePlayers.filter((x) => x.IsFolded === false).length
   ) {
+    console.log("case 1 ran");
     GameState.CurrentBet = 0;
     GameState.ActivePlayers.forEach(
       (player) => (player.CurrentRoundStatus = 0)
