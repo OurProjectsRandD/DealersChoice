@@ -19,8 +19,8 @@ var services = builder.Services;
 // Add services to the container.
 builder.Services.AddControllersWithViews().AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = null);
 
-//builder.Services.AddDbContext<DBCardGameContext>(options =>
-    //options.UseSqlServer(builder.Configuration.GetConnectionString(builder.Environment.IsDevelopment() ? "DbCoreConnectionString" : "DbCoreConnectionString_Deploy") ?? throw new InvalidOperationException("Connection string 'DbCoreConnectionString' not found.")));
+builder.Services.AddDbContext<DBCardGameContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString(builder.Environment.IsDevelopment() ? "DbCoreConnectionString" : "DbCoreConnectionString_Deploy") ?? throw new InvalidOperationException("Connection string 'DbCoreConnectionString' not found.")));
 
 builder.Services.Configure<MongoDBSetting>(
     builder.Configuration.GetSection("MongoDBConfig"));

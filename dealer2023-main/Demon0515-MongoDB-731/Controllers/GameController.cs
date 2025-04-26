@@ -752,6 +752,58 @@ namespace PersonalizedCardGame.Controllers
         }
 
         [HttpPost]
+        public async Task<bool> Fold([FromBody] GameControllerRequestModel model)
+        {
+            try
+            {
+                _log.Info("Fold object {model}" + model.DisplayName + model.GameCode + model.DealerId + model.GameCode + model.DealType + model.Status);
+                GameHash gameHash = await _GameStateService.GetByGameCodeAsync(model.GameCode!);
+                gameHash.ActivePlayers[model.Index].LastActionPerformed = " Fold";
+                gameHash.AddStep(model.Index, " folded", "Fold");
+                gameHash.ActivePlayers[model.Index].IsFolded = true;
+                gameHash.ActivePlayers[model.Index].PlayerCards.ForEach(card =>
+                {
+                    card.Presentation = 1;
+                });
+                _log.Info("Fold Method" + "ID=" + gameHash.Id + "MeetingId=" + gameHash.MeetingId + "GameCode=" + gameHash.GameCode +
+                    "GameHand =" + gameHash.GameHand + gameHash.ActivePlayers + gameHash.CurrentBet);
+                OnPlayerAction(gameHash, model.Index);
+                await _GameStateService.UpdateAsync(gameHash.Id!, gameHash);
+
+                _log.Info("Update under fold" + "gameHashId=" + gameHash.Id);
+
+
+                gameHash.ActivePlayers.ForEach(async (player) =>
+                {
+
+                    //  var foldTasks = gameHash.ActivePlayers
+                    //.Where(player => player.PlayerId != model.UserId)
+                    //.Select(player =>
+                    //{
+                    //    _log.Info("Fold Method" + player.PlayerId + player.IsFolded + player.IsFolded + player.ConnectionId);
+                    //    return _HubContext.Clients.Client(player.ConnectionId).SendAsync("Fold", model.Index!);
+                    //});
+
+                    //       await Task.WhenAll(foldTasks);
+
+
+
+                    if (player.PlayerId != model.UserId)
+                        await _HubContext.Clients.Client(player.ConnectionId).SendAsync("Fold", model.Index!);
+                    _log.Info("Fold Method" + player.PlayerId + player.IsFolded + player.IsFolded + player.ConnectionId);
+                });
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _log.Error("Fold method Exception point:{ex}" + "Message=" + ex.Message + "InnerException=" + ex.InnerException + "StackTrace=" + ex.StackTrace + "TargetSite" + ex.TargetSite + "Source=" + ex.Source);
+                return false;
+            }
+        }
+
+
+
+        [HttpPost]
         public async Task<bool> DealCards([FromBody] GameControllerRequestModel model)
         {
             try
@@ -1047,55 +1099,7 @@ namespace PersonalizedCardGame.Controllers
             }
         }
 
-        [HttpPost]
-        public async Task<bool> Fold([FromBody] GameControllerRequestModel model)
-        {
-            try
-            {
-                _log.Info("Fold object {model}" + model.DisplayName + model.GameCode + model.DealerId + model.GameCode + model.DealType + model.Status);
-                GameHash gameHash = await _GameStateService.GetByGameCodeAsync(model.GameCode!);
-                gameHash.ActivePlayers[model.Index].LastActionPerformed = " Fold";
-                gameHash.AddStep(model.Index, " folded", "Fold");
-                gameHash.ActivePlayers[model.Index].IsFolded = true;
-                gameHash.ActivePlayers[model.Index].PlayerCards.ForEach(card => 
-                {
-                    card.Presentation = 1;
-                });
-                _log.Info("Fold Method" + "ID="+  gameHash.Id + "MeetingId=" +gameHash.MeetingId + "GameCode=" +gameHash.GameCode +
-                    "GameHand ="+gameHash.GameHand + gameHash.ActivePlayers +gameHash.CurrentBet);
-                OnPlayerAction(gameHash, model.Index);
-                await _GameStateService.UpdateAsync(gameHash.Id!, gameHash);
-
-                _log.Info("Update under fold" + "gameHashId=" + gameHash.Id);
-
-
-                gameHash.ActivePlayers.ForEach(async (player) =>
-                {
-
-                    //  var foldTasks = gameHash.ActivePlayers
-                    //.Where(player => player.PlayerId != model.UserId)
-                    //.Select(player =>
-                    //{
-                    //    _log.Info("Fold Method" + player.PlayerId + player.IsFolded + player.IsFolded + player.ConnectionId);
-                    //    return _HubContext.Clients.Client(player.ConnectionId).SendAsync("Fold", model.Index!);
-                    //});
-
-                    //       await Task.WhenAll(foldTasks);
-
-
-
-                    if (player.PlayerId != model.UserId)
-                        await _HubContext.Clients.Client(player.ConnectionId).SendAsync("Fold", model.Index!);
-                    _log.Info("Fold Method" + player.PlayerId + player.IsFolded + player.IsFolded + player.ConnectionId);
-                });
-                return true;
-            }
-            catch (Exception ex)
-            {
-                _log.Error("Fold method Exception point:{ex}" + "Message=" + ex.Message + "InnerException=" + ex.InnerException + "StackTrace=" + ex.StackTrace + "TargetSite" + ex.TargetSite + "Source=" + ex.Source);
-                return false;
-            }
-        }
+       
 
         [Authorize]
         [HttpPost]
