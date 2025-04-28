@@ -19,235 +19,194 @@ namespace PersonalizedCardGame.Hubs
 {
     public class GameClass : Hub
     {
-        public static List<string> ConnectionIds = new List<string>();
-        public static bool IsBusy = false;
-        private static readonly ConcurrentDictionary<string, string> Users = new ConcurrentDictionary<string, string>();
+        private static readonly ConcurrentDictionary<string, string> ConnectionIds = new ConcurrentDictionary<string, string>();
+        private static readonly object IsBusyLock = new object();
+        private static bool IsBusy = false;
         private readonly DBCardGameContext _dbCardGameContext;
         private readonly GameStateService _GameStateService;
-        private readonly ILogger<AuthController> _logger; // Added logger dependency
-        public GameClass(DBCardGameContext dbCardGameContext, GameStateService gameStateService)
+        private readonly ILogger<GameClass> _logger;
+
+        public GameClass(DBCardGameContext dbCardGameContext, GameStateService gameStateService, ILogger<GameClass> logger)
         {
             _dbCardGameContext = dbCardGameContext;
             _GameStateService = gameStateService;
+            _logger = logger;
         }
 
-        /*
-            Send "ReceiveMessage" to all clients.
-        */
-        public int SendMessage(string user, string message)
+        public async Task<int> SendMessage(string user, string message)
         {
             try
             {
-                if (IsBusy == false)
+                lock (IsBusyLock)
                 {
+                    if (IsBusy)
+                        return 0;
+
                     IsBusy = true;
-                    var val1 = Context.ConnectionId;
-                    var val2 = Context.User;
-                    var val3 = Clients.Caller;
-
-                    ConnectionIds.Add(user + "===" + message);
-
-                    Clients.All.SendAsync("ReceiveMessage", user, message);
-                    return 1;
                 }
-                else
+
+                ConnectionIds.TryAdd(Context.ConnectionId, $"{user}==={message}");
+                await Clients.All.SendAsync("ReceiveMessage", user, message);
+                return 1;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in SendMessage");
+                return -1;
+            }
+            finally
+            {
+                lock (IsBusyLock)
                 {
-                    return 0;
+                    IsBusy = false;
+                }
+            }
+        }
+
+        public async Task SendNotification(string gameCode, string playerId, string notificationMessage)
+        {
+            try
+            {
+                await Clients.All.SendAsync("ReceiveNotification", gameCode, playerId, notificationMessage);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in SendNotification");
+            }
+        }
+
+        public async Task SendRemoveNotification(string gameCode, string userId)
+        {
+            try
+            {
+                var player = await _dbCardGameContext.Player
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(x => x.GameCode == gameCode && x.PlayerUniqueId == userId);
+
+                if (player != null && !string.IsNullOrEmpty(player.SignalRconnectionId))
+                {
+                    await Clients.Client(player.SignalRconnectionId).SendAsync("RemovedNotification");
                 }
             }
             catch (Exception ex)
             {
-                return -1;
+                _logger.LogError(ex, "Error in SendRemoveNotification");
             }
         }
 
-        /*
-        Send "ReciveNotification" to all Clients.
-        @param
-        gamecode: GameCode that will receive notfication.
-        playerid: PlayerId that send notficiation.
-        notificationmessage: message
-        */
-        public async Task SendNotification(string gamecode, string playerid, string notificationmessage)
+        public async Task SendEndGameSummary(string gameCode)
         {
-            var val1 = Context.ConnectionId;
-            var val2 = Context.User;
-            var val3 = Clients.Caller;
-
-            // ConnectionIds.Add(user + "===" + message);
-
-            await Clients.All.SendAsync("ReceiveNotification", gamecode, playerid, notificationmessage);
+            try
+            {
+                await Clients.All.SendAsync("ReceiveEndGameSummary", gameCode);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in SendEndGameSummary");
+            }
         }
 
-        public async Task GameLog(string GameCode, string ActionName, string PlayerUniqueId, string PlayerName)
+        public async Task SendEndHandSummary(string gameCode)
         {
-
+            try
+            {
+                await Clients.All.SendAsync("ReceiveEndHandSummary", gameCode);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in SendEndHandSummary");
+            }
         }
 
-        /*
-         SendRemoveNotification
-         */
-        public async Task SendRemoveNotification(string GameCode, string UserId)
-        {
-            var player = await _dbCardGameContext.Player.Where(x => x.GameCode == GameCode && x.PlayerUniqueId == UserId).FirstOrDefaultAsync();
-            var val1 = Context.ConnectionId;
-            await Clients.Client(player.SignalRconnectionId).SendAsync("RemovedNotification");
-        }
-
-        /*
-        Send "ReceiveEndGameSummary"
-        @param
-        gamecode: GameCode that send notification
-        */
-        public async Task SendEndGameSummary(string gamecode)
-        {
-            var val1 = Context.ConnectionId;
-            var val2 = Context.User;
-            var val3 = Clients.Caller;
-
-            // ConnectionIds.Add(user + "===" + message);
-
-            await Clients.All.SendAsync("ReceiveEndGameSummary", gamecode);
-        }
-
-        /*
-        Send "ReceiveEndHandSummary"
-        @param
-        gamecode: GameCode that send notification
-        */
-        public async Task SendEndHandSummary(string gamecode)
-        {
-            var val1 = Context.ConnectionId;
-            var val2 = Context.User;
-            var val3 = Clients.Caller;
-
-            // ConnectionIds.Add(user + "===" + message);
-
-            await Clients.All.SendAsync("ReceiveEndHandSummary", gamecode);
-        }
-
-        //same as SendMessage
         public async Task SendMessage2(string user, string message, string test)
         {
-            var val1 = Context.ConnectionId;
-            var val2 = Context.User;
-            var val3 = Clients.Caller;
-
-            ConnectionIds.Add(user + "===" + message);
-
-            JavaScriptSerializer js = new JavaScriptSerializer();
-            string jsonData = js.Serialize(ConnectionIds); // {"Name":"C-
-
-            await Clients.All.SendAsync("ReceiveMessage", user, message);
+            try
+            {
+                ConnectionIds.TryAdd(Context.ConnectionId, $"{user}==={message}");
+                await Clients.All.SendAsync("ReceiveMessage", user, message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in SendMessage2");
+            }
         }
 
-        //same as SendMessage    
         public async Task ReceiveOnLoad(string user, string message)
         {
-            var val1 = Context.ConnectionId;
-            var val2 = Context.User;
-            var val3 = Clients.Caller;
-
-            // string val1 = "";
-            JavaScriptSerializer js = new JavaScriptSerializer();
-            string jsonData = js.Serialize(ConnectionIds); // {"Name":"C-
-
-            await Clients.All.SendAsync("ReceiveMessage", user, jsonData);
+            try
+            {
+                var jsonData = System.Text.Json.JsonSerializer.Serialize(ConnectionIds);
+                await Clients.All.SendAsync("ReceiveMessage", user, jsonData);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in ReceiveOnLoad");
+            }
         }
 
-        // when you connect to GameClass Hub, this function invoked.
-        public async override Task OnConnectedAsync()
+        public override async Task OnConnectedAsync()
         {
-            HttpContext httpContext = Context.GetHttpContext();
-            Console.Write(Context.ConnectionId);
-
-            var customQuerystring = httpContext!.Request.QueryString.Value;
-
-            string[] keyValuePairs = customQuerystring.Split('&');
-
-            // Loop through each key=value pair and split it into its separate key and value components
-            string gameCode = null;
-            string userIdentity = null;
-
-            foreach (string keyValuePair in keyValuePairs)
+            try
             {
-                string[] parts = keyValuePair.Split('=');
+                var httpContext = Context.GetHttpContext();
+                var query = httpContext?.Request.Query;
 
-                if (parts.Length == 2)
+                string gameCode = query?["GameCode"];
+                string userIdentity = query?["UserIdentity"];
+
+                if (!string.IsNullOrEmpty(gameCode) && !string.IsNullOrEmpty(userIdentity))
                 {
-                    if (parts[0] == "GameCode")
+                    var gameHash = await _GameStateService.GetByGameCodeAsync(gameCode);
+                    if (gameHash != null)
                     {
-                        gameCode = parts[1];
-                    }
-                    else if (parts[0] == "UserIdentity")
-                    {
-                        userIdentity = parts[1];
+                        var player = gameHash.ActivePlayers.FirstOrDefault(x => x.PlayerId == userIdentity);
+                        if (player != null)
+                        {
+                            await _GameStateService.SetPlayerConnection(gameCode, userIdentity, Context.ConnectionId, false);
+
+                            foreach (var otherPlayer in gameHash.ActivePlayers.Where(p => p.PlayerId != userIdentity))
+                            {
+                                await Clients.Client(otherPlayer.ConnectionId).SendAsync("Other_Connected", userIdentity, Context.ConnectionId);
+                            }
+                        }
                     }
                 }
-            }
 
-            GameHash gameHash = await _GameStateService.GetByGameCodeAsync(gameCode);
-            if (gameHash != null)
-            {
-                ActivePlayer player = gameHash.ActivePlayers.Find(x => x.PlayerId == userIdentity);
-                if (player != null)
-                {
-                    GameHash updatedGameHash = await _GameStateService.SetPlayerConnection(gameCode, userIdentity!, Context.ConnectionId, false);
-                    updatedGameHash.ActivePlayers.ForEach(async Player =>
-                    {
-                        if (Player.PlayerId != userIdentity!)
-                            await this.Clients.Client(Player.ConnectionId).SendAsync("Other_Connected", userIdentity!, Context.ConnectionId);
-                    });
-                }
+                await base.OnConnectedAsync();
             }
-            await base.OnConnectedAsync();
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in OnConnectedAsync");
+            }
         }
 
-        //when you close connection, this function invokes.
         public override async Task OnDisconnectedAsync(Exception exception)
         {
             try
             {
-
-                _logger.LogInformation("OnDisconnection information Status" /*+ exception.Message, exception.InnerException, exception.StackTrace, exception.Source*/);
-
-
+                if (exception != null)
                 {
-                    if (exception != null)
-                        Console.WriteLine($"Disconnected due to: {exception}");
-                    await base.OnDisconnectedAsync(exception);
+                    _logger.LogWarning($"Disconnected due to: {exception.Message}");
                 }
 
-
-                //GameHash gameHash = _GameStateService.FindByConnectionId(Context.ConnectionId);
-                //if (gameHash == null)
-                //    return;
-                //int index = gameHash.ActivePlayers.FindIndex(x => x.ConnectionId == Context.ConnectionId);
-                //if (index != -1)
-                //{
-                //    ActivePlayer player = gameHash.ActivePlayers[index];
-                //    player.IsDisconnected = true;
-                //    if (player.PlayerId == gameHash.DealerId)
-                //        gameHash.DealerId = gameHash.FindNextCurrentId(index);
-                //    if (player.PlayerId == gameHash.CurrentId)
-                //        gameHash.CurrentId = gameHash.FindNextCurrentId(index);
-                //}
-                //await _GameStateService.UpdateAsync(gameHash.Id!, gameHash);
-                //gameHash.ActivePlayers.ForEach(async Player =>
-                //{
-                //    await this.Clients.Client(Player.ConnectionId).SendAsync("Player_Disconnected", index);
-                //});
+                await base.OnDisconnectedAsync(exception);
             }
             catch (Exception ex)
             {
-                _logger.LogError("OnDisconnection Error Status" + ex.Message, ex.InnerException, ex.StackTrace, ex.Source);
+                _logger.LogError(ex, "Error in OnDisconnectedAsync");
             }
         }
-        public async Task AlertNotifictionVideo(string message)
+
+        public async Task AlertNotificationVideo(string message)
         {
-            // You can send the message to all clients, or to specific ones, depending on your needs.
-            await Clients.All.SendAsync("ReceiveAlertNotifictionVideo", message);
+            try
+            {
+                await Clients.All.SendAsync("ReceiveAlertNotificationVideo", message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in AlertNotificationVideo");
+            }
         }
-       
     }
 }
