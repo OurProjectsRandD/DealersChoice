@@ -39,6 +39,24 @@ namespace PersonalizedCardGame.Services
         public async Task<GameHash> GetByGameCodeAsync(string gameCode) =>
             await mongoCollection.Find(x => x.GameCode == gameCode).FirstOrDefaultAsync();
 
+
+        public async Task<GameHash?> GetByGameCodeActivePlayerAsync(string gameCode)
+        {
+            try
+            {
+                var data = await mongoCollection.Find(x => x.GameCode == gameCode).FirstOrDefaultAsync();
+                if (data == null || data.ActivePlayers == null)
+                    return null;
+                data.ActivePlayers = data.ActivePlayers.Where(player => player.IsFolded == false).ToList();
+                return data;
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception(ex.Message);
+            }
+        }
+
         public async Task CreateAsync(GameHash gameHash) =>
             await mongoCollection.InsertOneAsync(gameHash);
 
@@ -60,6 +78,17 @@ namespace PersonalizedCardGame.Services
             GameHash updateResult = await mongoCollection.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<GameHash> { ArrayFilters = arrayFilters, ReturnDocument = ReturnDocument.After  });
             return updateResult;
         }
+
+        public async Task<List<ActivePlayer>> GetActivePlayers(string gameCode)
+        {
+            var filter = Builders<GameHash>.Filter.Eq("GameCode", gameCode);
+            var gameHash = await mongoCollection.Find(filter).FirstOrDefaultAsync();
+
+            return gameHash?.ActivePlayers ?? new List<ActivePlayer>();
+        }
+
+
+
 
         public async Task<GameHash> AddActivePlayer(string gameCode, ActivePlayer activePlayer)
         {

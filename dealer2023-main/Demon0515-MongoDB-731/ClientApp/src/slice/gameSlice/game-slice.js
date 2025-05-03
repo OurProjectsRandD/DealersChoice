@@ -35,6 +35,7 @@ const initialState = {
   IsRoundSettlement: false,
   GameCode: null,
   ActivePlayers: [],
+  ActiveParticipants: [],
   CommunityCards: [],
   HandSteps: [],
   Deck: [],
@@ -83,6 +84,9 @@ const slice = createSlice({
       state.IsRoundSettlement = action.payload.IsRoundSettlement;
       state.GameCode = action.payload.GameCode;
       state.ActivePlayers = action.payload.ActivePlayers;
+      state.ActiveParticipants = state.ActivePlayers.filter(
+        (item) => item.IsFolded === false && item.IsDisconnected === false
+      );
       state.CommunityCards = action.payload.CommunityCards;
       state.HandSteps = action.payload.HandSteps;
       state.Deck = action.payload.Deck;
@@ -114,7 +118,7 @@ const slice = createSlice({
         return;
       }
 
-      state.ActivePlayers.push({
+      const _user = {
         PlayerId: userId,
         PlayerImage: playerImage,
         PlayerName: userName,
@@ -130,7 +134,10 @@ const slice = createSlice({
         CurrentRoundStatus: 0,
         Balance: 0,
         LastActionPerformed: "",
-      });
+      };
+
+      state.ActivePlayers.push(_user);
+      state.ActiveParticipants.push(_user);
 
       if (state.ActivePlayers.length === 2) {
         state.CurrentId = state.ActivePlayers[1].PlayerId;
@@ -342,12 +349,20 @@ const slice = createSlice({
 
     fold(state, action) {
       state.isLoading = false;
-      console.log("payloadAtFold =====>", action.payload);
-      
-      state.ActivePlayers[action.payload].LastActionPerformed = " Fold";
-      AddStep(state, action.payload, "folded", "Fold");
-      state.ActivePlayers[action.payload].IsFolded = true;
-      state.ActivePlayers[action.payload].PlayerCards.forEach(
+
+      const newParticipants = state.ActiveParticipants.filter(
+        (player) => player.PlayerId !== action.payload.Id
+      );
+      state.ActiveParticipants = newParticipants;
+
+      const playerIndex = state.ActivePlayers.findIndex(
+        (player) => player.PlayerId === action.payload.Id
+      );
+
+      state.ActivePlayers[playerIndex].LastActionPerformed = " Fold";
+      AddStep(state, playerIndex, "folded", "Fold");
+      state.ActivePlayers[playerIndex].IsFolded = true;
+      state.ActivePlayers[playerIndex].PlayerCards.forEach(
         (playerCard) => (playerCard.Presentation = 1)
       );
       OnPlayerAction(state);

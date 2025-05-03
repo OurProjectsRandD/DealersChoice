@@ -233,6 +233,12 @@ export function endHandAction(payload) {
 export function foldAction(payload) {
   return async (dispatch) => {
     dispatch(actions.startLoading());
+    try {
+      dispatch(actions.fold(payload));
+      LogRocket.log(`${payload.DisplayName} Player folded`, payload.gameState);
+    } catch (error) {
+      dispatch(actions.hasError(error));
+    }
 
     try {
       dispatch(actions.fold(payload));

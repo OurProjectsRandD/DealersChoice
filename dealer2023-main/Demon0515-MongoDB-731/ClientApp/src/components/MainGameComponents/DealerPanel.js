@@ -12,14 +12,23 @@ const DealerPanel = () => {
   const dispatch = useDispatch();
   const gameState = useSelector((state) => state.newGameState);
   const user = useSelector((state) => state.auth.user);
-
+  console.log("gameState", gameState.ActivePlayers);
   const txtAnteRef = useRef(null);
   const DealValueRef = useRef(null);
+
+  const activePlayers = gameState.ActiveParticipants.filter(
+    (activePlayer) =>
+      activePlayer.IsFolded === false && activePlayer.IsDisconnected === false
+  );
 
   //when you click deal button
   const dealCardToPlayer = useCallback(
     (index) => {
       try {
+        console.log("Filtered Active Players:", activePlayers);
+        console.log("Index of player to deal card to:", index);
+        console.log("Deal Value Ref:", DealValueRef.current.value);
+        console.log("Card Deal Type:", cardDealType);
         // Get Number of card to pass
         const NumOfCard = parseInt(DealValueRef.current.value);
 
@@ -50,7 +59,7 @@ const DealerPanel = () => {
         console.log("error dealing card to player = ", err);
       }
     },
-    [cardDealType, gameState.GameCode, user.Id]
+    [activePlayers, cardDealType, gameState.GameCode, user.Id]
   );
 
   const daelCardToCommunity = useCallback(
@@ -161,11 +170,13 @@ const DealerPanel = () => {
               >
                 Community
               </label>
-              {gameState.ActivePlayers.filter(
-                (activePlayer) =>
-                  activePlayer.IsFolded === false &&
-                  activePlayer.IsDisconnected === false
-              ).map((activePlayer, index) => {
+              {activePlayers.map((activePlayer, index) => {
+                console.log(
+                  "activePlayer on map and index",
+                  activePlayer,
+                  index
+                );
+                const handleClick = () => dealCardToPlayer(index);
                 return (
                   <label
                     key={index}
@@ -173,7 +184,7 @@ const DealerPanel = () => {
                       textDecoration: "underline",
                       cursor: "pointer",
                     }}
-                    onClick={() => dealCardToPlayer(index)}
+                    onClick={handleClick}
                   >
                     {activePlayer.PlayerName}
                   </label>

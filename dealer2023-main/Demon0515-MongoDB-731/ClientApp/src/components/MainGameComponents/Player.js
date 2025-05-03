@@ -141,6 +141,7 @@ const Player = ({ ptr }) => {
     (Player) => {
       KickPlayer(gameState.GameCode, PlayerIndex, () => {
         dispatch(playerLeftAction(PlayerIndex));
+        console.log(PlayerIndex, "Player Removed index from player.js");
         LogRocket.log("Kicked Player " + Player.PlayerName, {
           GameCode: gameState.GameCode,
           GameHash: gameState,

@@ -1,6 +1,7 @@
 ﻿using Elmah.Io.Client;
 using log4net;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
@@ -751,6 +752,19 @@ namespace PersonalizedCardGame.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<GameHash?> UnfoldedPlayers(string code)
+        {
+            GameHash? gameHash = await _GameStateService.GetByGameCodeActivePlayerAsync(code);
+            if (gameHash == null)
+            {
+                _log.Info($"GameHash not found for code: {code}");
+                return null;
+            }
+            return gameHash;
+        }
+       
+
         [HttpPost]
         public async Task<bool> Fold([FromBody] GameControllerRequestModel model)
         {
@@ -867,8 +881,10 @@ namespace PersonalizedCardGame.Controllers
                 }
                 else
                 {
-                    action = "Deal 1 card to patrick";
-                    //action = "Deal " + model.Amount + " card to " + (model.Type == 0 ? activePlayers[model.Index!].PlayerName : "community " + (model.Index + 1));
+                    // action = "Deal 1 card to patrick";
+                   //int index = model.Index - 1;
+                   // action = "Deal " + model.Amount + " card to " + (model.Type == 0 ? activePlayers[index].PlayerName : "community " + (index + 1));
+                    action = "Deal " + model.Amount + " card to " + (model.Type == 0 ? activePlayers[model.Index].PlayerName : "community " + (model.Index + 1));
                     for (int i = 0; i < model.Amount; i++)
                     {
                         string card_value = gameHash.SelectFromDeck();
@@ -892,68 +908,36 @@ namespace PersonalizedCardGame.Controllers
 
 
 
-                        // Ensure model.Index is 2
-                        model.Index = 2;
+                        //// Ensure model.Index is 2
+                        //model.Index = 2;
 
-                        // Ensure activePlayers.Count is 3
-                        if (activePlayers == null)
-                        {
-                            activePlayers = new List<ActivePlayer>();
-                        }
+                        //// Ensure activePlayers.Count is 3
+                        //if (activePlayers == null)
+                        //{
+                        //    activePlayers = new List<ActivePlayer>();
+                        //}
 
-                        while (activePlayers.Count < 3)
-                        {
-                            activePlayers.Add(new ActivePlayer());
-                        }
+                        //while (activePlayers.Count < 3)
+                        //{
+                        //    activePlayers.Add(new ActivePlayer());
+                        //}
 
-                        // (Optional) If activePlayers.Count > 3 and you want *exactly* 3, you can trim it
-                        if (activePlayers.Count > 3)
-                        {
-                            activePlayers = activePlayers.Take(4).ToList();
-                        }
-
-                        if (model.Type == 0)
-                        {
-                            if (model.Index >= 0 && model.Index < activePlayers.Count)
-                            {
-                                activePlayers[model.Index].PlayerCards.Add(new Card()
-                                {
-                                    Value = card_value,
-                                    Presentation = model.DealType
-                                });
-
-                                draggingCards.Add(new DraggingCard()
-                                {
-                                    Value = card_value,
-                                    Presentation = model.DealType,
-                                    Type = 0,
-                                    Index = model.Index
-                                });
-                            }
-                            else
-                            {
-                                Console.WriteLine($"Invalid model.Index {model.Index} for activePlayers.Count = {activePlayers.Count}");
-                            }
-                        }
-
-
-
-
-
-
-
+                        //// (Optional) If activePlayers.Count > 3 and you want *exactly* 3, you can trim it
+                        //if (activePlayers.Count > 3)
+                        //{
+                        //    activePlayers = activePlayers.Take(4).ToList();
+                        //}
 
                         //if (model.Type == 0)
                         //{
                         //    if (model.Index >= 0 && model.Index < activePlayers.Count)
-                        //  //  if (model.Index >= 0 && model.Index < activePlayers.Count)
                         //    {
-
                         //        activePlayers[model.Index].PlayerCards.Add(new Card()
                         //        {
                         //            Value = card_value,
                         //            Presentation = model.DealType
                         //        });
+
                         //        draggingCards.Add(new DraggingCard()
                         //        {
                         //            Value = card_value,
@@ -967,6 +951,38 @@ namespace PersonalizedCardGame.Controllers
                         //        Console.WriteLine($"Invalid model.Index {model.Index} for activePlayers.Count = {activePlayers.Count}");
                         //    }
                         //}
+
+
+
+
+
+
+
+
+                        if (model.Type == 0)
+                        {
+                            if (model.Index >= 0 && model.Index < activePlayers.Count)
+                            //  if (model.Index >= 0 && model.Index < activePlayers.Count)
+                            {
+
+                                activePlayers[model.Index].PlayerCards.Add(new Card()
+                                {
+                                    Value = card_value,
+                                    Presentation = model.DealType
+                                });
+                                draggingCards.Add(new DraggingCard()
+                                {
+                                    Value = card_value,
+                                    Presentation = model.DealType,
+                                    Type = 0,
+                                    Index = model.Index
+                                });
+                            }
+                            else
+                            {
+                                Console.WriteLine($"Invalid model.Index {model.Index} for activePlayers.Count = {activePlayers.Count}");
+                            }
+                        }
 
                         else
                         {

@@ -535,6 +535,10 @@ export const OnPlayerAction = (GameState) => {
   console.log("current Id index ====>", GameState.activePlayers);
   console.log("active players ======>", activePlayers);
   GameState.CurrentId = GameState.ActivePlayers[newIndex].PlayerId;
+  console.log(
+    "current Id at OnPlayerAction  ======>",
+    GameState.ActivePlayers[newIndex]
+  );
   let currentPlayerbet =
     GameState.CurrentBet - GameState.ActivePlayers[newIndex].CurrentRoundStatus;
   GameState.BetStatusIndex = newIndex;
@@ -570,6 +574,7 @@ export const OnPlayerAction = (GameState) => {
       AfterRoundSteps: [],
     });
   }
+
   return GameState;
 };
 
@@ -586,6 +591,7 @@ export const NextCurrentIndex = (GameState, index = -1) => {
       (player) => player.PlayerId === GameState.CurrentId
     );
   let newIndex = index;
+  console.log("new index on NextCurrentIndex =====>", newIndex);
   let count = 0;
   do {
     newIndex = (newIndex + 1) % GameState.ActivePlayers.length;
@@ -594,6 +600,7 @@ export const NextCurrentIndex = (GameState, index = -1) => {
       GameState.ActivePlayers[newIndex].IsDisconnected === false
     )
       return newIndex;
+    console.log("new index on NextCurrentIndex return =====>", newIndex);
   } while (count++ < GameState.ActivePlayers.length);
 };
 

@@ -18,18 +18,15 @@ const FoldButton = () => {
     return gameState.ActivePlayers[currentIndex];
   }, [currentIndex, gameState.ActivePlayers]);
 
-  const FoldEventHandler = useCallback(
-    (ev) => {
-      console.log("event blablblbl:", currentIndex);
-      Fold(user.Id, gameState.GameCode, currentIndex, () => {
-        dispatch(foldAction(currentIndex));
-      });
-    },
-    [currentIndex, dispatch, gameState, user]
-  );
+  const handleFoldEvt = useCallback(() => {
+    Fold(user.Id, gameState.GameCode, currentIndex, () => {
+      dispatch(foldAction(user));
+    });
+  }, [currentIndex, dispatch, gameState, user]);
+
   if (gameState.CurrentId === user.Id && currentPlayer.PlayerCards.length > 0)
     return (
-      <button className="btn Fold mt-1 me-1 me-md-0" onClick={FoldEventHandler}>
+      <button className="btn Fold mt-1 me-1 me-md-0" onClick={handleFoldEvt}>
         Fold
       </button>
     );
