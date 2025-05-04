@@ -431,6 +431,7 @@ const MainGame = ({ isVideoChatAllowed = false }) => {
     });
 
     connection.on("Fold", (index) => {
+      console.log("=============== FOLD TRIGGERED ===============");
       dispatch(foldAction(index));
     });
 

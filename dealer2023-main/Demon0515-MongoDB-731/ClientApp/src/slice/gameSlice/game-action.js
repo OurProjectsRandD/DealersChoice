@@ -333,3 +333,15 @@ export function toggleLockAction() {
     }
   };
 }
+
+export function refreshParticipants(payload) {
+  return async (dispatch) => {
+    dispatch(actions.startLoading());
+
+    try {
+      dispatch(actions.refreshParticipants(payload));
+    } catch (error) {
+      dispatch(actions.hasError(error));
+    }
+  };
+}

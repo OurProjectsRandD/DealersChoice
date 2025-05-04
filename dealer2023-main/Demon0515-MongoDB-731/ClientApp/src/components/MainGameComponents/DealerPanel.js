@@ -1,14 +1,18 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import AnteButton from "../Buttons/AnteButton";
 import PassCommunityModal from "../Dialogs/PassCommunityModal";
 import PassDealPopUp from "../Dialogs/PassDealPopup";
-import { DealCards } from "../../common/game/GameControl";
+import {
+  DealCards,
+  getActiveGameParticipants,
+} from "../../common/game/GameControl";
 import { useDispatch, useSelector } from "react-redux";
 
 const DealerPanel = () => {
   const [cardDealType, setCardDealType] = useState(0);
   const [passCommunityModalOpen, setPassCommunityModalOpen] = useState(false);
   const [passDealPopUpOpen, setPassDealPopUpOpen] = useState(false);
+  // const [participants, setParticipants] = useState([]);
   const dispatch = useDispatch();
   const gameState = useSelector((state) => state.newGameState);
   const user = useSelector((state) => state.auth.user);
@@ -20,6 +24,16 @@ const DealerPanel = () => {
     (activePlayer) =>
       activePlayer.IsFolded === false && activePlayer.IsDisconnected === false
   );
+
+  const participants = useMemo(async () => {
+    const players = await getActiveGameParticipants(gameState.GameCode);
+
+    if (!players) {
+      return [];
+    }
+
+    return;
+  }, []);
 
   //when you click deal button
   const dealCardToPlayer = useCallback(

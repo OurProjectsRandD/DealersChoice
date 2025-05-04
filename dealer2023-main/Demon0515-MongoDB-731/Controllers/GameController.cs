@@ -793,8 +793,11 @@ namespace PersonalizedCardGame.Controllers
                         //investingate this method
                         if (player.PlayerId == model.UserId)
                         {
+                           // await _HubContext.Clients.Client(player.ConnectionId)
+                               // .SendAsync("Fold", model);
+
                             await _HubContext.Clients.Client(player.ConnectionId)
-                                .SendAsync("Fold", model.Index!);
+                                        .SendAsync("Fold", model.Index!);
                         }
                         _log.Info($"Fold Method - PlayerId: {player.PlayerId}, IsFolded: {player.IsFolded}, ConnectionId: {player.ConnectionId}");
                     }
@@ -804,25 +807,7 @@ namespace PersonalizedCardGame.Controllers
                     }
                 }
 
-                //gameHash.ActivePlayers.ForEach(async (player) =>
-                //{
-
-                //    //  var foldTasks = gameHash.ActivePlayers
-                //    //.Where(player => player.PlayerId != model.UserId)
-                //    //.Select(player =>
-                //    //{
-                //    //    _log.Info("Fold Method" + player.PlayerId + player.IsFolded + player.IsFolded + player.ConnectionId);
-                //    //    return _HubContext.Clients.Client(player.ConnectionId).SendAsync("Fold", model.Index!);
-                //    //});
-
-                //    //       await Task.WhenAll(foldTasks);
-
-
-
-                //    if (player.PlayerId != model.UserId)
-                //        await _HubContext.Clients.Client(player.ConnectionId).SendAsync("Fold", model.Index!);
-                //    _log.Info("Fold Method" + player.PlayerId + player.IsFolded + player.IsFolded + player.ConnectionId);
-                //});
+             
                 return true;
             }
             catch (Exception ex)
@@ -888,75 +873,7 @@ namespace PersonalizedCardGame.Controllers
                     for (int i = 0; i < model.Amount; i++)
                     {
                         string card_value = gameHash.SelectFromDeck();
-                        //if (model.Type == 0)
-                        //{
-                        //    activePlayers[model.Index!].PlayerCards.Add(new Card()
-                        //    {
-                        //        Value = card_value,
-                        //        Presentation = model.DealType
-                        //    });
-                        //    draggingCards.Add(new DraggingCard()
-                        //    {
-                        //        Value = card_value,
-                        //        Presentation = model.DealType,
-                        //        Type = 0,
-                        //        Index = model.Index!
-                        //    });
-                        //} 
-
-
-
-
-
-                        //// Ensure model.Index is 2
-                        //model.Index = 2;
-
-                        //// Ensure activePlayers.Count is 3
-                        //if (activePlayers == null)
-                        //{
-                        //    activePlayers = new List<ActivePlayer>();
-                        //}
-
-                        //while (activePlayers.Count < 3)
-                        //{
-                        //    activePlayers.Add(new ActivePlayer());
-                        //}
-
-                        //// (Optional) If activePlayers.Count > 3 and you want *exactly* 3, you can trim it
-                        //if (activePlayers.Count > 3)
-                        //{
-                        //    activePlayers = activePlayers.Take(4).ToList();
-                        //}
-
-                        //if (model.Type == 0)
-                        //{
-                        //    if (model.Index >= 0 && model.Index < activePlayers.Count)
-                        //    {
-                        //        activePlayers[model.Index].PlayerCards.Add(new Card()
-                        //        {
-                        //            Value = card_value,
-                        //            Presentation = model.DealType
-                        //        });
-
-                        //        draggingCards.Add(new DraggingCard()
-                        //        {
-                        //            Value = card_value,
-                        //            Presentation = model.DealType,
-                        //            Type = 0,
-                        //            Index = model.Index
-                        //        });
-                        //    }
-                        //    else
-                        //    {
-                        //        Console.WriteLine($"Invalid model.Index {model.Index} for activePlayers.Count = {activePlayers.Count}");
-                        //    }
-                        //}
-
-
-
-
-
-
+                      
 
 
                         if (model.Type == 0)
@@ -1006,27 +923,6 @@ namespace PersonalizedCardGame.Controllers
                 gameHash.GetDealer().LastActionPerformed = action;
                 gameHash.AddStep(gameHash.GetDealerIndex(), action, "Deal");
                 await _GameStateService.UpdateAsync(gameHash.Id!, gameHash);
-
-                //foreach (var player in gameHash.ActivePlayers)
-                //{
-                //    await _HubContext.Clients.Client(player.ConnectionId)
-                //        .SendAsync("DealCards", draggingCards, action);
-                //} 
-
-                //try
-                //{
-                //    foreach (var player in gameHash.ActivePlayers)
-                //    {
-                //        await _HubContext.Clients.Client(player.ConnectionId)
-                //            .SendAsync("DealCards", draggingCards, action);
-                //    }
-                //}
-                //catch (Exception ex)
-                //{
-                //    _logger.LogError(ex, "Error sending DealCards to player {PlayerId}", model.UserId,player.);
-                //    Console.WriteLine($"Error sending DealCards: {ex.Message}");
-                //    // You could log it properly or handle it however you need
-                //}
 
 
                 foreach (var player in gameHash.ActivePlayers)

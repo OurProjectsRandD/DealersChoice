@@ -522,6 +522,24 @@ export const decreaseVideoMinutesRuntime = async (
   });
 };
 
+export const getActiveGameParticipants = async (gameCode) => {
+  try {
+    const result = SendRequest({
+      url: `Game/UnfoldedPlayers?code=${gameCode}`,
+      method: "GET",
+    });
+
+    if (!result) {
+      throw new Error("No result");
+    }
+
+    return result;
+  } catch (error) {
+    console.error("Error fetching active game participants:", error);
+    throw error;
+  }
+};
+
 export const OnPlayerAction = (GameState) => {
   let activePlayers = [...GameState.ActivePlayers];
 
