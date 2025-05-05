@@ -84,6 +84,7 @@ export const DealCards = (
       DealType,
     },
   }).then((result) => {
+    console.log("result", result);
     if (result.data === false) alert("failed");
     else feedback();
   });

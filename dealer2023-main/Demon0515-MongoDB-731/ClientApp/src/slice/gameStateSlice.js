@@ -258,6 +258,7 @@ export const gameStateSlice = createSlice({
     fold: (state, action) => {
       console.log("payload =====>", action.payload);
       state.ActivePlayers[action.payload].LastActionPerformed = " Fold";
+
       AddStep(state, action.payload, "folded", "Fold");
       state.ActivePlayers[action.payload].IsFolded = true;
       state.ActivePlayers[action.payload].PlayerCards.forEach(
@@ -411,6 +412,7 @@ export const gameStateSlice = createSlice({
       state.ActivePlayers[action.payload.index].IsRealTimeChatForMic =
         action.payload.value;
     },
+
     dealCards: (state, action) => {
       action.payload.dealCards.forEach((card) => {
         state.Deck = state.Deck.filter((x) => x !== card.Value);
@@ -418,7 +420,13 @@ export const gameStateSlice = createSlice({
           // state.ActivePlayers.filter(
           //   (player) => !player.IsFolded
           // )[card.Index].PlayerCards.push({
-          if (!state.ActivePlayers[card.Index].IsFolded)
+
+          const active = state.ActivePlayers.filter(
+            (player) => !player.IsFolded && !player.IsDisconnected
+          );
+          state.ActivePlayers = active;
+
+          if (!active[card.Index].IsFolded)
             state.ActivePlayers[card.Index].PlayerCards.push({
               Value: card.Value,
               Presentation: card.Presentation,
@@ -439,6 +447,7 @@ export const gameStateSlice = createSlice({
       AddStep(state, dealerIndex, action.payload.LastActionPerformed, "Deal");
       LogRocket.log(action.payload.LastActionPerformed, state);
     },
+
     passDeal: (state, action) => {
       state.DealerId = action.payload;
       if (state.Deck.length === 52) {

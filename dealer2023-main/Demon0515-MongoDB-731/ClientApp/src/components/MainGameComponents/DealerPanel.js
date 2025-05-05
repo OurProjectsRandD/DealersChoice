@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import AnteButton from "../Buttons/AnteButton";
 import PassCommunityModal from "../Dialogs/PassCommunityModal";
 import PassDealPopUp from "../Dialogs/PassDealPopup";
@@ -15,6 +15,20 @@ const DealerPanel = () => {
 
   const txtAnteRef = useRef(null);
   const DealValueRef = useRef(null);
+
+  const participants = useMemo(() => {
+    if (!gameState.ActivePlayers) return [];
+
+    const unfoldedParticipants = gameState.ActivePlayers.map(
+      (player, index) => ({ ...player, originalIndex: index })
+    ).filter((player) => !player.IsFolded);
+
+    const notDisconnected = unfoldedParticipants.filter(
+      (player) => !player.IsDisconnected
+    );
+
+    return notDisconnected;
+  }, [gameState.ActivePlayers]);
 
   //when you click deal button
   const dealCardToPlayer = useCallback(
@@ -45,7 +59,9 @@ const DealerPanel = () => {
             DealValueRef.current.value = "";
           }
         );
-      } catch (err) { }
+      } catch (err) {
+        console.error("Error in dealCardToPlayer:", err);
+      }
     },
     [cardDealType, gameState.GameCode, user.Id]
   );
@@ -153,11 +169,7 @@ const DealerPanel = () => {
               >
                 Community
               </label>
-              {gameState.ActivePlayers.filter(
-                (activePlayer) =>
-                  activePlayer.IsFolded === false &&
-                  activePlayer.IsDisconnected === false
-              ).map((activePlayer, index) => {
+              {participants.map(({ PlayerName }, index) => {
                 return (
                   <label
                     key={index}
@@ -167,7 +179,7 @@ const DealerPanel = () => {
                     }}
                     onClick={() => dealCardToPlayer(index)}
                   >
-                    {activePlayer.PlayerName}
+                    {PlayerName}
                   </label>
                 );
               })}
