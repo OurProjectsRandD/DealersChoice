@@ -16,19 +16,19 @@ const DealerPanel = () => {
   const txtAnteRef = useRef(null);
   const DealValueRef = useRef(null);
 
-  const participants = useMemo(() => {
-    if (!gameState.ActivePlayers) return [];
+  // const participants = useMemo(() => {
+  // if (!gameState.ActivePlayers) return [];
 
-    const unfoldedParticipants = gameState.ActivePlayers.map(
-      (player, index) => ({ ...player, originalIndex: index })
-    ).filter((player) => !player.IsFolded);
+  //   const unfoldedParticipants = gameState.ActivePlayers.map(
+  //     (player, index) => ({ ...player, originalIndex: index })
+  //   ).filter((player) => !player.IsFolded);
 
-    const notDisconnected = unfoldedParticipants.filter(
-      (player) => !player.IsDisconnected
-    );
+  //   const notDisconnected = unfoldedParticipants.filter(
+  //     (player) => !player.IsDisconnected
+  //   );
 
-    return notDisconnected;
-  }, [gameState.ActivePlayers]);
+  //   return notDisconnected;
+  // }, [gameState.ActivePlayers]);
 
   //when you click deal button
   const dealCardToPlayer = useCallback(
@@ -169,7 +169,7 @@ const DealerPanel = () => {
               >
                 Community
               </label>
-              {participants.map(({ PlayerName }, index) => {
+              {gameState.FilteredPlayers.map(({ PlayerName }, index) => {
                 return (
                   <label
                     key={index}
