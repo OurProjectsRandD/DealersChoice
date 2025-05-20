@@ -402,9 +402,11 @@ export const gameStateSlice = createSlice({
       }
       LogRocket.log(`${action.payload.Index}th Player showed cards`, state);
     },
+
     endHand: (state, action) => {
       state.IsRoundSettlement = true;
       AddStep(state, -1, "ended hand", "EndHand");
+
       state.ActivePlayers.forEach((obj) => {
         obj.PlayerNetStatusFinal = obj.PlayerNetStatusFinal + obj.PlayerAmount;
         obj.PlayerAmount = 0;
@@ -412,9 +414,14 @@ export const gameStateSlice = createSlice({
         obj.CurrentRoundStatus = 0;
         obj.LastActionPerformed = "";
         obj.PlayerCards = [];
-        //if you'r not sitout, set IsFolded as false
-        if (!obj.IsSitOut) obj.IsFolded = false;
+
+        // Reset folded status if player is not sitting out
+        if (!obj.IsSitOut) {
+          obj.IsFolded = false;
+        }
       });
+
+      // Reset other round-specific states
       state.CommunityCards = [];
       state.CurrentBet = 0;
       state.Deck = GetNewDeck();
@@ -426,12 +433,50 @@ export const gameStateSlice = createSlice({
       });
 
       state.BetStatus = "New Hand. No bet yet.";
+
       let dealerIndex = state.ActivePlayers.findIndex(
         (x) => x.PlayerId === state.DealerId
       );
+      console.log("endhand index in gameStateSlice", dealerIndex);
       state.CurrentId = NextCurrentId(state, dealerIndex);
+
+      // ✅ Rebuild filtered players list after all reset operations
+      state.FilteredPlayers = __filterPlayersHandler(state.ActivePlayers);
+
       LogRocket.log(`Ended hand`, state);
     },
+
+    // endHand: (state, action) => {
+    //   state.IsRoundSettlement = true;
+    //   AddStep(state, -1, "ended hand", "EndHand");
+    //   state.ActivePlayers.forEach((obj) => {
+    //     obj.PlayerNetStatusFinal = obj.PlayerNetStatusFinal + obj.PlayerAmount;
+    //     obj.PlayerAmount = 0;
+    //     obj.Balance = 0;
+    //     obj.CurrentRoundStatus = 0;
+    //     obj.LastActionPerformed = "";
+    //     obj.PlayerCards = [];
+    //     //if you'r not sitout, set IsFolded as false
+    //     if (!obj.IsSitOut) obj.IsFolded = false;
+    //   });
+    //   state.CommunityCards = [];
+    //   state.CurrentBet = 0;
+    //   state.Deck = GetNewDeck();
+    //   state.GameHand += 1;
+    //   state.Round = 0;
+    //   state.HandSteps.push({
+    //     HandId: state.GameHand,
+    //     BettingRounds: [],
+    //   });
+
+    //   state.BetStatus = "New Hand. No bet yet.";
+    //   let dealerIndex = state.ActivePlayers.findIndex(
+    //     (x) => x.PlayerId === state.DealerId
+    //   );
+    //   console.log("endhand index in gameStateSlice", dealerIndex);
+    //   state.CurrentId = NextCurrentId(state, dealerIndex);
+    //   LogRocket.log(`Ended hand`, state);
+    // },
     endGame: (state, action) => {
       state.IsEnded = true;
       LogRocket.log(`Ended game`);
