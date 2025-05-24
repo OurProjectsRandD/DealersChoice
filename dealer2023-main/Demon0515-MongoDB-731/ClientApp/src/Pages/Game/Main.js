@@ -162,7 +162,7 @@ const MainGame = ({ isVideoChatAllowed = false }) => {
             dispatch,
             setVideoTime
           );
-          console.log( 
+          console.log(
             `Active Players: ${stateRef.current.minutes} stateRef.current.minutes +${stateRef.current.gameHash.ActivePlayers.length} stateRef.current.gameHash.ActivePlayers.length`
           );
           console.log(
@@ -247,9 +247,6 @@ const MainGame = ({ isVideoChatAllowed = false }) => {
   });
 
   useEffect(() => {
-    // console.log("Dealer: ", gameState.DealerId);
-    // console.log("Active Players:", JSON.stringify(stateRef.current.gameHash, null, 2));
-
     console.log("connection id: " + connection.connectionId);
     if (connection.connectionId === undefined) return;
 
@@ -421,6 +418,7 @@ const MainGame = ({ isVideoChatAllowed = false }) => {
     });
 
     connection.on("Fold", (index) => {
+      console.log("Fold connection signalR ", index);
       dispatch(fold(index));
     });
 
@@ -446,6 +444,14 @@ const MainGame = ({ isVideoChatAllowed = false }) => {
     // });
 
     connection.on("DealCards", (DealCards, action) => {
+      console.log("DealCards updated on the websocket", DealCards);
+
+      // console.log("Dealer::::::: ", gameState.DealerId);
+      // console.log(
+      //   "Active Players:",
+      //   JSON.stringify(stateRef.current.gameHash, null, 2)
+      // );
+
       dispatch(
         dealCards({
           dealCards: DealCards.map((x) => ({
@@ -455,10 +461,17 @@ const MainGame = ({ isVideoChatAllowed = false }) => {
             Presentation: x.presentation,
             CommunityIndex: x.communityIndex,
           })),
+
           LastActionPerformed: action,
         })
       );
     });
+
+    console.log("Dealer::::::: ", gameState.DealerId);
+    console.log(
+      "Active Players:",
+      JSON.stringify(stateRef.current.gameHash, null, 2)
+    );
 
     connection.on("PassDeal", (dealerId) => {
       dispatch(passDeal(dealerId));
@@ -493,15 +506,16 @@ const MainGame = ({ isVideoChatAllowed = false }) => {
     };
   }, [connection.connectionId]);
 
-// Get active players from gameState
-const activePlayers = stateRef.current.gameHash.ActivePlayers.map((player, index) => {
-  const ptrValue = index + 2; // Assign ptr dynamically (starts from 2)
-  return { ...player, ptr: ptrValue };
-});
+  // Get active players from gameState
+  const activePlayers = stateRef.current.gameHash.ActivePlayers.map(
+    (player, index) => {
+      const ptrValue = index + 2; // Assign ptr dynamically (starts from 2)
+      return { ...player, ptr: ptrValue };
+    }
+  );
 
-const totalPlayers = activePlayers.length;
-const middleIndex = Math.floor(totalPlayers / 2);
-
+  const totalPlayers = activePlayers.length;
+  const middleIndex = Math.floor(totalPlayers / 2);
 
   if (!isLoading)
     return (
@@ -509,9 +523,16 @@ const middleIndex = Math.floor(totalPlayers / 2);
         <div className="container-fluid bg-black p-0" id="GameBoard">
           <div className="row">
             <div className="col-lg-2 mb-3">
-            {/* Hamburger Menu Toggle Button for Mobile */}
+              {/* Hamburger Menu Toggle Button for Mobile */}
               <div class="d-lg-none mb-2">
-                <button class="btn btn-primary ms-auto d-block" type="button" data-bs-toggle="collapse" data-bs-target="#mobileSidebar" aria-expanded="false" aria-controls="mobileSidebar">
+                <button
+                  class="btn btn-primary ms-auto d-block"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#mobileSidebar"
+                  aria-expanded="false"
+                  aria-controls="mobileSidebar"
+                >
                   <i class="bi bi-list"></i>
                 </button>
               </div>
@@ -558,10 +579,16 @@ const middleIndex = Math.floor(totalPlayers / 2);
 
               <div id="table">
                 <div className="row">
-                  <div className="order-1 order-sm-0 col-6 col-md-3 col-lg-2 mt-2 mt-md-1 mt-lg-0 seat" data-dealer="2">
+                  <div
+                    className="order-1 order-sm-0 col-6 col-md-3 col-lg-2 mt-2 mt-md-1 mt-lg-0 seat"
+                    data-dealer="2"
+                  >
                     <Player ptr={2} dealerId={gameState.DealerId} />
                   </div>
-                  <div className="order-2 order-sm-0 col-6 col-md-3 col-lg-2 mt-2 mt-md-1 mt-lg-0 seat" data-dealer="3">
+                  <div
+                    className="order-2 order-sm-0 col-6 col-md-3 col-lg-2 mt-2 mt-md-1 mt-lg-0 seat"
+                    data-dealer="3"
+                  >
                     <Player ptr={3} dealerId={gameState.DealerId} />
                   </div>
                   <div className="order-0 order-sm-0 col-12 col-sm-6 col-md-3 col-lg-2 mt-2 mt-md-1 mt-lg-0 seat">
@@ -569,13 +596,22 @@ const middleIndex = Math.floor(totalPlayers / 2);
                       <PotDiv />
                     </div>
                   </div>
-                  <div className="order-3 col-6 col-md-3 col-lg-2 mt-2 mt-md-1 mt-lg-0 seat" data-dealer="4">
+                  <div
+                    className="order-3 col-6 col-md-3 col-lg-2 mt-2 mt-md-1 mt-lg-0 seat"
+                    data-dealer="4"
+                  >
                     <Player ptr={4} dealerId={gameState.DealerId} />
                   </div>
-                  <div className="order-4 col-6 col-md-3 col-lg-2 mt-2 mt-md-1 mt-lg-0 seat" data-dealer="5">
+                  <div
+                    className="order-4 col-6 col-md-3 col-lg-2 mt-2 mt-md-1 mt-lg-0 seat"
+                    data-dealer="5"
+                  >
                     <Player ptr={5} dealerId={gameState.DealerId} />
                   </div>
-                  <div className="order-5 col-6 col-md-3 col-lg-2 mt-2 mt-md-1 mt-lg-0 seat" data-dealer="6">
+                  <div
+                    className="order-5 col-6 col-md-3 col-lg-2 mt-2 mt-md-1 mt-lg-0 seat"
+                    data-dealer="6"
+                  >
                     <Player ptr={6} dealerId={gameState.DealerId} />
                   </div>
                   {/* {activePlayers.slice(0, middleIndex).map((player, index) => (

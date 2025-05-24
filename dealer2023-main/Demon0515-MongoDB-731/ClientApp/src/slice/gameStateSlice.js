@@ -6,11 +6,20 @@ import {
   OnPlayerAction,
 } from "../common/game/GameControl";
 import { GetNewDeck } from "../common/game/CommonGame";
+import { _ } from "ajv";
+
+function __filterPlayersHandler(payload) {
+  return payload.filter((player) => {
+    return !player.IsFolded && !player.IsDisconnected;
+  });
+}
+
 export const gameStateSlice = createSlice({
   name: "gameState",
   initialState: {
     GameCode: "",
     ActivePlayers: [],
+    FilteredPlayers: [],
     CommunityCards: [],
     HandSteps: [],
     Deck: [],
@@ -20,7 +29,33 @@ export const gameStateSlice = createSlice({
       state.MeetingId = action.payload;
     },
     setGameState: (state, action) => {
-      return action.payload;
+      state.GameCode = action.payload.GameCode;
+      state.ActivePlayers = action.payload.ActivePlayers;
+      state.Deck = action.payload.Deck;
+      state.CommunityCards = action.payload.CommunityCards;
+      state.HandSteps = action.payload.HandSteps;
+      state.Id = action.payload.Id;
+      state.DealerId = action.payload.DealerId;
+      state.CurrentId = action.payload.CurrentId;
+      state.BetStatus = action.payload.BetStatus;
+      state.BetStatusIndex = action.payload.BetStatusIndex;
+      state.CurrentBet = action.payload.CurrentBet;
+      state.EndDate = action.payload.EndDate;
+      state.GameCreatorId = action.payload.GameCreatorId;
+      state.GameHand = action.payload.GameHand;
+      state.IsEnded = action.payload.IsEnded;
+      state.IsInvitesOnly = action.payload.IsInvitesOnly;
+      state.IsLocked = action.payload.IsLocked;
+      state.IsRoundSettlement = action.payload.IsRoundSettlement;
+      state.MeetingId = action.payload.MeetingId;
+      state.MeetingMinutes = action.payload.MeetingMinutes;
+      state.NumberOfCommunities = action.payload.NumberOfCommunities;
+      state.PotSize = action.payload.PotSize;
+      state.Round = action.payload.Round;
+      state.VideoChatAllowed = action.payload.VideoChatAllowed;
+      state.FilteredPlayers = __filterPlayersHandler(
+        action.payload.ActivePlayers
+      );
     },
     /**
      *0
@@ -42,6 +77,7 @@ export const gameStateSlice = createSlice({
       }
       state.CurrentId = NextCurrentId(state, currentIndex);
       state.ActivePlayers.splice(action.payload, 1);
+      state.FilteredPlayers = state.ActivePlayers;
       LogRocket.log(`${action.payload}th Player Left Game`, state);
     },
     playerDisconnected: (state, action) => {
@@ -50,6 +86,8 @@ export const gameStateSlice = createSlice({
         state.CurrentId = NextCurrentId(state, action.payload);
       if (state.DealerId === state.ActivePlayers[action.payload].PlayerId)
         state.DealerId = NextCurrentId(state, action.payload);
+
+      state.FilteredPlayers = state.ActivePlayers;
       LogRocket.log(`${action.payload}th Player Disconnected`, state);
     },
     playerConnected: (state, action) => {
@@ -59,6 +97,7 @@ export const gameStateSlice = createSlice({
       if (index !== -1) {
         state.ActivePlayers[index].ConnectionId = action.payload.ConnectionId;
         state.ActivePlayers[index].IsDisconnected = false;
+        state.FilteredPlayers = state.ActivePlayers;
       }
       LogRocket.log(`${action.payload}th Player Connected`, state);
     },
@@ -84,6 +123,7 @@ export const gameStateSlice = createSlice({
         Balance: 0,
         LastActionPerformed: "",
       });
+      state.FilteredPlayers = state.ActivePlayers;
       if (state.ActivePlayers.length === 2) {
         state.CurrentId = state.ActivePlayers[1].PlayerId;
       }
@@ -256,14 +296,16 @@ export const gameStateSlice = createSlice({
       LogRocket.log(`${action.payload}th Player rejoined`, state);
     },
     fold: (state, action) => {
-      console.log("payload =====>", action.payload);
       state.ActivePlayers[action.payload].LastActionPerformed = " Fold";
+
       AddStep(state, action.payload, "folded", "Fold");
       state.ActivePlayers[action.payload].IsFolded = true;
       state.ActivePlayers[action.payload].PlayerCards.forEach(
         (playerCard) => (playerCard.Presentation = 1)
       );
       OnPlayerAction(state);
+
+      state.FilteredPlayers = __filterPlayersHandler(state.ActivePlayers);
       LogRocket.log(`${action.payload}th Player folede`, state);
     },
     take: (state, action) => {
@@ -360,9 +402,11 @@ export const gameStateSlice = createSlice({
       }
       LogRocket.log(`${action.payload.Index}th Player showed cards`, state);
     },
+
     endHand: (state, action) => {
       state.IsRoundSettlement = true;
       AddStep(state, -1, "ended hand", "EndHand");
+
       state.ActivePlayers.forEach((obj) => {
         obj.PlayerNetStatusFinal = obj.PlayerNetStatusFinal + obj.PlayerAmount;
         obj.PlayerAmount = 0;
@@ -370,9 +414,14 @@ export const gameStateSlice = createSlice({
         obj.CurrentRoundStatus = 0;
         obj.LastActionPerformed = "";
         obj.PlayerCards = [];
-        //if you'r not sitout, set IsFolded as false
-        if (!obj.IsSitOut) obj.IsFolded = false;
+
+        // Reset folded status if player is not sitting out
+        if (!obj.IsSitOut) {
+          obj.IsFolded = false;
+        }
       });
+
+      // Reset other round-specific states
       state.CommunityCards = [];
       state.CurrentBet = 0;
       state.Deck = GetNewDeck();
@@ -384,12 +433,50 @@ export const gameStateSlice = createSlice({
       });
 
       state.BetStatus = "New Hand. No bet yet.";
+
       let dealerIndex = state.ActivePlayers.findIndex(
         (x) => x.PlayerId === state.DealerId
       );
+      console.log("endhand index in gameStateSlice", dealerIndex);
       state.CurrentId = NextCurrentId(state, dealerIndex);
+
+      // ✅ Rebuild filtered players list after all reset operations
+      state.FilteredPlayers = __filterPlayersHandler(state.ActivePlayers);
+
       LogRocket.log(`Ended hand`, state);
     },
+
+    // endHand: (state, action) => {
+    //   state.IsRoundSettlement = true;
+    //   AddStep(state, -1, "ended hand", "EndHand");
+    //   state.ActivePlayers.forEach((obj) => {
+    //     obj.PlayerNetStatusFinal = obj.PlayerNetStatusFinal + obj.PlayerAmount;
+    //     obj.PlayerAmount = 0;
+    //     obj.Balance = 0;
+    //     obj.CurrentRoundStatus = 0;
+    //     obj.LastActionPerformed = "";
+    //     obj.PlayerCards = [];
+    //     //if you'r not sitout, set IsFolded as false
+    //     if (!obj.IsSitOut) obj.IsFolded = false;
+    //   });
+    //   state.CommunityCards = [];
+    //   state.CurrentBet = 0;
+    //   state.Deck = GetNewDeck();
+    //   state.GameHand += 1;
+    //   state.Round = 0;
+    //   state.HandSteps.push({
+    //     HandId: state.GameHand,
+    //     BettingRounds: [],
+    //   });
+
+    //   state.BetStatus = "New Hand. No bet yet.";
+    //   let dealerIndex = state.ActivePlayers.findIndex(
+    //     (x) => x.PlayerId === state.DealerId
+    //   );
+    //   console.log("endhand index in gameStateSlice", dealerIndex);
+    //   state.CurrentId = NextCurrentId(state, dealerIndex);
+    //   LogRocket.log(`Ended hand`, state);
+    // },
     endGame: (state, action) => {
       state.IsEnded = true;
       LogRocket.log(`Ended game`);
@@ -411,18 +498,29 @@ export const gameStateSlice = createSlice({
       state.ActivePlayers[action.payload.index].IsRealTimeChatForMic =
         action.payload.value;
     },
+
     dealCards: (state, action) => {
       action.payload.dealCards.forEach((card) => {
         state.Deck = state.Deck.filter((x) => x !== card.Value);
         if (card.Type === 0) {
-          // state.ActivePlayers.filter(
-          //   (player) => !player.IsFolded
-          // )[card.Index].PlayerCards.push({
-          if (!state.ActivePlayers[card.Index].IsFolded)
+          if (!state.ActivePlayers[card.Index].IsFolded) {
             state.ActivePlayers[card.Index].PlayerCards.push({
               Value: card.Value,
               Presentation: card.Presentation,
             });
+          } else {
+            const filteredPlayer = state.FilteredPlayers[card.Index];
+            const player = state.ActivePlayers.find(
+              (x) => x.PlayerId === filteredPlayer.PlayerId
+            );
+
+            if (player) {
+              player.PlayerCards.push({
+                Value: card.Value,
+                Presentation: card.Presentation,
+              });
+            }
+          }
         } else {
           state.CommunityCards.push({
             Value: card.Value,

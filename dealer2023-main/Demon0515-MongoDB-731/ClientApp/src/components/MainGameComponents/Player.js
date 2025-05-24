@@ -58,7 +58,7 @@ const ParticipantView = ({ participantId }) => {
           playing={true}
           url={videoStream}
           className="react-player"
-          style={{ height: "100%", width: "100%" }} 
+          style={{ height: "100%", width: "100%" }}
           onError={(err) => {
             console.log(err, "participant video error");
           }}
@@ -165,13 +165,16 @@ const Player = ({ ptr }) => {
       <div>
         <div className="row m-0 p-1">
           <div
-            className={`PlayerName col${gameState.DealerId === Player.PlayerId ? " green" : ""
-              }`}
+            className={`PlayerName col${
+              gameState.DealerId === Player.PlayerId ? " green" : ""
+            }`}
             onClick={() =>
               setToggleRemoveButtonVisible(!toggleRemoveButtonVisible)
             }
           >
-            <div className="PlayerDealer"><p>{Player.PlayerName}</p></div>
+            <div className="PlayerDealer">
+              <p>{Player.PlayerName}</p>
+            </div>
             {gameState.GameCreatorId === user.Id && (
               <span
                 className="PlayerStatusNet col-auto my-auto btn"

@@ -30,6 +30,7 @@ const Home = () => {
   const [isCreating, setIsCreating] = useState(false);
 
   const auth = useSelector((state) => state.auth);
+
   const dispatch = useDispatch();
 
   const copyInvitation = useCallback(() => {
@@ -58,7 +59,6 @@ const Home = () => {
       setCopyButtonVisible(true);
     }
   }, [auth]);
-
 
   const handleStart = useCallback(async () => {
     if (
@@ -203,14 +203,12 @@ const Home = () => {
     });
   }, [auth, dispatch, navigator]);
 
-
-    //function App() {
-    //    return (
-    //        <div className='container'>
-    //            <h2>Hello useState</h2></div>
-    //    );
-    //}
-
+  //function App() {
+  //    return (
+  //        <div className='container'>
+  //            <h2>Hello useState</h2></div>
+  //    );
+  //}
 
   //start
   if (!isCreating)
@@ -226,39 +224,38 @@ const Home = () => {
               <u>Your</u> club.
             </h3>
           </div>
-        
 
-        <div className="col-6 call-out MainPageDivTitle">
-          <div className="col-md-8 m-2">
-            <h2>Members can</h2>
-            <div>
-              <ul>
-                <li>
-                  <h3>Save guest lists</h3>
-                </li>
-                <li>
-                  <h3>Schedule games</h3>
-                </li>
-                <li>
-                  <h3>Save game history</h3>
-                </li>
-                <li>
-                  <h3>
-                    Access premium features like ad-free games, in-game video,
-                    and more!
-                  </h3>
-                </li>
-              </ul>
+          <div className="col-6 call-out MainPageDivTitle">
+            <div className="col-md-8 m-2">
+              <h2>Members can</h2>
+              <div>
+                <ul>
+                  <li>
+                    <h3>Save guest lists</h3>
+                  </li>
+                  <li>
+                    <h3>Schedule games</h3>
+                  </li>
+                  <li>
+                    <h3>Save game history</h3>
+                  </li>
+                  <li>
+                    <h3>
+                      Access premium features like ad-free games, in-game video,
+                      and more!
+                    </h3>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div className="col-md-3 my-auto mx-auto cta">
+              <h2>
+                <a href="/auth/sign-up" className="join-btn btn fs-2 px-4 py-2">
+                  Join Now<span className="fs-5 d-block">for free!</span>
+                </a>
+              </h2>
             </div>
           </div>
-          <div className="col-md-3 my-auto mx-auto cta">
-            <h2>
-              <a href="/auth/sign-up" className="join-btn btn fs-2 px-4 py-2">
-                Join Now<span className="fs-5 d-block">for free!</span>
-              </a>
-            </h2>
-          </div>
-                </div>
         </div>
         <div className="row create-join mt-5 justify-content-between">
           <div className="col-12 m-2 MainPageDivTitle">
