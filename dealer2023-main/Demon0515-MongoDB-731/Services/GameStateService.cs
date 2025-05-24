@@ -49,7 +49,7 @@ namespace PersonalizedCardGame.Services
             var update = Builders<GameHash>.Update.Set("ActivePlayers.$[player].IsDisconnected", IsDisconnected)
                 .Set("ActivePlayers.$[player].ConnectionId", connectionId);
 
-            var arrayFilters = new List<ArrayFilterDefinition>
+            var arrayFilters = new List<ArrayFilterDefinition> 
                 {
                     new BsonDocumentArrayFilterDefinition<BsonDocument>(new BsonDocument("player.PlayerId", playerId))
                 };
