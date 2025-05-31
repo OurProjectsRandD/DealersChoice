@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { Ante } from "../../common/game/GameControl";
 import { useDispatch, useSelector } from "react-redux";
 import { ante } from "../../slice/gameStateSlice";
@@ -7,6 +7,8 @@ const AnteButton = ({ txtAnteRef }) => {
   const dispatch = useDispatch();
   const gameState = useSelector((state) => state.gameState);
   const user = useSelector((state) => state.auth.user);
+
+  const [showAnte, setShowAnte] = useState(true);
 
   const currentIndex = useMemo(
     () => gameState.ActivePlayers.findIndex((x) => x.PlayerId === user.Id),
@@ -42,6 +44,7 @@ const AnteButton = ({ txtAnteRef }) => {
             })
           );
           txtAnteRef.current.value = "";
+          setShowAnte(false);
         });
       }
 
@@ -53,9 +56,11 @@ const AnteButton = ({ txtAnteRef }) => {
     [currentIndex, gameState, txtAnteRef]
   );
   return (
-    <button className="btn btn Ante mt-0" onClick={AnteEventHandler}>
-      Ante
-    </button>
+    showAnte && (
+      <button className="btn btn Ante mt-0" onClick={AnteEventHandler}>
+        Ante
+      </button>
+    )
   );
 };
 
