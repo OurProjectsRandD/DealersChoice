@@ -21,6 +21,7 @@ export const NavMenu = () => {
   const [anchorElUser, setAnchorElUser] = useState(null);
   const auth = useSelector((state) => state.auth);
   const dispatch = useDispatch();
+  const gameState = useSelector((state) => state.gameState);
 
   const handleSignOut = useCallback(() => {
     SendRequest({
@@ -79,16 +80,24 @@ export const NavMenu = () => {
           id="Games_Menu"
         >
           {!auth.isAuthorized && (
-            <Typography
-              variant="h4"
-              component="div"
-              sx={{ mr: 2 }}
-              color="blue"
-              className="btn"
-              onClick={() => navigate("/about")}
-            >
-              About
-            </Typography>
+            <div className="d-flex align-items-center">
+              <Typography
+                variant="h4"
+                component="div"
+                sx={{ mr: 2 }}
+                color="blue"
+                className="btn"
+                onClick={() => navigate("/about")}
+              >
+                About
+              </Typography>
+
+              <div className="bg-light text-center">
+                <div className="text-center mb-0" id="status">
+                  {gameState.BetStatus}
+                </div>
+              </div>
+            </div>
           )}
           {auth.isAuthorized && (
             <>
