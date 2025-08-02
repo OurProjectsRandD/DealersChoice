@@ -67,7 +67,7 @@ namespace PersonalizedCardGame.Services
             {
                 ReturnDocument = ReturnDocument.After // specifies to return the updated document
             };
-            GameHash gameHash = await mongoCollection.FindOneAndUpdateAsync(filter, update, options);
+            GameHash gameHash = await mongoCollection.FindOneAndUpdateAsync(filter, update, options); 
             return gameHash;
         }
 
